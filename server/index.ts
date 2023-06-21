@@ -12,6 +12,9 @@ app.use(cors());
 
 mongoose.connect("mongodb+srv://dyang:RrrwmSWGDb1vqNZy@cluster0.vtkcvkm.mongodb.net/disputeboard?retryWrites=true&w=majority");
 
+/**
+ * Get disputes from mongo db and post it to frontend
+ */
 app.get("/getDisputes", (req: Request, res: Response) => {
     DisputeModel.find({})
     .then(result => {
@@ -22,13 +25,31 @@ app.get("/getDisputes", (req: Request, res: Response) => {
     });
 });
 
+/**
+ * Adds dispute from frontend and puts it to mongodb
+ */
 app.post("/addDispute", async (req: Request, res: Response) => {
+    console.log("Hello")
+    console.log(req.body) 
+    
+
     const dispute = req.body;
+    for (let prop in dispute){
+        console.log("Checking")
+        if (!dispute.hasOwnProperty(prop)){
+            console.log("Object has a field empty")
+
+        }
+    }
+
     const newDispute = new DisputeModel(dispute);
     await newDispute.save();
     res.json(dispute);
 });
 
+/**
+ * Get a list of users
+ */
 app.get("/getUsers", (req: Request, res: Response) => {
     UserModel.find({})
     .then(result => {
@@ -39,6 +60,9 @@ app.get("/getUsers", (req: Request, res: Response) => {
     });
 });
 
+/**
+ * Add user to mongodb
+ */
 app.post("/addUser", async (req: Request, res: Response) => {
     const user = req.body;
     const newUser = new UserModel(user);
