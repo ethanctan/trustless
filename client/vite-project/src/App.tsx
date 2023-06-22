@@ -1,42 +1,50 @@
 import { useState, useEffect } from 'react';
 import './App.css';
 import Axios from 'axios';
-import { ethers } from "ethers";
 
 interface Dispute {
   _id: string; 
-  addressFrom: string;
-  addressTo: string;
-  txnHash: string;
-  blockID: number;
-}
-
-declare global {
-  interface Window {
-    ethereum: any;
-  }
+  protocol: string;
+  question1: number;
+  question2: number;
+  question3: number;
+  question4: number;
+  question5: number;
 }
 
 interface User {
   address: string;
 }
 
+interface Protocol {
+  _id: string;
+  disputeCount: number;
+  protocol: string;
+  averageScore: number;
+  q1Score: number;
+  q2Score: number;
+  q3Score: number;
+  q4Score: number;
+  q5Score: number;
+}
+
 function App() {
   const [listofDisputes, setListofDisputes] = useState<Dispute[]>([]);
-  const [addressFrom, setAddressFrom] = useState<string>("");
-  const [addressTo, setAddressTo] = useState<string>("");
-  const [txnHash, setTxnHash] = useState<string>("");
-  const [blockID, setBlockID] = useState<number>(0);
-  const [signer, setSigner] = useState<ethers.providers.JsonRpcSigner | null>(null);
+  const [protocol, setProtocol] = useState<string>("");
+  const [question1, setQuestion1] = useState<number>(0);
+  const [question2, setQuestion2] = useState<number>(0);
+  const [question3, setQuestion3] = useState<number>(0);
+  const [question4, setQuestion4] = useState<number>(0);
+  const [question5, setQuestion5] = useState<number>(0);
   const [address, setAddress] = useState<string | null>(null);
+  const [submitted, setSubmitted] = useState<boolean>(false);
+  const [listofProtocols, setListofProtocols] = useState<Protocol[]>([]);
+  const [q1Score, setQ1Score] = useState<number>(0);
+  const [q2Score, setQ2Score] = useState<number>(0);
+  const [q3Score, setQ3Score] = useState<number>(0);
+  const [q4Score, setQ4Score] = useState<number>(0);
+  const [q5Score, setQ5Score] = useState<number>(0);
 
-
-  useEffect(() => {
-    if (window.ethereum) {
-      const provider = new ethers.providers.Web3Provider(window.ethereum);
-      setSigner(provider.getSigner());
-    }
-  }, []);
 
   useEffect(() => {
     Axios.get<Dispute[]>('http://localhost:3001/getDisputes').then((response) => {
@@ -44,72 +52,122 @@ function App() {
     });
   }, []);
 
-  const connectWallet = async () => {
-    if (window.ethereum) {
-      try {
-        // Request account access
-        const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
-        // If user has granted access and there are accounts available
-        if (accounts && accounts.length > 0) {
-          // The array `accounts` holds the addresses, with the user's primary account at index 0
-          setAddress(accounts[0]); // Pass the user's address to the setAddress function
-          setAddressFrom(accounts[0]);
-          Axios.post<User[]>('http://localhost:3001/addUser', {
-            address: accounts[0],
-          }).then((response) => {
-            console.log("User added!");
-          })
-        }
-      } catch (error) {
-        console.error(error);
-      }
-    } else {
-      console.log("Install MetaMask!");
-    }
+  useEffect(() => {
+    setSubmitted(false);
+  }, [address]);
+
+  useEffect(() => {
+    Axios.get<Protocol[]>('http://localhost:3001/getProtocols').then((response) => {
+      setListofProtocols(response.data);
+    });
+  }, []);
+
+  const addUser = () => {
+    Axios.post<User[]>('http://localhost:3001/addUser', {
+      address: address,
+    }).then((response) => {
+      console.log("User added!");
+      setSubmitted(true);
+    })
   };  
 
-  const addDispute = () => {
-    Axios.post('http://localhost:3001/addDispute', {
-      addressFrom: addressFrom,
-      addressTo: addressTo,
-      txnHash: txnHash,
-      blockID: blockID,
-    }).then((response) => {
+  const addDispute = async () => {
+    try {
+      const disputeResponse = await Axios.post('http://localhost:3001/addDispute', {
+        protocol: protocol,
+        question1: question1,
+        question2: question2,
+        question3: question3,
+        question4: question4,
+        question5: question5,
+      });
+  
       setListofDisputes([...listofDisputes, {
-        _id: response.data._id,  
-        addressFrom: addressFrom,
-        addressTo: addressTo,
-        txnHash: txnHash,
-        blockID: blockID
+        _id: disputeResponse.data._id,  
+        protocol: protocol,
+        question1: question1,
+        question2: question2,
+        question3: question3,
+        question4: question4,
+        question5: question5,
       }]);
-    });
+    } catch (error) {
+      console.error('There was an error with the addDispute request:', error);
+    }
+  
+    try {
+      const protocolResponse = await Axios.post('http://localhost:3001/addProtocol', {
+        disputeCount: 0,
+        protocol: protocol,
+        averageScore: 0,
+        q1Score: q1Score,
+        q2Score: q2Score,
+        q3Score: q3Score,
+        q4Score: q4Score,
+        q5Score: q5Score,
+      });
+  
+      setListofProtocols([...listofProtocols, {
+        _id: protocolResponse.data._id,
+        disputeCount: 0,
+        protocol: protocol,
+        averageScore: 0,
+        q1Score: q1Score,
+        q2Score: q2Score,
+        q3Score: q3Score,
+        q4Score: q4Score,
+        q5Score: q5Score,
+      }]);
+    } catch (error) {
+      console.error('There was an error with the addProtocol request:', error);
+    }
   };
+  
   
   return (
     <div className="App">
-      <h1>Dispute Resolution</h1>
-      <button onClick={connectWallet}>Connect Your Wallet</button>
-      <h6>{address ? "Wallet Connected!" : ""}</h6>
+      <h1>Aegis Protocol Tracker</h1>
+      <h4>Live Responses</h4>
       {listofDisputes.map((dispute) => {
         return (
           <div key={dispute._id}>
-            <h3>{dispute.addressFrom}</h3>
-            <h4>{dispute.addressTo}</h4>
-            <h5>{dispute.txnHash}</h5>
-            <h6>{dispute.blockID}</h6>
+            <h3>{dispute.protocol}</h3>
+            <p>{dispute.question1}</p>
+            <p>{dispute.question2}</p>
+            <p>{dispute.question3}</p>
+            <p>{dispute.question4}</p>
+            <p>{dispute.question5}</p>
           </div>
         );
       })}
-      <div>
+      <h4>Protocol Leaderboards</h4>
+      {listofProtocols.map((protocol) => {
+        return (
+          <div key={protocol._id}>
+            <h3>{protocol.protocol}</h3>
+            <p>{protocol.q1Score}</p>
+            <p>{protocol.q2Score}</p>
+            <p>{protocol.q3Score}</p>
+            <p>{protocol.q4Score}</p>
+            <p>{protocol.q5Score}</p>
+          </div>
+        );
+      })};
+        <div>
             {/* <input type="text" placeholder="Enter your address" onChange={(event) => setAddressFrom(event.target.value)} /> */}
-            <input type="text" placeholder="Enter the address you are disputing" onChange={(event) => setAddressTo(event.target.value)}/>
-            <input type="text" placeholder="Enter the transaction hash" onChange={(event) => setTxnHash(event.target.value)}/>
-            <input type="number" placeholder="Enter the block ID" onChange={(event) => {
-                let num = Number(event.target.value);
-                setBlockID(isNaN(num) ? 0 : num);
-            }}/>
+            <input type="text" placeholder="Protocol Name" onChange={(event) => setProtocol(event.target.value)}/>
+            <input type="number" placeholder="Question 1" onChange={(event) => {setQuestion1(parseInt(event.target.value)); setQ1Score(parseInt(event.target.value))}}/>
+            <input type="number" placeholder="Question 2" onChange={(event) => {setQuestion2(parseInt(event.target.value)); setQ2Score(parseInt(event.target.value))}}/>
+            <input type="number" placeholder="Question 3" onChange={(event) => {setQuestion3(parseInt(event.target.value)); setQ3Score(parseInt(event.target.value))}}/>
+            <input type="number" placeholder="Question 4" onChange={(event) => {setQuestion4(parseInt(event.target.value)); setQ4Score(parseInt(event.target.value))}}/>
+            <input type="number" placeholder="Question 5" onChange={(event) => {setQuestion5(parseInt(event.target.value)); setQ5Score(parseInt(event.target.value))}}/>
             <button onClick={addDispute}>Submit</button>
-          </div> 
+        </div> 
+        <div>
+          Drop your address here: <input type="text" placeholder="Enter your address" onChange={(event) => setAddress(event.target.value)} />
+          <button onClick={addUser}>Submit</button>
+          <h5>{submitted ? "Thank you for submitting your address." : ""}</h5>
+        </div>
     </div>
   );
 }
