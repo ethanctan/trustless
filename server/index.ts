@@ -42,12 +42,8 @@ app.get("/getUsers", (req: Request, res: Response) => {
 app.post("/addUser", async (req: Request, res: Response) => {
     const user = req.body;
     const newUser = new UserModel(user);
-    try {
-        await newUser.save();
-        res.status(201).json(newUser);
-    } catch(err) {
-        res.status(400).json(err);
-    }
+    await newUser.save();
+    res.json(user);
 });
 
 app.listen(3001, () => {
