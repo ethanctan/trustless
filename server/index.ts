@@ -4,6 +4,7 @@ import cors from 'cors';
 
 import DisputeModel from './models/Disputes';
 import UserModel from './models/Users';
+import ProtocolModel from './models/Protocols';
 
 const app = express();
 
@@ -29,23 +30,38 @@ app.get("/getDisputes", (req: Request, res: Response) => {
  * Adds dispute from frontend and puts it to mongodb
  */
 app.post("/addDispute", async (req: Request, res: Response) => {
-    console.log("Hello")
     console.log(req.body) 
-    
-
     const dispute = req.body;
-    for (let prop in dispute){
-        console.log("Checking")
-        if (!dispute.hasOwnProperty(prop)){
-            console.log("Object has a field empty")
 
-        }
+    // TODO: Check for duplicate keys
+    let addressFromCorrect = validHex(dispute["addressFrom"]);
+    let addressToCorrect = validHex(dispute["addressTo"]);
+    let txnHashCorrect = dispute["txnHash"];
+    let blockIdCorrect = (dispute["blockID"] != -1);
+
+    if (!(addressFromCorrect && addressToCorrect && txnHashCorrect && blockIdCorrect)){
+        res.json({error: "Invalid input"})
+        return
     }
+
+    // update protocol db - need to create unique index?
+    await ProtocolModel.updateOne(
+        {protocolAddress: dispute["addressTo"]}, 
+        {$inc:{disputeCount: 1}},
+        {upsert: true}
+    );
 
     const newDispute = new DisputeModel(dispute);
     await newDispute.save();
+
     res.json(dispute);
 });
+
+const HEXREGEX = /^0x[0-9A-F]/g
+function validHex(str: string){
+    str = str.toLocaleLowerCase()
+    return str.match(HEXREGEX)
+}
 
 /**
  * Get a list of users
