@@ -20,17 +20,29 @@ interface Protocol {
   qScores: [number]
 }
 
+interface GetProtocolResponse {
+  _id: string;
+  protocolName: string;
+  disputeCount: number;
+  averageScore: number;
+}
+
 function App() {
+  //hooks for dispute list
   const [listofDisputes, setListofDisputes] = useState<Dispute[]>([]);
+  //hooks for dispute input
   const [protocol, setProtocol] = useState<string>("");
   const [question1, setQuestion1] = useState<number>(0);
   const [question2, setQuestion2] = useState<number>(0);
   const [question3, setQuestion3] = useState<number>(0);
   const [question4, setQuestion4] = useState<number>(0);
   const [question5, setQuestion5] = useState<number>(0);
+  //hooks for user address
   const [address, setAddress] = useState<string | null>(null);
   const [submitted, setSubmitted] = useState<boolean>(false);
-  const [listofProtocols, setListofProtocols] = useState<Protocol[]>([]);
+  //hooks for protocol list
+  const [protocolData, setProtocolData] = useState<GetProtocolResponse[]>([]);
+  //hooks for protocol input
   const [q1Score, setQ1Score] = useState<number>(0);
   const [q2Score, setQ2Score] = useState<number>(0);
   const [q3Score, setQ3Score] = useState<number>(0);
@@ -49,8 +61,8 @@ function App() {
   }, [address]);
 
   useEffect(() => {
-    Axios.get<Protocol[]>('http://localhost:3001/getProtocols').then((response) => {
-      setListofProtocols(response.data);
+    Axios.get<GetProtocolResponse[]>('http://localhost:3001/getProtocols').then((response) => {
+      setProtocolData(response.data);
     });
   }, []);
 
@@ -65,25 +77,27 @@ function App() {
 
   const addDispute = async () => {
     try {
-      const disputeResponse = await Axios.post('http://localhost:3001/addDispute', {
+        await Axios.post('http://localhost:3001/addDispute', {
         protocol: protocol,
         qVals: [question1, question2, question3, question4, question5]
       });
   
-      setListofDisputes([...listofDisputes]);
+      const response = await Axios.get<Dispute[]>('http://localhost:3001/getDisputes');
+      setListofDisputes(response.data);
     } catch (error) {
       console.error('There was an error with the addDispute request:', error);
     }
   
     try {
-      const protocolResponse = await Axios.post('http://localhost:3001/addProtocol', {
+      await Axios.post<Protocol>('http://localhost:3001/addProtocol', {
         disputeCount: 1,
         protocolName: protocol,
         averageScore: (q1Score+q2Score+q3Score+q4Score+q5Score)/5,
         qScores: [q1Score, q2Score, q3Score, q4Score, q5Score]
       });
-  
-      setListofProtocols([...listofProtocols]);
+    
+      const response = await Axios.get<GetProtocolResponse[]>('http://localhost:3001/getProtocols');
+      setProtocolData(response.data);
     } catch (error) {
       console.error('There was an error with the addProtocol request:', error);
     }
@@ -93,33 +107,35 @@ function App() {
   return (
     <div className="App">
       <h1>Aegis Protocol Tracker</h1>
-      <h4>Live Responses</h4>
-      {listofDisputes.map((dispute) => {
-        return (
-          <div key={dispute._id}>
-            <h3>{dispute.protocol}</h3>
-            <p>{dispute.question1}</p>
-            <p>{dispute.question2}</p>
-            <p>{dispute.question3}</p>
-            <p>{dispute.question4}</p>
-            <p>{dispute.question5}</p>
-          </div>
-        );
-      })}
-      <h4>Protocol Leaderboards</h4>
-      {listofProtocols.map((protocol) => {
-        return (
-          <div key={protocol._id}>
-            <h3>{protocol.protocol}</h3>
-            <p>{protocol.q1Score}</p>
-            <p>{protocol.q2Score}</p>
-            <p>{protocol.q3Score}</p>
-            <p>{protocol.q4Score}</p>
-            <p>{protocol.q5Score}</p>
-          </div>
-        );
-      })};
+      <div style={{ display: 'flex', justifyContent: 'space-between', paddingRight:'20%', paddingLeft:'20%'}}>
         <div>
+          <h4>Live Responses</h4>
+          {listofDisputes.slice(-2).map((dispute) => {
+            return (
+              <div key={dispute._id}>
+                <h3>{dispute.protocol}</h3>
+                {dispute.qVals.map((val, index) => (
+                  <p key={index}>Question {index + 1}: {val}</p>
+                ))}
+              </div>
+            );
+          })}
+        </div>
+        <div>
+          <h4>Protocol Leaderboards</h4>
+          {protocolData.map((protocol) => {
+            return (
+              <div key={protocol._id}>
+                <h3>{protocol.protocolName}</h3>
+                <p>number of ratings: {protocol.disputeCount}</p>
+                <p> averageScore: {protocol.averageScore}</p>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+
+      <div>
             {/* <input type="text" placeholder="Enter your address" onChange={(event) => setAddressFrom(event.target.value)} /> */}
             <input type="text" placeholder="Protocol Name" onChange={(event) => setProtocol(event.target.value)}/>
             <input type="number" placeholder="Question 1" onChange={(event) => {setQuestion1(parseInt(event.target.value)); setQ1Score(parseInt(event.target.value))}}/>
@@ -134,6 +150,7 @@ function App() {
           <button onClick={addUser}>Submit</button>
           <h5>{submitted ? "Thank you for submitting your address." : ""}</h5>
         </div>
+
     </div>
   );
 }

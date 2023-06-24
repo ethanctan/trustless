@@ -56,15 +56,6 @@ function checkScoresCorrect(dispute : [number]){
     return true
 }
 
-
-
-
-const HEXREGEX = /^0x[0-9A-F]/g
-function validHex(str: string){
-    str = str.toLocaleLowerCase()
-    return str.match(HEXREGEX)
-}
-
 /**
  * Get a list of users
  */
@@ -90,11 +81,14 @@ app.post("/addUser", async (req: Request, res: Response) => {
 
 app.get("/getProtocols", async (req: Request, res: Response) => {
     ProtocolModel.find({})
-    .then(result => {
-        res.json({
+    .sort({ averageScore: -1 })
+    .then(results => {
+        let responseData = results.map(result => ({
+            protocolName: result["protocolName"],
             disputeCount: result["disputeCount"],
             averageScore: result["averageScore"]
-        });
+        }));
+        res.json(responseData);
     })
     .catch(err => {
         res.json(err);
