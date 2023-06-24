@@ -56,15 +56,6 @@ function checkScoresCorrect(dispute : [number]){
     return true
 }
 
-
-
-
-const HEXREGEX = /^0x[0-9A-F]/g
-function validHex(str: string){
-    str = str.toLocaleLowerCase()
-    return str.match(HEXREGEX)
-}
-
 /**
  * Get a list of users
  */
