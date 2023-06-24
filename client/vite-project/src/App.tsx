@@ -27,6 +27,11 @@ interface GetProtocolResponse {
   averageScore: number;
 }
 
+interface IpAdress {
+  ipAddress: string;
+  protocolName: string;
+}
+
 function App() {
   //hooks for dispute list
   const [listofDisputes, setListofDisputes] = useState<Dispute[]>([]);
@@ -48,6 +53,11 @@ function App() {
   const [q3Score, setQ3Score] = useState<number>(0);
   const [q4Score, setQ4Score] = useState<number>(0);
   const [q5Score, setQ5Score] = useState<number>(0);
+  //hook for ip address
+  const [ipAddress, setIpAddress] = useState<string>("");
+  // const [serverResponse, setServerResponse] = useState(null);
+  const [within, setWithin] = useState<boolean>(false);
+
 
 
   useEffect(() => {
@@ -66,6 +76,13 @@ function App() {
     });
   }, []);
 
+  useEffect(() => {
+    Axios.get<string>('http://localhost:3001/get-ip').then((response) => {
+      setIpAddress(response.data);
+      console.log(response.data);
+    });
+  }, []);
+
   const addUser = () => {
     Axios.post<User[]>('http://localhost:3001/addUser', {
       address: address,
@@ -76,32 +93,62 @@ function App() {
   };  
 
   const addDispute = async () => {
-    try {
-        await Axios.post('http://localhost:3001/addDispute', {
-        protocol: protocol,
-        qVals: [question1, question2, question3, question4, question5]
-      });
-  
-      const response = await Axios.get<Dispute[]>('http://localhost:3001/getDisputes');
-      setListofDisputes(response.data);
-    } catch (error) {
-      console.error('There was an error with the addDispute request:', error);
+
+    if (within) {
+      console.log("You are already rated this protocol");
     }
-  
-    try {
-      await Axios.post<Protocol>('http://localhost:3001/addProtocol', {
-        disputeCount: 1,
+    else{
+        try {
+            await Axios.post('http://localhost:3001/addDispute', {
+            protocol: protocol,
+            qVals: [question1, question2, question3, question4, question5]
+          });
+      
+          const response = await Axios.get<Dispute[]>('http://localhost:3001/getDisputes');
+          setListofDisputes(response.data);
+        } catch (error) {
+          console.error('There was an error with the addDispute request:', error);
+        }
+      
+        try {
+          await Axios.post<Protocol>('http://localhost:3001/addProtocol', {
+            disputeCount: 1,
+            protocolName: protocol,
+            averageScore: (q1Score+q2Score+q3Score+q4Score+q5Score)/5,
+            qScores: [q1Score, q2Score, q3Score, q4Score, q5Score]
+          });
+        
+          const response = await Axios.get<GetProtocolResponse[]>('http://localhost:3001/getProtocols');
+          setProtocolData(response.data);
+        } catch (error) {
+          console.error('There was an error with the addProtocol request:', error);
+        }
+      }
+
+    try{
+      await Axios.post('http://localhost:3001/addIp', {
+        ipAddress: ipAddress,
         protocolName: protocol,
-        averageScore: (q1Score+q2Score+q3Score+q4Score+q5Score)/5,
-        qScores: [q1Score, q2Score, q3Score, q4Score, q5Score]
+      }).then((response) => {
+        // response.data will have the data from your backend.
+        console.log(response.data);
+        // setServerResponse(response.data);   
       });
-    
-      const response = await Axios.get<GetProtocolResponse[]>('http://localhost:3001/getProtocols');
-      setProtocolData(response.data);
-    } catch (error) {
-      console.error('There was an error with the addProtocol request:', error);
+
+      try {
+        const response = await Axios.get<boolean>(`http://localhost:3001/getIpWithin?ip=${ipAddress}`);
+        const iswithin = response.data;
+        setWithin(iswithin);
+        console.log(within);
+      } catch (error) {
+        console.error(error);
+      }
     }
-  };
+    catch (error) {
+      console.log('There was an error with the addIprequest:', error);
+    }
+};
+    
    
   
   return (
