@@ -119,13 +119,36 @@ app.get("/getUsers", (req: Request, res: Response) => {
 app.post("/addUser", async (req: Request, res: Response) => {
     const user = req.body;
     const newUser = new UserModel(user);
+    await newUser.save();
+    res.json(user);
+});
+
+app.get("/getProtocols", async (req: Request, res: Response) => {
+    ProtocolModel.find({})
+    .then(result => {
+        res.json(result);
+    })
+    .catch(err => {
+        res.json(err);
+    });
+});
+
+app.post("/addProtocol", async (req: Request, res: Response) => {
+    console.log(req.body);  // Log the request body
     try {
-        await newUser.save();
-        res.status(201).json(newUser);
-    } catch(err) {
-        res.status(400).json(err);
+        const protocol = req.body;
+        const newProtocol = new ProtocolModel(protocol);
+        await newProtocol.save();
+        res.json(protocol);
+    } catch (error) {
+        console.error(error);  // Log any errors
+        res.status(500).json({ message: "An error occurred." });
     }
 });
+
+  
+
+
 
 app.listen(3001, () => {
     console.log('server running on port 3001');

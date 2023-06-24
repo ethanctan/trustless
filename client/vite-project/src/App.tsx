@@ -4,18 +4,47 @@ import Axios from 'axios';
 
 interface Dispute {
   _id: string; 
-  addressFrom: string;
-  addressTo: string;
-  txnHash: string;
-  blockID: number;
+  protocol: string;
+  question1: number;
+  question2: number;
+  question3: number;
+  question4: number;
+  question5: number;
+}
+
+interface User {
+  address: string;
+}
+
+interface Protocol {
+  _id: string;
+  disputeCount: number;
+  protocol: string;
+  averageScore: number;
+  q1Score: number;
+  q2Score: number;
+  q3Score: number;
+  q4Score: number;
+  q5Score: number;
 }
 
 function App() {
   const [listofDisputes, setListofDisputes] = useState<Dispute[]>([]);
-  const [addressFrom, setAddressFrom] = useState<string>("");
-  const [addressTo, setAddressTo] = useState<string>("");
-  const [txnHash, setTxnHash] = useState<string>("");
-  const [blockID, setBlockID] = useState<number>(0);
+  const [protocol, setProtocol] = useState<string>("");
+  const [question1, setQuestion1] = useState<number>(0);
+  const [question2, setQuestion2] = useState<number>(0);
+  const [question3, setQuestion3] = useState<number>(0);
+  const [question4, setQuestion4] = useState<number>(0);
+  const [question5, setQuestion5] = useState<number>(0);
+  const [address, setAddress] = useState<string | null>(null);
+  const [submitted, setSubmitted] = useState<boolean>(false);
+  const [listofProtocols, setListofProtocols] = useState<Protocol[]>([]);
+  const [q1Score, setQ1Score] = useState<number>(0);
+  const [q2Score, setQ2Score] = useState<number>(0);
+  const [q3Score, setQ3Score] = useState<number>(0);
+  const [q4Score, setQ4Score] = useState<number>(0);
+  const [q5Score, setQ5Score] = useState<number>(0);
+
 
   useEffect(() => {
     Axios.get<Dispute[]>('http://localhost:3001/getDisputes').then((response) => {
@@ -23,46 +52,122 @@ function App() {
     });
   }, []);
 
-  const addDispute = () => {
-    Axios.post('http://localhost:3001/addDispute', {
-      addressFrom: addressFrom,
-      addressTo: addressTo,
-      txnHash: txnHash,
-      blockID: blockID,
-    }).then((response) => {
-      setListofDisputes([...listofDisputes, {
-        _id: response.data._id,  
-        addressFrom: addressFrom,
-        addressTo: addressTo,
-        txnHash: txnHash,
-        blockID: blockID
-      }]);
+  useEffect(() => {
+    setSubmitted(false);
+  }, [address]);
+
+  useEffect(() => {
+    Axios.get<Protocol[]>('http://localhost:3001/getProtocols').then((response) => {
+      setListofProtocols(response.data);
     });
+  }, []);
+
+  const addUser = () => {
+    Axios.post<User[]>('http://localhost:3001/addUser', {
+      address: address,
+    }).then((response) => {
+      console.log("User added!");
+      setSubmitted(true);
+    })
+  };  
+
+  const addDispute = async () => {
+    try {
+      const disputeResponse = await Axios.post('http://localhost:3001/addDispute', {
+        protocol: protocol,
+        question1: question1,
+        question2: question2,
+        question3: question3,
+        question4: question4,
+        question5: question5,
+      });
+  
+      setListofDisputes([...listofDisputes, {
+        _id: disputeResponse.data._id,  
+        protocol: protocol,
+        question1: question1,
+        question2: question2,
+        question3: question3,
+        question4: question4,
+        question5: question5,
+      }]);
+    } catch (error) {
+      console.error('There was an error with the addDispute request:', error);
+    }
+  
+    try {
+      const protocolResponse = await Axios.post('http://localhost:3001/addProtocol', {
+        disputeCount: 0,
+        protocol: protocol,
+        averageScore: 0,
+        q1Score: q1Score,
+        q2Score: q2Score,
+        q3Score: q3Score,
+        q4Score: q4Score,
+        q5Score: q5Score,
+      });
+  
+      setListofProtocols([...listofProtocols, {
+        _id: protocolResponse.data._id,
+        disputeCount: 0,
+        protocol: protocol,
+        averageScore: 0,
+        q1Score: q1Score,
+        q2Score: q2Score,
+        q3Score: q3Score,
+        q4Score: q4Score,
+        q5Score: q5Score,
+      }]);
+    } catch (error) {
+      console.error('There was an error with the addProtocol request:', error);
+    }
   };
+  
   
   return (
     <div className="App">
-      <h1>Dispute Resolution</h1>
+      <h1>Aegis Protocol Tracker</h1>
+      <h4>Live Responses</h4>
       {listofDisputes.map((dispute) => {
         return (
           <div key={dispute._id}>
-            <h3>{dispute.addressFrom}</h3>
-            <h4>{dispute.addressTo}</h4>
-            <h5>{dispute.txnHash}</h5>
-            <h6>{dispute.blockID}</h6>
+            <h3>{dispute.protocol}</h3>
+            <p>{dispute.question1}</p>
+            <p>{dispute.question2}</p>
+            <p>{dispute.question3}</p>
+            <p>{dispute.question4}</p>
+            <p>{dispute.question5}</p>
           </div>
         );
       })}
-      <div>
-            <input type="text" placeholder="Enter your address" onChange={(event) => setAddressFrom(event.target.value)} />
-            <input type="text" placeholder="Enter the address you are disputing" onChange={(event) => setAddressTo(event.target.value)}/>
-            <input type="text" placeholder="Enter the transaction hash" onChange={(event) => setTxnHash(event.target.value)}/>
-            <input type="number" placeholder="Enter the block ID" onChange={(event) => {
-                let num = Number(event.target.value);
-                setBlockID(isNaN(num) ? 0 : num);
-            }}/>
+      <h4>Protocol Leaderboards</h4>
+      {listofProtocols.map((protocol) => {
+        return (
+          <div key={protocol._id}>
+            <h3>{protocol.protocol}</h3>
+            <p>{protocol.q1Score}</p>
+            <p>{protocol.q2Score}</p>
+            <p>{protocol.q3Score}</p>
+            <p>{protocol.q4Score}</p>
+            <p>{protocol.q5Score}</p>
+          </div>
+        );
+      })};
+        <div>
+            {/* <input type="text" placeholder="Enter your address" onChange={(event) => setAddressFrom(event.target.value)} /> */}
+            <input type="text" placeholder="Protocol Name" onChange={(event) => setProtocol(event.target.value)}/>
+            <input type="number" placeholder="Question 1" onChange={(event) => {setQuestion1(parseInt(event.target.value)); setQ1Score(parseInt(event.target.value))}}/>
+            <input type="number" placeholder="Question 2" onChange={(event) => {setQuestion2(parseInt(event.target.value)); setQ2Score(parseInt(event.target.value))}}/>
+            <input type="number" placeholder="Question 3" onChange={(event) => {setQuestion3(parseInt(event.target.value)); setQ3Score(parseInt(event.target.value))}}/>
+            <input type="number" placeholder="Question 4" onChange={(event) => {setQuestion4(parseInt(event.target.value)); setQ4Score(parseInt(event.target.value))}}/>
+            <input type="number" placeholder="Question 5" onChange={(event) => {setQuestion5(parseInt(event.target.value)); setQ5Score(parseInt(event.target.value))}}/>
             <button onClick={addDispute}>Submit</button>
-          </div> 
+        </div> 
+        <div>
+          Drop your address here: <input type="text" placeholder="Enter your address" onChange={(event) => setAddress(event.target.value)} />
+          <button onClick={addUser}>Submit</button>
+          <h5>{submitted ? "Thank you for submitting your address." : ""}</h5>
+        </div>
     </div>
   );
 }
