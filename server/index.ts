@@ -1,5 +1,5 @@
 import express, { Request, Response } from 'express';
-import mongoose from 'mongoose';
+import mongoose, { NumberSchemaDefinition } from 'mongoose';
 import cors from 'cors';
 
 import DisputeModel from './models/Disputes';
@@ -35,44 +35,28 @@ app.post("/addDispute", async (req: Request, res: Response) => {
     console.log(req.body) 
     const dispute = req.body;
 
-    if (!(checkDisputeCorrect)){
+
+    if (!(checkScoresCorrect(dispute["qVals"]))){
         res.json({error: "Invalid input"})
         return
     }
-
     
-
     const newDispute = new DisputeModel(dispute);
     await newDispute.save();
 
     res.json(dispute);
 });
 
-function checkDisputeCorrect(dispute : object){
-    let protocolCorrect = validHex(dispute["protocol"]);
-    let q1Correct = (dispute["question1"] <= 10 && dispute["question1"] >= 1)
-    let q2Correct = (dispute["question2"] <= 10 && dispute["question2"] >= 1)
-    let q3Correct = (dispute["question3"] <= 10 && dispute["question3"] >= 1)
-    let q4Correct = (dispute["question4"] <= 10 && dispute["question4"] >= 1)
-    let q5Correct = (dispute["question5"] <= 10 && dispute["question5"] >= 1)
-    let qsCorrect = q1Correct && q2Correct && q3Correct && q4Correct && q5Correct
-    return protocolCorrect && qsCorrect
+function checkScoresCorrect(dispute : [number]){
+    for (let i=0; i < dispute.length; i++){
+        if (dispute[i] > 10 || dispute[i] < 1){
+            return false
+        }
+    }
+    return true
 }
 
-function computeAverage(doc : object, dispute: object){
-    var newTotScore = 0
-    var cnt = 0
-    var totalScore = 0
-    if (doc["averageScore"]){
-        let score = doc["averageScore"]
-        let cnt = doc["disputeCount"]
-        totalScore = score * cnt 
-    }
-    let avgScore = (dispute["question1"] + dispute["question2"] +
-    dispute["question3"] + dispute["question4"] + dispute["question5"])/5
-    newTotScore = (totalScore+avgScore)/(cnt+1)
-    return newTotScore
-}
+
 
 
 const HEXREGEX = /^0x[0-9A-F]/g
@@ -107,37 +91,57 @@ app.post("/addUser", async (req: Request, res: Response) => {
 app.get("/getProtocols", async (req: Request, res: Response) => {
     ProtocolModel.find({})
     .then(result => {
-        res.json(result);
+        res.json({
+            disputeCount: result["disputeCount"],
+            averageScore: result["averageScore"]
+        });
     })
     .catch(err => {
         res.json(err);
     });
 });
 
+
 app.post("/addProtocol", async (req: Request, res: Response) => {
-    console.log(req.body);  // Log the request body
+    console.log("add protocol",req.body);  // Log the request body
     try {
+        
         const protocol = req.body;
-        await ProtocolModel.find(
-            {protocolAddress: protocol["protocol"]},
-        ).then((doc)=>{
-            var totalScore = computeAverage(doc, protocol)
+        if (!checkScoresCorrect(protocol["qScores"])){
+            res.json({error:"Invalid input"});
+            console.log("Invalid input")
+            return
+        }
+        await ProtocolModel.findOne(
+            {protocolName: protocol["protocolName"]},
+        ).then((doc : any)=>{
+            // Check if doc is null
+            if (!doc){
+                const newProtocol = new ProtocolModel(protocol);
+                newProtocol.save();
+                return
+            }
             
-            ProtocolModel.updateOne(
-                {protocolAddress: protocol["protocol"]}, 
-                {$inc:{
-                    disputeCount: 1, 
-                    q1Score: protocol["question1"],
-                    q2Score: protocol["question2"],
-                    q3Score: protocol["question3"],
-                    q4Score: protocol["question4"],
-                    q5Score: protocol["question5"]
-                }, $set: {
-                    averageScore: totalScore
-                }},
-                {upsert: true}
-            );
+            var newQScores = [0, 0, 0, 0, 0]
+            // Compute new q scores
+            newQScores =  protocol["qScores"].map(function (num : number, idx : number) {
+                return num + doc["qScores"][idx];
+            })
+            doc["disputeCount"] += 1
+            let newTotScore =  protocol["qScores"].map(function (num : number, idx : number) {
+                return num + doc["qScores"][idx];
+            })
+            let newAvg = (newTotScore.reduce(
+                (partialSum : number, a: number) => 
+                partialSum + a, 0))/((doc["disputeCount"])*5)
+
+
+            doc["protocolName"] = protocol["protocolName"]
+            doc["averageScore"] = newAvg
+            doc["qScores"] = newQScores
+            doc.save()
         })
+
         res.json(protocol);
     } catch (error) {
         console.error(error);  // Log any errors

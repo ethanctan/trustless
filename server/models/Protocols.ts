@@ -4,22 +4,14 @@ interface IProtocol extends Document {
     disputeCount: number;
     protocolName?: string;
     averageScore: number;
-    q1Score: number;
-    q2Score: number;
-    q3Score: number;
-    q4Score: number;
-    q5Score: number;
+    qScores: [Number]; //list of len 5 where each index corresponds to a question
 }
 
 const ProtocolSchema = new mongoose.Schema({
     protocolName: { type: String, required: true },
     disputeCount: { type: Number, required: true },
     averageScore: { type: Number, required: true},
-    q1Score: { type: Number, required: true},
-    q2Score: { type: Number, required: true},
-    q3Score: { type: Number, required: true},
-    q4Score: { type: Number, required: true},
-    q5Score: { type: Number, required: true}
+    qScores: {type: [Number], required: true}
 });
 
 const ProtocolModel = mongoose.model<IProtocol>('protocols', ProtocolSchema);

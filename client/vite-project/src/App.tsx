@@ -5,11 +5,7 @@ import Axios from 'axios';
 interface Dispute {
   _id: string; 
   protocol: string;
-  question1: number;
-  question2: number;
-  question3: number;
-  question4: number;
-  question5: number;
+  qVals: [number]
 }
 
 interface User {
@@ -19,13 +15,9 @@ interface User {
 interface Protocol {
   _id: string;
   disputeCount: number;
-  protocol: string;
+  protocolName: string;
   averageScore: number;
-  q1Score: number;
-  q2Score: number;
-  q3Score: number;
-  q4Score: number;
-  q5Score: number;
+  qScores: [number]
 }
 
 function App() {
@@ -75,54 +67,28 @@ function App() {
     try {
       const disputeResponse = await Axios.post('http://localhost:3001/addDispute', {
         protocol: protocol,
-        question1: question1,
-        question2: question2,
-        question3: question3,
-        question4: question4,
-        question5: question5,
+        qVals: [question1, question2, question3, question4, question5]
       });
   
-      setListofDisputes([...listofDisputes, {
-        _id: disputeResponse.data._id,  
-        protocol: protocol,
-        question1: question1,
-        question2: question2,
-        question3: question3,
-        question4: question4,
-        question5: question5,
-      }]);
+      setListofDisputes([...listofDisputes]);
     } catch (error) {
       console.error('There was an error with the addDispute request:', error);
     }
   
     try {
       const protocolResponse = await Axios.post('http://localhost:3001/addProtocol', {
-        disputeCount: 0,
-        protocol: protocol,
-        averageScore: 0,
-        q1Score: q1Score,
-        q2Score: q2Score,
-        q3Score: q3Score,
-        q4Score: q4Score,
-        q5Score: q5Score,
+        disputeCount: 1,
+        protocolName: protocol,
+        averageScore: (q1Score+q2Score+q3Score+q4Score+q5Score)/5,
+        qScores: [q1Score, q2Score, q3Score, q4Score, q5Score]
       });
   
-      setListofProtocols([...listofProtocols, {
-        _id: protocolResponse.data._id,
-        disputeCount: 0,
-        protocol: protocol,
-        averageScore: 0,
-        q1Score: q1Score,
-        q2Score: q2Score,
-        q3Score: q3Score,
-        q4Score: q4Score,
-        q5Score: q5Score,
-      }]);
+      setListofProtocols([...listofProtocols]);
     } catch (error) {
       console.error('There was an error with the addProtocol request:', error);
     }
   };
-  
+   
   
   return (
     <div className="App">
