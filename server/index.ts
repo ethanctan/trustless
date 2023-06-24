@@ -40,26 +40,7 @@ app.post("/addDispute", async (req: Request, res: Response) => {
         return
     }
 
-    await ProtocolModel.find(
-        {protocolAddress: dispute["protocol"]},
-    ).then((doc)=>{
-        var totalScore = computeAverage(doc, dispute)
-        
-        ProtocolModel.updateOne(
-            {protocolAddress: dispute["protocol"]}, 
-            {$inc:{
-                disputeCount: 1, 
-                q1Score: dispute["question1"],
-                q2Score: dispute["question2"],
-                q3Score: dispute["question3"],
-                q4Score: dispute["question4"],
-                q5Score: dispute["question5"]
-            }, $set: {
-                averageScore: totalScore
-            }},
-            {upsert: true}
-        );
-    })
+    
 
     const newDispute = new DisputeModel(dispute);
     await newDispute.save();
@@ -137,8 +118,26 @@ app.post("/addProtocol", async (req: Request, res: Response) => {
     console.log(req.body);  // Log the request body
     try {
         const protocol = req.body;
-        const newProtocol = new ProtocolModel(protocol);
-        await newProtocol.save();
+        await ProtocolModel.find(
+            {protocolAddress: protocol["protocol"]},
+        ).then((doc)=>{
+            var totalScore = computeAverage(doc, protocol)
+            
+            ProtocolModel.updateOne(
+                {protocolAddress: protocol["protocol"]}, 
+                {$inc:{
+                    disputeCount: 1, 
+                    q1Score: protocol["question1"],
+                    q2Score: protocol["question2"],
+                    q3Score: protocol["question3"],
+                    q4Score: protocol["question4"],
+                    q5Score: protocol["question5"]
+                }, $set: {
+                    averageScore: totalScore
+                }},
+                {upsert: true}
+            );
+        })
         res.json(protocol);
     } catch (error) {
         console.error(error);  // Log any errors
