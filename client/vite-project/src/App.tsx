@@ -55,9 +55,7 @@ function App() {
   const [q5Score, setQ5Score] = useState<number>(0);
   //hook for ip address
   const [ipAddress, setIpAddress] = useState<string>("");
-  // const [serverResponse, setServerResponse] = useState(null);
-  const [within, setWithin] = useState<boolean>(false);
-
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
 
   useEffect(() => {
@@ -94,59 +92,54 @@ function App() {
 
   const addDispute = async () => {
 
-    if (within) {
-      console.log("You are already rated this protocol");
-    }
-    else{
-        try {
-            await Axios.post('http://localhost:3001/addDispute', {
-            protocol: protocol,
-            qVals: [question1, question2, question3, question4, question5]
-          });
-      
-          const response = await Axios.get<Dispute[]>('http://localhost:3001/getDisputes');
-          setListofDisputes(response.data);
-        } catch (error) {
-          console.error('There was an error with the addDispute request:', error);
-        }
-      
-        try {
-          await Axios.post<Protocol>('http://localhost:3001/addProtocol', {
-            disputeCount: 1,
-            protocolName: protocol,
-            averageScore: (q1Score+q2Score+q3Score+q4Score+q5Score)/5,
-            qScores: [q1Score, q2Score, q3Score, q4Score, q5Score]
-          });
-        
-          const response = await Axios.get<GetProtocolResponse[]>('http://localhost:3001/getProtocols');
-          setProtocolData(response.data);
-        } catch (error) {
-          console.error('There was an error with the addProtocol request:', error);
-        }
-      }
-
     try{
       await Axios.post('http://localhost:3001/addIp', {
         ipAddress: ipAddress,
         protocolName: protocol,
-      }).then((response) => {
+      }).then(async (response) => {
         // response.data will have the data from your backend.
         console.log(response.data);
-        // setServerResponse(response.data);   
+        const response1 = await Axios.get<boolean>(`http://localhost:3001/getIpWithin?ip=${ipAddress}`);
+        const iswithin = response1.data;
+        console.log("iswithin", iswithin);
+        
+        if (iswithin) {
+          console.log("You are already rated this protocol");
+          setErrorMessage("You have already rated this protocol. Try rating another!");
+        }
+        else{
+            try {
+                await Axios.post('http://localhost:3001/addDispute', {
+                protocol: protocol,
+                qVals: [question1, question2, question3, question4, question5]
+              });
+          
+              const response = await Axios.get<Dispute[]>('http://localhost:3001/getDisputes');
+              setListofDisputes(response.data);
+              setErrorMessage("Rating submitted!");
+            } catch (error) {
+              console.error('There was an error with the addDispute request:', error);
+            }
+          
+            try {
+              await Axios.post<Protocol>('http://localhost:3001/addProtocol', {
+                disputeCount: 1,
+                protocolName: protocol,
+                averageScore: (q1Score+q2Score+q3Score+q4Score+q5Score)/5,
+                qScores: [q1Score, q2Score, q3Score, q4Score, q5Score]
+              });
+            
+              const response = await Axios.get<GetProtocolResponse[]>('http://localhost:3001/getProtocols');
+              setProtocolData(response.data);
+            } catch (error) {
+              console.error('There was an error with the addProtocol request:', error);
+            }
+          }
       });
-
-      try {
-        const response = await Axios.get<boolean>(`http://localhost:3001/getIpWithin?ip=${ipAddress}`);
-        const iswithin = response.data;
-        setWithin(iswithin);
-        console.log(within);
-      } catch (error) {
-        console.error(error);
-      }
     }
     catch (error) {
       console.log('There was an error with the addIprequest:', error);
-    }
+    }  
 };
     
    
@@ -191,6 +184,7 @@ function App() {
             <input type="number" placeholder="Question 4" onChange={(event) => {setQuestion4(parseInt(event.target.value)); setQ4Score(parseInt(event.target.value))}}/>
             <input type="number" placeholder="Question 5" onChange={(event) => {setQuestion5(parseInt(event.target.value)); setQ5Score(parseInt(event.target.value))}}/>
             <button onClick={addDispute}>Submit</button>
+            <h5 style={{ color: 'red' }}>{errorMessage}</h5>
         </div> 
         <div>
           Drop your address here: <input type="text" placeholder="Enter your address" onChange={(event) => setAddress(event.target.value)} />

@@ -165,6 +165,7 @@ app.post("/addIp", async (req: Request, res: Response) => {
                 return
             }
             else{
+                doc.within = false;
                 doc.protocolName = ip.protocolName;
                 doc.within = doc.interacted.includes(ip.protocolName);
                 if (!doc.within) {
