@@ -32,6 +32,12 @@ interface IpAdress {
   protocolName: string;
 }
 
+interface CryptoData {
+  id: number;
+  slug: string;
+  logo: string;
+}
+
 function App() {
   //hooks for dispute list
   const [listofDisputes, setListofDisputes] = useState<Dispute[]>([]);
@@ -56,6 +62,8 @@ function App() {
   //hook for ip address
   const [ipAddress, setIpAddress] = useState<string>("");
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  //hook for crypto data
+  const [cryptoData, setCryptoData] = useState<CryptoData[]>([]);
 
 
   useEffect(() => {
@@ -104,7 +112,7 @@ function App() {
         console.log("iswithin", iswithin);
         
         if (iswithin) {
-          console.log("You are already rated this protocol");
+          console.log("You have already rated this protocol");
           setErrorMessage("You have already rated this protocol. Try rating another!");
         }
         else{
@@ -141,7 +149,27 @@ function App() {
       console.log('There was an error with the addIprequest:', error);
     }  
 };
-    
+
+function transformApiResponse(response: any): CryptoData[] {
+  return Object.values(response.data).map((coin: any) => ({
+      id: coin.id,
+      slug: coin.slug,
+      logo: coin.logo,
+  }));
+}
+ 
+const getCoins = async () => {
+  try {
+      const response = await Axios.get('http://localhost:3001/api/cryptocurrency');
+      console.log(response);
+      const coins = transformApiResponse(response);
+      console.log(coins);
+      setCryptoData(coins);
+  } catch (error) {
+      console.error('There was an error with the getCoins request:', error);
+  }
+};
+
    
   
   return (
@@ -190,6 +218,7 @@ function App() {
           Drop your address here: <input type="text" placeholder="Enter your address" onChange={(event) => setAddress(event.target.value)} />
           <button onClick={addUser}>Submit</button>
           <h5>{submitted ? "Thank you for submitting your address." : ""}</h5>
+          <button onClick={getCoins}>Get Coins</button>
         </div>
 
     </div>

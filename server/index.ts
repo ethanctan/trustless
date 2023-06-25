@@ -8,6 +8,7 @@ import ProtocolModel from './models/Protocols';
 import IpModel from './models/Ip';
 
 const app = express();
+const axios = require('axios');
 
 app.use(express.json());
 app.use(cors());
@@ -193,6 +194,28 @@ app.get("/getIpWithin", (req: Request, res: Response) => {
         res.status(500).json(err);
     });
 });
+
+
+app.get('/api/cryptocurrency', async (req, res) => {
+    try {
+      const response = await axios.get('https://pro-api.coinmarketcap.com/v2/cryptocurrency/info', {
+        headers: {
+          'X-CMC_PRO_API_KEY': '107c4c2b-b8bc-43a9-9aae-d61aa337ad42',
+        },
+        params: {
+            'id': '1,2,3',
+            'aux': 'logo'
+        }
+      });
+  
+      if (response) {
+        res.json(response.data);
+      }
+    } catch(ex) {
+      console.log(ex);
+      res.status(500).send('Error retrieving cryptocurrency data');
+    }
+  });
 
 
 app.listen(3001, () => {
