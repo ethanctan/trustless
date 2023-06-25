@@ -98,6 +98,22 @@ app.get("/getProtocols", async (req: Request, res: Response) => {
     });
 });
 
+app.get("/getProtocolsTop", async (req: Request, res: Response) => {
+    ProtocolModel.find({})
+    .sort({ averageScore: 1 })
+    .then(results => {
+        let responseData = results.map(result => ({
+            protocolName: result["protocolName"],
+            disputeCount: result["disputeCount"],
+            averageScore: result["averageScore"]
+        }));
+        res.json(responseData);
+    })
+    .catch(err => {
+        res.json(err);
+    });
+});
+
 
 app.post("/addProtocol", async (req: Request, res: Response) => {
     console.log("add protocol",req.body);  // Log the request body

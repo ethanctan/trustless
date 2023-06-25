@@ -54,6 +54,7 @@ function App() {
   const [submitted, setSubmitted] = useState<boolean>(false);
   //hooks for protocol list
   const [protocolData, setProtocolData] = useState<GetProtocolResponse[]>([]);
+  const [protocolDataTop, setProtocolDataTop] = useState<GetProtocolResponse[]>([]);
   //hooks for protocol input
   const [q1Score, setQ1Score] = useState<number>(0);
   const [q2Score, setQ2Score] = useState<number>(0);
@@ -147,6 +148,9 @@ function App() {
             
               const response = await Axios.get<GetProtocolResponse[]>('http://localhost:3001/getProtocols');
               setProtocolData(response.data);
+              const response1 = await Axios.get<GetProtocolResponse[]>('http://localhost:3001/getProtocolsTop');
+              setProtocolDataTop(response1.data);
+              console.log(response1.data);
             } catch (error) {
               console.error('There was an error with the addProtocol request:', error);
             }
@@ -176,8 +180,20 @@ function App() {
           })}
         </div>
         <div>
-          <h4>Protocol Leaderboards</h4>
+          <h4>Most Trusted</h4>
           {protocolData.map((protocol) => {
+            return (
+              <div key={protocol._id}>
+                <h3>{protocol.protocolName}</h3>
+                <p>number of ratings: {protocol.disputeCount}</p>
+                <p> averageScore: {protocol.averageScore}</p>
+              </div>
+            );
+          })}
+        </div>
+        <div>
+          <h4>Least Trusted</h4>
+          {protocolDataTop.map((protocol) => {
             return (
               <div key={protocol._id}>
                 <h3>{protocol.protocolName}</h3>
