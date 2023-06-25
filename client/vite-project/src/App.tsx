@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import './App.css';
 import Axios from 'axios';
+import Select from 'react-select';
 
 interface Dispute {
   _id: string; 
@@ -32,9 +33,9 @@ interface IpAdress {
   protocolName: string;
 }
 
-interface CryptoData {
-  id: number;
-  slug: string;
+interface DefiData {
+  _id: string;
+  name: string;
   logo: string;
 }
 
@@ -63,7 +64,7 @@ function App() {
   const [ipAddress, setIpAddress] = useState<string>("");
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   //hook for crypto data
-  const [cryptoData, setCryptoData] = useState<CryptoData[]>([]);
+  const [defiData, setDefiData] = useState<DefiData[]>([]);
 
 
   useEffect(() => {
@@ -85,6 +86,13 @@ function App() {
   useEffect(() => {
     Axios.get<string>('http://localhost:3001/get-ip').then((response) => {
       setIpAddress(response.data);
+      console.log(response.data);
+    });
+  }, []);
+
+  useEffect(() => {
+    Axios.get<DefiData[]>('http://localhost:3001/getDefiData').then((response) => {
+      setDefiData(response.data);
       console.log(response.data);
     });
   }, []);
@@ -148,29 +156,7 @@ function App() {
     catch (error) {
       console.log('There was an error with the addIprequest:', error);
     }  
-};
-
-function transformApiResponse(response: any): CryptoData[] {
-  return Object.values(response.data).map((coin: any) => ({
-      id: coin.id,
-      slug: coin.slug,
-      logo: coin.logo,
-  }));
-}
- 
-const getCoins = async () => {
-  try {
-      const response = await Axios.get('http://localhost:3001/api/cryptocurrency');
-      console.log(response);
-      const coins = transformApiResponse(response);
-      console.log(coins);
-      setCryptoData(coins);
-  } catch (error) {
-      console.error('There was an error with the getCoins request:', error);
-  }
-};
-
-   
+}; 
   
   return (
     <div className="App">
@@ -204,8 +190,15 @@ const getCoins = async () => {
       </div>
 
       <div>
-            {/* <input type="text" placeholder="Enter your address" onChange={(event) => setAddressFrom(event.target.value)} /> */}
-            <input type="text" placeholder="Protocol Name" onChange={(event) => setProtocol(event.target.value)}/>
+            <select onChange={(event) => setProtocol(event.target.value)}>
+              <option value="">Select Protocol</option>
+              {defiData.map((protocol) => (
+                <option key={protocol._id} value={protocol.name}>
+                  {protocol.name}
+                </option>
+              ))}
+            </select>
+
             <input type="number" placeholder="Question 1" onChange={(event) => {setQuestion1(parseInt(event.target.value)); setQ1Score(parseInt(event.target.value))}}/>
             <input type="number" placeholder="Question 2" onChange={(event) => {setQuestion2(parseInt(event.target.value)); setQ2Score(parseInt(event.target.value))}}/>
             <input type="number" placeholder="Question 3" onChange={(event) => {setQuestion3(parseInt(event.target.value)); setQ3Score(parseInt(event.target.value))}}/>
@@ -218,7 +211,6 @@ const getCoins = async () => {
           Drop your address here: <input type="text" placeholder="Enter your address" onChange={(event) => setAddress(event.target.value)} />
           <button onClick={addUser}>Submit</button>
           <h5>{submitted ? "Thank you for submitting your address." : ""}</h5>
-          <button onClick={getCoins}>Get Coins</button>
         </div>
 
     </div>

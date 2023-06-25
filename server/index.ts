@@ -6,6 +6,7 @@ import DisputeModel from './models/Disputes';
 import UserModel from './models/Users';
 import ProtocolModel from './models/Protocols';
 import IpModel from './models/Ip';
+import DataModel from './models/Data';
 
 const app = express();
 const axios = require('axios');
@@ -198,16 +199,7 @@ app.get("/getIpWithin", (req: Request, res: Response) => {
 
 app.get('/api/cryptocurrency', async (req, res) => {
     try {
-      const response = await axios.get('https://pro-api.coinmarketcap.com/v2/cryptocurrency/info', {
-        headers: {
-          'X-CMC_PRO_API_KEY': '107c4c2b-b8bc-43a9-9aae-d61aa337ad42',
-        },
-        params: {
-            'id': '1,2,3',
-            'aux': 'logo'
-        }
-      });
-  
+      const response = await axios.get('https://api.llama.fi/protocols');
       if (response) {
         res.json(response.data);
       }
@@ -217,6 +209,16 @@ app.get('/api/cryptocurrency', async (req, res) => {
     }
   });
 
+
+app.get("/getDefiData", (req: Request, res: Response) => {
+    DataModel.find({})
+    .then(result => {
+        res.json(result);
+    })
+    .catch(err => {
+        res.json(err);
+    });
+});
 
 app.listen(3001, () => {
     console.log('server running on port 3001');
