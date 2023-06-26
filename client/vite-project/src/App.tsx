@@ -85,14 +85,14 @@ function App() {
   }, []);
 
   useEffect(() => {
-    Axios.get<string>('http://localhost:3001/get-ip').then((response) => {
+    Axios.get<string>('http://localhost:3001/ip/getClientIp').then((response) => {
       setIpAddress(response.data);
       console.log(response.data);
     });
   }, []);
 
   useEffect(() => {
-    Axios.get<DefiData[]>('http://localhost:3001/getDefiData').then((response) => {
+    Axios.get<DefiData[]>('http://localhost:3001/defiData').then((response) => {
       setDefiData(response.data);
       console.log(response.data);
     });
@@ -107,16 +107,30 @@ function App() {
     })
   };  
 
+  function checkScoresCorrect(dispute : number[]){
+    for (let i=0; i < dispute.length; i++){
+        if (dispute[i] > 10 || dispute[i] < 1){
+            return false
+        }
+    }
+    return true
+}
+
   const addDispute = async () => {
+    let scores = [q1Score, q2Score, q3Score, q4Score, q5Score]
+    if (!checkScoresCorrect(scores)){
+      setErrorMessage("Invalid score, re-enter a valid score")
+      return
+    }
 
     try{
-      await Axios.post('http://localhost:3001/addIp', {
+      await Axios.post('http://localhost:3001/ip', {
         ipAddress: ipAddress,
         protocolName: protocol,
       }).then(async (response) => {
         // response.data will have the data from your backend.
         console.log(response.data);
-        const response1 = await Axios.get<boolean>(`http://localhost:3001/getIpWithin?ip=${ipAddress}`);
+        const response1 = await Axios.get<boolean>(`http://localhost:3001/ip?ip=${ipAddress}`);
         const iswithin = response1.data;
         console.log("iswithin", iswithin);
         
