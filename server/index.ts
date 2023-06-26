@@ -86,6 +86,7 @@ app.post("/addUser", async (req: Request, res: Response) => {
 });
 
 app.get("/getProtocols", async (req: Request, res: Response) => {
+    console.log(req)
     ProtocolModel.find({})
     .sort({ averageScore: -1 })
     .then(results => {
