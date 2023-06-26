@@ -69,7 +69,7 @@ function App() {
 
 
   useEffect(() => {
-    Axios.get<Dispute[]>('http://localhost:3001/getDisputes').then((response) => {
+    Axios.get<Dispute[]>('http://localhost:3001/disputes').then((response) => {
       setListofDisputes(response.data);
     });
   }, []);
@@ -99,7 +99,7 @@ function App() {
   }, []);
 
   const addUser = () => {
-    Axios.post<User[]>('http://localhost:3001/addUser', {
+    Axios.post<User[]>('http://localhost:3001/users', {
       address: address,
     }).then((response) => {
       console.log("User added!");
@@ -126,12 +126,12 @@ function App() {
         }
         else{
             try {
-                await Axios.post('http://localhost:3001/addDispute', {
+                await Axios.post('http://localhost:3001/disputes', {
                 protocol: protocol,
                 qVals: [question1, question2, question3, question4, question5]
               });
           
-              const response = await Axios.get<Dispute[]>('http://localhost:3001/getDisputes');
+              const response = await Axios.get<Dispute[]>('http://localhost:3001/disputes');
               setListofDisputes(response.data);
               setErrorMessage("Rating submitted!");
             } catch (error) {

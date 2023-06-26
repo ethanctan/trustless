@@ -3,55 +3,29 @@ import mongoose, { NumberSchemaDefinition } from 'mongoose';
 import cors from 'cors';
 
 import DisputeModel from './models/Disputes';
-import UserModel from './models/Users';
+
 import ProtocolModel from './models/Protocols';
 import IpModel from './models/Ip';
 import DataModel from './models/Data';
 
+
+
 const app = express();
 const axios = require('axios');
+
+const userRoute = require('./routes/users')
+const disputeRoute = require('./routes/disputes')
 
 app.use(express.json());
 app.use(cors());
 
 mongoose.connect("mongodb+srv://dyang:RrrwmSWGDb1vqNZy@cluster0.vtkcvkm.mongodb.net/disputeboard?retryWrites=true&w=majority");
 
-/**
- * Get disputes from mongo db and post it to frontend
- */
-app.get("/getDisputes", (req: Request, res: Response) => {
-    DisputeModel.find({})
-    .then(result => {
-        res.json(result);
-    })
-    .catch(err => {
-        res.json(err);
-    });
-});
+app.use("/users", userRoute)
+app.use("/disputes", disputeRoute)
 
 
 
-/**
- * Adds dispute from frontend and puts it to mongodb
- */
-app.post("/addDispute", async (req: Request, res: Response) => {
-    try{
-        const dispute = req.body;
-        if (!(checkScoresCorrect(dispute["qVals"]))){
-            res.json({error: "Invalid input"})
-            return
-        }
-        
-        const newDispute = new DisputeModel(dispute);
-        await newDispute.save();
-
-        res.json(dispute);
-    }catch(error){
-        // Need to figure out how to handle on the frontend
-        res.status(500).json({ message: "An error occurred." });
-    }
-    
-});
 
 function checkScoresCorrect(dispute : [number]){
     for (let i=0; i < dispute.length; i++){
@@ -62,31 +36,10 @@ function checkScoresCorrect(dispute : [number]){
     return true
 }
 
-/**
- * Get a list of users
- */
-app.get("/getUsers", (req: Request, res: Response) => {
-    UserModel.find({})
-    .then(result => {
-        res.json(result);
-    })
-    .catch(err => {
-        res.json(err);
-    });
-});
 
-/**
- * Add user to mongodb
- */
-app.post("/addUser", async (req: Request, res: Response) => {
-    const user = req.body;
-    const newUser = new UserModel(user);
-    await newUser.save();
-    res.json(user);
-});
 
 app.get("/getProtocols", async (req: Request, res: Response) => {
-    console.log(req)
+    // console.log(req)
     ProtocolModel.find({})
     .sort({ averageScore: -1 })
     .then(results => {
@@ -174,7 +127,7 @@ app.get('/get-ip', function(req, res) {
 });
 
 app.post("/addIp", async (req: Request, res: Response) => {
-    console.log("add Ip",req.body);  // Log the request body
+    // console.log("add Ip",req.body);  // Log the request body
     try {
         
         const ip = req.body;
@@ -225,7 +178,7 @@ app.get('/api/cryptocurrency', async (req, res) => {
         res.json(response.data);
       }
     } catch(ex) {
-      console.log(ex);
+    //   console.log(ex);
       res.status(500).send('Error retrieving cryptocurrency data');
     }
   });
