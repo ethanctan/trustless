@@ -15,6 +15,7 @@ const axios = require('axios');
 
 const userRoute = require('./routes/users')
 const disputeRoute = require('./routes/disputes')
+const protocolsRoute = require('./routes/protocols')
 
 app.use(express.json());
 app.use(cors());
@@ -23,103 +24,10 @@ mongoose.connect("mongodb+srv://dyang:RrrwmSWGDb1vqNZy@cluster0.vtkcvkm.mongodb.
 
 app.use("/users", userRoute)
 app.use("/disputes", disputeRoute)
+app.use("/protocols", protocolsRoute)
 
 
 
-
-function checkScoresCorrect(dispute : [number]){
-    for (let i=0; i < dispute.length; i++){
-        if (dispute[i] > 10 || dispute[i] < 1){
-            return false
-        }
-    }
-    return true
-}
-
-
-
-app.get("/getProtocols", async (req: Request, res: Response) => {
-    // console.log(req)
-    ProtocolModel.find({})
-    .sort({ averageScore: -1 })
-    .then(results => {
-        let responseData = results.map(result => ({
-            protocolName: result["protocolName"],
-            disputeCount: result["disputeCount"],
-            averageScore: result["averageScore"]
-        }));
-        res.json(responseData);
-    })
-    .catch(err => {
-        res.json(err);
-    });
-});
-
-app.get("/getProtocolsTop", async (req: Request, res: Response) => {
-    ProtocolModel.find({})
-    .sort({ averageScore: 1 })
-    .then(results => {
-        let responseData = results.map(result => ({
-            protocolName: result["protocolName"],
-            disputeCount: result["disputeCount"],
-            averageScore: result["averageScore"]
-        }));
-        res.json(responseData);
-    })
-    .catch(err => {
-        res.json(err);
-    });
-});
-
-
-/**
- * Updates document based on new q score
- */
-function updateDoc(doc : any, protocol : object){
-    var newQScores = [0, 0, 0, 0, 0]
-    // element-wise sum on old q scores and incoming scores
-    newQScores =  protocol["qScores"].map(function (num : number, idx : number) {
-        return num + doc["qScores"][idx];
-    })
-    // use updated q scores to recompute average
-    let newAvg = (newQScores.reduce(
-        (partialSum : number, a: number) => 
-        partialSum + a, 0))/((doc["disputeCount"])*5)
-
-    doc["disputeCount"] += 1
-    doc["protocolName"] = protocol["protocolName"]
-    doc["averageScore"] = newAvg
-    doc["qScores"] = newQScores
-    doc.save()
-}
-
-
-app.post("/addProtocol", async (req: Request, res: Response) => {
-    try {
-        const protocol = req.body;
-        if (!checkScoresCorrect(protocol["qScores"])){
-            res.json({error:"Invalid input"});
-            return
-        }
-        await ProtocolModel.findOne(
-            {protocolName: protocol["protocolName"]},
-        ).then((doc : any)=>{
-            // Check if doc is null
-            if (!doc){
-                const newProtocol = new ProtocolModel(protocol);
-                newProtocol.save();
-                return
-            }
-
-            updateDoc(doc, protocol)
-        })
-
-        res.json(protocol);
-    } catch (error) {
-         // should handle this error
-        res.status(500).json({ message: "An error occurred." });
-    }
-});
 
 app.get('/get-ip', function(req, res) {
     const ip = req.headers['x-forwarded-for'] || req.ip;

@@ -79,7 +79,7 @@ function App() {
   }, [address]);
 
   useEffect(() => {
-    Axios.get<GetProtocolResponse[]>('http://localhost:3001/getProtocols').then((response) => {
+    Axios.get<GetProtocolResponse[]>('http://localhost:3001/protocols?order=ascending').then((response) => {
       setProtocolData(response.data);
     });
   }, []);
@@ -139,16 +139,16 @@ function App() {
             }
           
             try {
-              await Axios.post<Protocol>('http://localhost:3001/addProtocol', {
+              await Axios.post<Protocol>('http://localhost:3001/protocols', {
                 disputeCount: 1,
                 protocolName: protocol,
                 averageScore: (q1Score+q2Score+q3Score+q4Score+q5Score)/5,
                 qScores: [q1Score, q2Score, q3Score, q4Score, q5Score]
               });
             
-              const response = await Axios.get<GetProtocolResponse[]>('http://localhost:3001/getProtocols');
+              const response = await Axios.get<GetProtocolResponse[]>('http://localhost:3001/protocols?order=ascending');
               setProtocolData(response.data);
-              const response1 = await Axios.get<GetProtocolResponse[]>('http://localhost:3001/getProtocolsTop');
+              const response1 = await Axios.get<GetProtocolResponse[]>('http://localhost:3001/protocols?order=descending');
               setProtocolDataTop(response1.data);
               console.log(response1.data);
             } catch (error) {
