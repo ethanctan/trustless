@@ -193,7 +193,6 @@ app.post("/addIp", async (req: Request, res: Response) => {
                 await doc.save();
             }    
     })
-
         res.json(ip);
     } catch (error) {
         console.error(error);  // Log any errors
