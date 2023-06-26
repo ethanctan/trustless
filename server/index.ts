@@ -35,19 +35,22 @@ app.get("/getDisputes", (req: Request, res: Response) => {
  * Adds dispute from frontend and puts it to mongodb
  */
 app.post("/addDispute", async (req: Request, res: Response) => {
-    console.log(req.body) 
-    const dispute = req.body;
+    try{
+        const dispute = req.body;
+        if (!(checkScoresCorrect(dispute["qVals"]))){
+            res.json({error: "Invalid input"})
+            return
+        }
+        
+        const newDispute = new DisputeModel(dispute);
+        await newDispute.save();
 
-
-    if (!(checkScoresCorrect(dispute["qVals"]))){
-        res.json({error: "Invalid input"})
-        return
+        res.json(dispute);
+    }catch(error){
+        // Need to figure out how to handle on the frontend
+        res.status(500).json({ message: "An error occurred." });
     }
     
-    const newDispute = new DisputeModel(dispute);
-    await newDispute.save();
-
-    res.json(dispute);
 });
 
 function checkScoresCorrect(dispute : [number]){
@@ -115,14 +118,33 @@ app.get("/getProtocolsTop", async (req: Request, res: Response) => {
 });
 
 
+/**
+ * Updates document based on new q score
+ */
+function updateDoc(doc : any, protocol : object){
+    var newQScores = [0, 0, 0, 0, 0]
+    // element-wise sum on old q scores and incoming scores
+    newQScores =  protocol["qScores"].map(function (num : number, idx : number) {
+        return num + doc["qScores"][idx];
+    })
+    // use updated q scores to recompute average
+    let newAvg = (newQScores.reduce(
+        (partialSum : number, a: number) => 
+        partialSum + a, 0))/((doc["disputeCount"])*5)
+
+    doc["disputeCount"] += 1
+    doc["protocolName"] = protocol["protocolName"]
+    doc["averageScore"] = newAvg
+    doc["qScores"] = newQScores
+    doc.save()
+}
+
+
 app.post("/addProtocol", async (req: Request, res: Response) => {
-    console.log("add protocol",req.body);  // Log the request body
     try {
-        
         const protocol = req.body;
         if (!checkScoresCorrect(protocol["qScores"])){
             res.json({error:"Invalid input"});
-            console.log("Invalid input")
             return
         }
         await ProtocolModel.findOne(
@@ -134,30 +156,13 @@ app.post("/addProtocol", async (req: Request, res: Response) => {
                 newProtocol.save();
                 return
             }
-            
-            var newQScores = [0, 0, 0, 0, 0]
-            // Compute new q scores
-            newQScores =  protocol["qScores"].map(function (num : number, idx : number) {
-                return num + doc["qScores"][idx];
-            })
-            doc["disputeCount"] += 1
-            let newTotScore =  protocol["qScores"].map(function (num : number, idx : number) {
-                return num + doc["qScores"][idx];
-            })
-            let newAvg = (newTotScore.reduce(
-                (partialSum : number, a: number) => 
-                partialSum + a, 0))/((doc["disputeCount"])*5)
 
-
-            doc["protocolName"] = protocol["protocolName"]
-            doc["averageScore"] = newAvg
-            doc["qScores"] = newQScores
-            doc.save()
+            updateDoc(doc, protocol)
         })
 
         res.json(protocol);
     } catch (error) {
-        console.error(error);  // Log any errors
+         // should handle this error
         res.status(500).json({ message: "An error occurred." });
     }
 });
