@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
 import './App.css';
 import Axios from 'axios';
-import Select from 'react-select';
 
 interface Dispute {
   _id: string; 
@@ -66,6 +65,10 @@ function App() {
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   //hook for crypto data
   const [defiData, setDefiData] = useState<DefiData[]>([]);
+  //hook for other protocol
+  const [duplicate, setDuplicate] = useState(false);
+  const [isDropdownOpen, setIsDropdownOpen] = useState(true);
+
 
 
   useEffect(() => {
@@ -81,6 +84,12 @@ function App() {
   useEffect(() => {
     Axios.get<GetProtocolResponse[]>('http://localhost:3001/getProtocols').then((response) => {
       setProtocolData(response.data);
+    });
+  }, []);
+
+  useEffect(() => {
+    Axios.get<GetProtocolResponse[]>('http://localhost:3001/getProtocolsTop').then((response) => {
+      setProtocolDataTop(response.data);
     });
   }, []);
 
@@ -108,8 +117,89 @@ function App() {
   };  
 
   const addDispute = async () => {
+    console.log("dropdown is open: ", isDropdownOpen);
+    setDuplicate(false);
+    if (true) {
+      try{
+        await Axios.post('http://localhost:3001/addIp', {
+          ipAddress: ipAddress,
+          protocolName: protocol,
+        }).then(async (response) => {
+          // response.data will have the data from your backend.
+          console.log(response.data);
+          const response1 = await Axios.get<boolean>(`http://localhost:3001/getIpWithin?ip=${ipAddress}`);
+          const iswithin = response1.data;
+          console.log("iswithin", iswithin);
+          
+          if (iswithin) {
+            console.log("You have already rated this protocol");
+            setErrorMessage("You have already rated this protocol. Try rating another!");
+          }
+          else{
+              try {
+                  await Axios.post('http://localhost:3001/addDispute', {
+                  protocol: protocol,
+                  qVals: [question1, question2, question3, question4, question5]
+                });
+            
+                const response = await Axios.get<Dispute[]>('http://localhost:3001/getDisputes');
+                setListofDisputes(response.data);
+                setErrorMessage("Rating submitted!");
+              } catch (error) {
+                console.error('There was an error with the addDispute request:', error);
+              }
+            
+              try {
+                await Axios.post<Protocol>('http://localhost:3001/addProtocol', {
+                  disputeCount: 1,
+                  protocolName: protocol,
+                  averageScore: (q1Score+q2Score+q3Score+q4Score+q5Score)/5,
+                  qScores: [q1Score, q2Score, q3Score, q4Score, q5Score]
+                });
+              
+                const response = await Axios.get<GetProtocolResponse[]>('http://localhost:3001/getProtocols');
+                setProtocolData(response.data);
+                const response1 = await Axios.get<GetProtocolResponse[]>('http://localhost:3001/getProtocolsTop');
+                setProtocolDataTop(response1.data);
+                console.log(response1.data);
+              } catch (error) {
+                console.error('There was an error with the addProtocol request:', error);
+              }
+            }
+        });
+      }
+      catch (error) {
+        console.log('There was an error with the addIprequest:', error);
+      }  
+  }
+}; 
 
+const addDisputeFromOther = async () => {
+  console.log("dropdown is open: ", isDropdownOpen);
+  let isDuplicate = false;
+  try {
+    await Axios.post('http://localhost:3001/addDefiData', {
+      name: protocol,
+      logo: "None"
+    });
+    console.log("Defi data added!");
+  }
+  catch (error : any) {
+    if (error.response) {
+      console.log('Protocol already exists:', error.response.data.message);
+      setErrorMessage("");
+      isDuplicate = true;
+    } else {
+      console.log('Error', error.message);
+      setErrorMessage("");
+      isDuplicate = true;
+    }
+  }
+  console.log("isDuplicate", isDuplicate);
+  setDuplicate(isDuplicate);
+  if (!isDuplicate) {
     try{
+      console.log("We are executing");
       await Axios.post('http://localhost:3001/addIp', {
         ipAddress: ipAddress,
         protocolName: protocol,
@@ -160,6 +250,7 @@ function App() {
     catch (error) {
       console.log('There was an error with the addIprequest:', error);
     }  
+}
 }; 
   
   return (
@@ -206,22 +297,34 @@ function App() {
       </div>
 
       <div>
-            <select onChange={(event) => setProtocol(event.target.value)}>
-              <option value="">Select Protocol</option>
-              {defiData.map((protocol) => (
-                <option key={protocol._id} value={protocol.name}>
-                  {protocol.name}
-                </option>
-              ))}
-            </select>
-
+              {isDropdownOpen &&
+                <select 
+                  onChange={(event) => {setProtocol(event.target.value);setIsDropdownOpen(true)}}
+                >
+                  <option value="">Select Protocol</option>
+                  {defiData.map((protocol) => (
+                    <option key={protocol._id} value={protocol.name}>
+                      {protocol.name}
+                    </option>
+                  ))}
+                </select>}
+                
+                <button onClick={() => {setIsDropdownOpen(!isDropdownOpen); setErrorMessage("")}}> {isDropdownOpen ? "Can't find protocol?" : "Back"} </button> 
+                {!isDropdownOpen && <input 
+                  type="text" 
+                  placeholder="Other" 
+                  onChange={(event) => {setProtocol(event.target.value)}}
+                />}
+              
+           
             <input type="number" placeholder="Question 1" onChange={(event) => {setQuestion1(parseInt(event.target.value)); setQ1Score(parseInt(event.target.value))}}/>
             <input type="number" placeholder="Question 2" onChange={(event) => {setQuestion2(parseInt(event.target.value)); setQ2Score(parseInt(event.target.value))}}/>
             <input type="number" placeholder="Question 3" onChange={(event) => {setQuestion3(parseInt(event.target.value)); setQ3Score(parseInt(event.target.value))}}/>
             <input type="number" placeholder="Question 4" onChange={(event) => {setQuestion4(parseInt(event.target.value)); setQ4Score(parseInt(event.target.value))}}/>
             <input type="number" placeholder="Question 5" onChange={(event) => {setQuestion5(parseInt(event.target.value)); setQ5Score(parseInt(event.target.value))}}/>
-            <button onClick={addDispute}>Submit</button>
-            <h5 style={{ color: 'red' }}>{errorMessage}</h5>
+            <button onClick={isDropdownOpen ? addDispute : addDisputeFromOther}>Submit</button>
+            <h5>{duplicate ? "This protocol is in the dropdown." : ""}</h5>
+            <h5 style={{ color: 'grey' }}>{errorMessage}</h5>
         </div> 
         <div>
           Drop your address here: <input type="text" placeholder="Enter your address" onChange={(event) => setAddress(event.target.value)} />

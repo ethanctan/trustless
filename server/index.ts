@@ -235,6 +235,23 @@ app.get("/getDefiData", (req: Request, res: Response) => {
     });
 });
 
+app.post("/addDefiData", async (req, res) => {
+    const { name } = req.body;
+    const regex = new RegExp(`^${name}$`, 'i'); // Case-insensitive RegExp
+
+    const dataExists = await DataModel.exists({ name: regex });
+
+    if (dataExists) {
+        res.status(409).json({ message: 'Data already exists' });
+    } else {
+        // Create and save new data
+        const newData = new DataModel(req.body);
+        await newData.save();
+        res.json(newData);
+    }
+});
+
+
 app.listen(3001, () => {
     console.log('server running on port 3001');
 });
