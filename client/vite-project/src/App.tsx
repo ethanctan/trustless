@@ -2,42 +2,7 @@ import { useState, useEffect } from 'react';
 import './App.css';
 import Axios from 'axios';
 import Select from 'react-select';
-
-interface Dispute {
-  _id: string; 
-  protocol: string;
-  qVals: [number]
-}
-
-interface User {
-  address: string;
-}
-
-interface Protocol {
-  _id: string;
-  disputeCount: number;
-  protocolName: string;
-  averageScore: number;
-  qScores: [number]
-}
-
-interface GetProtocolResponse {
-  _id: string;
-  protocolName: string;
-  disputeCount: number;
-  averageScore: number;
-}
-
-interface IpAdress {
-  ipAddress: string;
-  protocolName: string;
-}
-
-interface DefiData {
-  _id: string;
-  name: string;
-  logo: string;
-}
+import {Dispute, User, Protocol, GetProtocolResponse, DefiData} from './interfaces.ts'
 
 function App() {
   //hooks for dispute list
@@ -72,31 +37,23 @@ function App() {
     Axios.get<Dispute[]>('http://localhost:3001/disputes').then((response) => {
       setListofDisputes(response.data);
     });
+    Axios.get<GetProtocolResponse[]>('http://localhost:3001/protocols?order=ascending').then((response) => {
+      setProtocolData(response.data);
+    });
+    Axios.get<string>('http://localhost:3001/ip/getClientIp').then((response) => {
+      setIpAddress(response.data);
+      console.log(response.data);
+    });
+    Axios.get<DefiData[]>('http://localhost:3001/defiData').then((response) => {
+      setDefiData(response.data);
+      console.log(response.data);
+    });
   }, []);
 
   useEffect(() => {
     setSubmitted(false);
   }, [address]);
 
-  useEffect(() => {
-    Axios.get<GetProtocolResponse[]>('http://localhost:3001/protocols?order=ascending').then((response) => {
-      setProtocolData(response.data);
-    });
-  }, []);
-
-  useEffect(() => {
-    Axios.get<string>('http://localhost:3001/ip/getClientIp').then((response) => {
-      setIpAddress(response.data);
-      console.log(response.data);
-    });
-  }, []);
-
-  useEffect(() => {
-    Axios.get<DefiData[]>('http://localhost:3001/defiData').then((response) => {
-      setDefiData(response.data);
-      console.log(response.data);
-    });
-  }, []);
 
   const addUser = () => {
     Axios.post<User[]>('http://localhost:3001/users', {
@@ -115,9 +72,10 @@ function App() {
     }
     return true
 }
-
+  // TODO: refactor
   const addDispute = async () => {
     let scores = [q1Score, q2Score, q3Score, q4Score, q5Score]
+    
     if (!checkScoresCorrect(scores)){
       setErrorMessage("Invalid score, re-enter a valid score")
       return
@@ -137,38 +95,41 @@ function App() {
         if (iswithin) {
           console.log("You have already rated this protocol");
           setErrorMessage("You have already rated this protocol. Try rating another!");
+          return
         }
-        else{
-            try {
-                await Axios.post('http://localhost:3001/disputes', {
-                protocol: protocol,
-                qVals: [question1, question2, question3, question4, question5]
-              });
-          
-              const response = await Axios.get<Dispute[]>('http://localhost:3001/disputes');
-              setListofDisputes(response.data);
-              setErrorMessage("Rating submitted!");
-            } catch (error) {
-              console.error('There was an error with the addDispute request:', error);
-            }
-          
-            try {
-              await Axios.post<Protocol>('http://localhost:3001/protocols', {
-                disputeCount: 1,
-                protocolName: protocol,
-                averageScore: (q1Score+q2Score+q3Score+q4Score+q5Score)/5,
-                qScores: [q1Score, q2Score, q3Score, q4Score, q5Score]
-              });
-            
-              const response = await Axios.get<GetProtocolResponse[]>('http://localhost:3001/protocols?order=ascending');
-              setProtocolData(response.data);
-              const response1 = await Axios.get<GetProtocolResponse[]>('http://localhost:3001/protocols?order=descending');
-              setProtocolDataTop(response1.data);
-              console.log(response1.data);
-            } catch (error) {
-              console.error('There was an error with the addProtocol request:', error);
-            }
-          }
+        
+        // send data to disputes
+        try {
+            await Axios.post('http://localhost:3001/disputes', {
+            protocol: protocol,
+            qVals: [question1, question2, question3, question4, question5]
+          });
+      
+          const response = await Axios.get<Dispute[]>('http://localhost:3001/disputes');
+          setListofDisputes(response.data);
+          setErrorMessage("Rating submitted!");
+        } catch (error) {
+          console.error('There was an error with the addDispute request:', error);
+        }
+
+        // send data to protocols
+        try {
+          await Axios.post<Protocol>('http://localhost:3001/protocols', {
+            disputeCount: 1,
+            protocolName: protocol,
+            averageScore: (q1Score+q2Score+q3Score+q4Score+q5Score)/5,
+            qScores: [q1Score, q2Score, q3Score, q4Score, q5Score]
+          });
+        
+          const response = await Axios.get<GetProtocolResponse[]>('http://localhost:3001/protocols?order=ascending');
+          setProtocolData(response.data);
+          const response1 = await Axios.get<GetProtocolResponse[]>('http://localhost:3001/protocols?order=descending');
+          setProtocolDataTop(response1.data);
+          console.log(response1.data);
+        } catch (error) {
+          console.error('There was an error with the addProtocol request:', error);
+        }
+  
       });
     }
     catch (error) {
