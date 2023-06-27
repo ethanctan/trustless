@@ -9,11 +9,6 @@ function App() {
   const [listofDisputes, setListofDisputes] = useState<Dispute[]>([]);
   //hooks for dispute input
   const [protocol, setProtocol] = useState<string>("");
-  const [question1, setQuestion1] = useState<number>(0);
-  const [question2, setQuestion2] = useState<number>(0);
-  const [question3, setQuestion3] = useState<number>(0);
-  const [question4, setQuestion4] = useState<number>(0);
-  const [question5, setQuestion5] = useState<number>(0);
   //hooks for user address
   const [address, setAddress] = useState<string | null>(null);
   const [submitted, setSubmitted] = useState<boolean>(false);
@@ -71,7 +66,49 @@ function App() {
         }
     }
     return true
-}
+  }
+
+  async function updateDisputes(protocol : string, scores : number[]){
+     // send data to disputes
+     try {
+      await Axios.post('http://localhost:3001/disputes', {
+      protocol: protocol,
+      qVals: scores
+    });
+
+    const response = await Axios.get<Dispute[]>('http://localhost:3001/disputes');
+    setListofDisputes(response.data);
+    setErrorMessage("Rating submitted!");
+  } catch (error) {
+    console.error('There was an error with the addDispute request:', error);
+  }
+  }
+
+  async function updateProtocol(protocol : string, scores : number[]){
+    // send data to protocols
+    try {
+
+      let average =  (scores.reduce(
+        (partialSum : number, a: number) => 
+        partialSum + a, 0))/(scores.length)
+
+      await Axios.post<Protocol>('http://localhost:3001/protocols', {
+        disputeCount: 1,
+        protocolName: protocol,
+        averageScore: average,
+        qScores: scores
+      });
+    
+      const response = await Axios.get<GetProtocolResponse[]>('http://localhost:3001/protocols?order=ascending');
+      setProtocolData(response.data);
+      const response1 = await Axios.get<GetProtocolResponse[]>('http://localhost:3001/protocols?order=descending');
+      setProtocolDataTop(response1.data);
+      console.log(response1.data);
+    } catch (error) {
+      console.error('There was an error with the addProtocol request:', error);
+    }
+  }
+
   // TODO: refactor
   const addDispute = async () => {
     let scores = [q1Score, q2Score, q3Score, q4Score, q5Score]
@@ -82,6 +119,9 @@ function App() {
     }
 
     try{
+      
+
+      // what is this trying to say?
       await Axios.post('http://localhost:3001/ip', {
         ipAddress: ipAddress,
         protocolName: protocol,
@@ -97,38 +137,9 @@ function App() {
           setErrorMessage("You have already rated this protocol. Try rating another!");
           return
         }
-        
-        // send data to disputes
-        try {
-            await Axios.post('http://localhost:3001/disputes', {
-            protocol: protocol,
-            qVals: [question1, question2, question3, question4, question5]
-          });
-      
-          const response = await Axios.get<Dispute[]>('http://localhost:3001/disputes');
-          setListofDisputes(response.data);
-          setErrorMessage("Rating submitted!");
-        } catch (error) {
-          console.error('There was an error with the addDispute request:', error);
-        }
 
-        // send data to protocols
-        try {
-          await Axios.post<Protocol>('http://localhost:3001/protocols', {
-            disputeCount: 1,
-            protocolName: protocol,
-            averageScore: (q1Score+q2Score+q3Score+q4Score+q5Score)/5,
-            qScores: [q1Score, q2Score, q3Score, q4Score, q5Score]
-          });
-        
-          const response = await Axios.get<GetProtocolResponse[]>('http://localhost:3001/protocols?order=ascending');
-          setProtocolData(response.data);
-          const response1 = await Axios.get<GetProtocolResponse[]>('http://localhost:3001/protocols?order=descending');
-          setProtocolDataTop(response1.data);
-          console.log(response1.data);
-        } catch (error) {
-          console.error('There was an error with the addProtocol request:', error);
-        }
+        await updateDisputes(protocol, scores)
+        await updateProtocol(protocol, scores)
   
       });
     }
@@ -190,11 +201,11 @@ function App() {
               ))}
             </select>
 
-            <input type="number" placeholder="Question 1" onChange={(event) => {setQuestion1(parseInt(event.target.value)); setQ1Score(parseInt(event.target.value))}}/>
-            <input type="number" placeholder="Question 2" onChange={(event) => {setQuestion2(parseInt(event.target.value)); setQ2Score(parseInt(event.target.value))}}/>
-            <input type="number" placeholder="Question 3" onChange={(event) => {setQuestion3(parseInt(event.target.value)); setQ3Score(parseInt(event.target.value))}}/>
-            <input type="number" placeholder="Question 4" onChange={(event) => {setQuestion4(parseInt(event.target.value)); setQ4Score(parseInt(event.target.value))}}/>
-            <input type="number" placeholder="Question 5" onChange={(event) => {setQuestion5(parseInt(event.target.value)); setQ5Score(parseInt(event.target.value))}}/>
+            <input type="number" placeholder="Question 1" onChange={(event) => {setQ1Score(parseInt(event.target.value))}}/>
+            <input type="number" placeholder="Question 2" onChange={(event) => {setQ2Score(parseInt(event.target.value))}}/>
+            <input type="number" placeholder="Question 3" onChange={(event) => {setQ3Score(parseInt(event.target.value))}}/>
+            <input type="number" placeholder="Question 4" onChange={(event) => {setQ4Score(parseInt(event.target.value))}}/>
+            <input type="number" placeholder="Question 5" onChange={(event) => {setQ5Score(parseInt(event.target.value))}}/>
             <button onClick={addDispute}>Submit</button>
             <h5 style={{ color: 'red' }}>{errorMessage}</h5>
         </div> 
