@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react';
 import './App.css';
 import Axios from 'axios';
-import Select from 'react-select';
 import {Dispute, User, Protocol, GetProtocolResponse, DefiData} from './interfaces.ts'
+import * as utils from './utils.ts'
 
 function App() {
   //hooks for dispute list
@@ -26,6 +26,10 @@ function App() {
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   //hook for crypto data
   const [defiData, setDefiData] = useState<DefiData[]>([]);
+  //hook for other protocol
+  const [duplicate, setDuplicate] = useState(false);
+  const [isDropdownOpen, setIsDropdownOpen] = useState(true);
+
 
 
   useEffect(() => {
@@ -35,15 +39,19 @@ function App() {
     Axios.get<GetProtocolResponse[]>('http://localhost:3001/protocols?order=ascending').then((response) => {
       setProtocolData(response.data);
     });
+    Axios.get<GetProtocolResponse[]>('http://localhost:3001/protocols?order=ascending').then((response) => {
+      setProtocolDataTop(response.data);
+    });
     Axios.get<string>('http://localhost:3001/ip/getClientIp').then((response) => {
       setIpAddress(response.data);
-      console.log(response.data);
     });
     Axios.get<DefiData[]>('http://localhost:3001/defiData').then((response) => {
       setDefiData(response.data);
-      console.log(response.data);
+      console.log("Logged defi data");
+      console.log(response.data)
     });
   }, []);
+
 
   useEffect(() => {
     setSubmitted(false);
@@ -59,65 +67,75 @@ function App() {
     })
   };  
 
-  function checkScoresCorrect(dispute : number[]){
-    for (let i=0; i < dispute.length; i++){
-        if (dispute[i] > 10 || dispute[i] < 1){
-            return false
-        }
-    }
-    return true
-  }
-
-  async function updateDisputes(protocol : string, scores : number[]){
-     // send data to disputes
-     try {
-      await Axios.post('http://localhost:3001/disputes', {
-      protocol: protocol,
-      qVals: scores
-    });
-
-    const response = await Axios.get<Dispute[]>('http://localhost:3001/disputes');
-    setListofDisputes(response.data);
-    setErrorMessage("Rating submitted!");
-  } catch (error) {
-    console.error('There was an error with the addDispute request:', error);
-  }
-  }
-
-  async function updateProtocol(protocol : string, scores : number[]){
-    // send data to protocols
-    try {
-
-      let average =  (scores.reduce(
-        (partialSum : number, a: number) => 
-        partialSum + a, 0))/(scores.length)
-
-      await Axios.post<Protocol>('http://localhost:3001/protocols', {
-        disputeCount: 1,
-        protocolName: protocol,
-        averageScore: average,
-        qScores: scores
-      });
-    
-      const response = await Axios.get<GetProtocolResponse[]>('http://localhost:3001/protocols?order=ascending');
-      setProtocolData(response.data);
-      const response1 = await Axios.get<GetProtocolResponse[]>('http://localhost:3001/protocols?order=descending');
-      setProtocolDataTop(response1.data);
-      console.log(response1.data);
-    } catch (error) {
-      console.error('There was an error with the addProtocol request:', error);
-    }
-  }
 
   // TODO: refactor
   const addDispute = async () => {
     let scores = [q1Score, q2Score, q3Score, q4Score, q5Score]
     
-    if (!checkScoresCorrect(scores)){
+    if (!utils.checkScoresCorrect(scores)){
       setErrorMessage("Invalid score, re-enter a valid score")
       return
     }
+    setDuplicate(false);
 
+    try{
+      // Why are you sending a post request here?
+      await Axios.post('http://localhost:3001/ip', {
+        ipAddress: ipAddress,
+        protocolName: protocol,
+      })
+
+      const response1 = await Axios.get<boolean>(`http://localhost:3001/ip?ip=${ipAddress}`);
+      const iswithin = response1.data;
+
+      if (iswithin) {
+        setErrorMessage("You have already rated this protocol. Try rating another!");
+        return
+      }
+
+      const response = await utils.updateDisputes(protocol, scores)
+      //@ts-ignore
+      setListofDisputes(response.data);
+      setErrorMessage("Rating submitted!");
+
+      let [ascendingResponse, descendingResponse] = await utils.updateProtocol(protocol, scores)
+      setProtocolData(ascendingResponse.data);
+      setProtocolDataTop(descendingResponse.data);
+
+      await utils.updateProtocol(protocol, scores)
+      
+    }
+    catch (error) {
+      console.log('There was an error with the addIprequest:', error);
+    }  
+  
+}; 
+
+const addDisputeFromOther = async () => {
+  let scores = [q1Score, q2Score, q3Score, q4Score, q5Score]
+  console.log("dropdown is open: ", isDropdownOpen);
+  let isDuplicate = false;
+  try {
+    await Axios.post('http://localhost:3001/defiData', {
+      name: protocol,
+      logo: "None"
+    });
+    console.log("Defi data added!");
+  }
+  catch (error : any) {
+    if (error.response) {
+      console.log('Protocol already exists:', error.response.data.message);
+      setErrorMessage("");
+      isDuplicate = true;
+    } else {
+      console.log('Error', error.message);
+      setErrorMessage("");
+      isDuplicate = true;
+    }
+  }
+  console.log("isDuplicate", isDuplicate);
+  setDuplicate(isDuplicate);
+  if (!isDuplicate) {
     try{
       
 
@@ -138,14 +156,15 @@ function App() {
           return
         }
 
-        await updateDisputes(protocol, scores)
-        await updateProtocol(protocol, scores)
+        await utils.updateDisputes(protocol, scores)
+        await utils.updateProtocol(protocol, scores)
   
       });
     }
     catch (error) {
       console.log('There was an error with the addIprequest:', error);
     }  
+}
 }; 
   
   return (
@@ -192,22 +211,34 @@ function App() {
       </div>
 
       <div>
-            <select onChange={(event) => setProtocol(event.target.value)}>
-              <option value="">Select Protocol</option>
-              {defiData.map((protocol) => (
-                <option key={protocol._id} value={protocol.name}>
-                  {protocol.name}
-                </option>
-              ))}
-            </select>
-
+              {isDropdownOpen &&
+                <select 
+                  onChange={(event) => {setProtocol(event.target.value);setIsDropdownOpen(true)}}
+                >
+                  <option value="">Select Protocol</option>
+                  {defiData.map((protocol) => (
+                    <option key={protocol._id} value={protocol.name}>
+                      {protocol.name}
+                    </option>
+                  ))}
+                </select>}
+                
+                <button onClick={() => {setIsDropdownOpen(!isDropdownOpen); setErrorMessage("")}}> {isDropdownOpen ? "Can't find protocol?" : "Back"} </button> 
+                {!isDropdownOpen && <input 
+                  type="text" 
+                  placeholder="Other" 
+                  onChange={(event) => {setProtocol(event.target.value)}}
+                />}
+              
+           
             <input type="number" placeholder="Question 1" onChange={(event) => {setQ1Score(parseInt(event.target.value))}}/>
             <input type="number" placeholder="Question 2" onChange={(event) => {setQ2Score(parseInt(event.target.value))}}/>
             <input type="number" placeholder="Question 3" onChange={(event) => {setQ3Score(parseInt(event.target.value))}}/>
             <input type="number" placeholder="Question 4" onChange={(event) => {setQ4Score(parseInt(event.target.value))}}/>
             <input type="number" placeholder="Question 5" onChange={(event) => {setQ5Score(parseInt(event.target.value))}}/>
-            <button onClick={addDispute}>Submit</button>
-            <h5 style={{ color: 'red' }}>{errorMessage}</h5>
+            <button onClick={isDropdownOpen ? addDispute : addDisputeFromOther}>Submit</button>
+            <h5>{duplicate ? "This protocol is in the dropdown." : ""}</h5>
+            <h5 style={{ color: 'grey' }}>{errorMessage}</h5>
         </div> 
         <div>
           Drop your address here: <input type="text" placeholder="Enter your address" onChange={(event) => setAddress(event.target.value)} />

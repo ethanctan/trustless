@@ -23,7 +23,6 @@ router.get("/", async (req: Request, res: Response) => {
             averageScore: result["averageScore"]
         }))
 
-        console.log(responseData)
         
         res.json(responseData)
     }catch(error){
