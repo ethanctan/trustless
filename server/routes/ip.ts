@@ -16,6 +16,27 @@ router.post("/", async (req: Request, res: Response) => {
     }
 });
 
+
+/**
+ * Get ip address from the backend. If exists then return the ip address
+ * returns null otherwise
+ */
+router.get("/", async (req: Request, res: Response) => {
+    const ipAddress = req.query.ip;
+    try{
+        const ip = await IpModel.findOne({ipAddress: ipAddress})
+        res.json(ip?.within)
+    } catch (error){
+        res.status(500).json(error);
+    }
+    
+});
+
+router.get('/getClientIp', function(req, res) {
+    const ip = req.headers['x-forwarded-for'] || req.ip;
+    res.send(ip);
+});
+
 async function saveIp(doc : any, ip : any){
     if (!doc){
         const newIp = new IpModel(ip);
@@ -34,22 +55,5 @@ async function saveIp(doc : any, ip : any){
         await doc.save();
     }
 }
-
-router.get("/", (req: Request, res: Response) => {
-    const ipAddress = req.query.ip;
-    
-    IpModel.findOne({ipAddress: ipAddress})
-    .then(result => {
-        res.json(result?.within);
-    })
-    .catch(err => {
-        res.status(500).json(err);
-    });
-});
-
-router.get('/getClientIp', function(req, res) {
-    const ip = req.headers['x-forwarded-for'] || req.ip;
-    res.send(ip);
-});
 
 module.exports = router

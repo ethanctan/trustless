@@ -1,4 +1,4 @@
-import express, { Request, Response } from 'express';
+import express, { Request, Response, response } from 'express';
 import ProtocolModel from '../models/Protocols';
 
 const router = express.Router()
@@ -15,20 +15,20 @@ router.get("/", async (req: Request, res: Response) => {
         order = Order.Ascending
     }
 
-    ProtocolModel.find({})
-    //@ts-ignore
-    .sort({ averageScore: order })
-    .then(results => {
-        let responseData = results.map(result => ({
+    try{
+        const test = await ProtocolModel.find({}).sort({averageScore : order})
+        let responseData = test.map(result => ({
             protocolName: result["protocolName"],
             disputeCount: result["disputeCount"],
             averageScore: result["averageScore"]
-        }));
-        res.json(responseData);
-    })
-    .catch(err => {
-        res.json(err);
-    });
+        }))
+
+        console.log(responseData)
+        
+        res.json(responseData)
+    }catch(error){
+        res.json(error)
+    }
 });
 
 
