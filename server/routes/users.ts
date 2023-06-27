@@ -6,14 +6,13 @@ const router = express.Router()
 /**
  * Get a list of users
  */
-router.get("/", (req: Request, res: Response) => {
-    UserModel.find({})
-    .then(result => {
-        res.json(result);
-    })
-    .catch(err => {
+router.get("/", async(req: Request, res: Response) => {
+    try{
+        const users = await UserModel.find({})
+        res.json(users)
+    }catch(err){
         res.json(err);
-    });
+    }
 });
 
 /**

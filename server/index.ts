@@ -2,9 +2,6 @@ import express, { Request, Response } from 'express';
 import mongoose, { NumberSchemaDefinition } from 'mongoose';
 import cors from 'cors';
 
-
-
-
 const app = express();
 
 const userRoute = require('./routes/users')
@@ -23,8 +20,6 @@ app.use("/disputes", disputeRoute)
 app.use("/protocols", protocolsRoute)
 app.use("/ip", ipRouter)
 app.use("/defiData", defiDataRouter)
-
-
 
 app.listen(3001, () => {
     console.log('server running on port 3001');

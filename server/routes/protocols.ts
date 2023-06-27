@@ -34,14 +34,14 @@ router.get("/", async (req: Request, res: Response) => {
 
 
 
-
+/**
+ * Adds protocol data to the db if it hasn't been added already
+ * Requires frontend to handle valid averages 
+ */
 router.post("/", async (req: Request, res: Response) => {
     try {
         const protocol = req.body;
-        if (!checkScoresCorrect(protocol["qScores"])){
-            res.json({error:"Invalid input"});
-            return
-        }
+
         await ProtocolModel.findOne(
             {protocolName: protocol["protocolName"]},
         ).then((doc : any)=>{
@@ -83,13 +83,5 @@ function updateDoc(doc : any, protocol : object){
     doc.save()
 }
 
-function checkScoresCorrect(dispute : [number]){
-    for (let i=0; i < dispute.length; i++){
-        if (dispute[i] > 10 || dispute[i] < 1){
-            return false
-        }
-    }
-    return true
-}
 
 module.exports = router
