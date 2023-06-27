@@ -39,7 +39,7 @@ function App() {
     Axios.get<GetProtocolResponse[]>('http://localhost:3001/protocols?order=ascending').then((response) => {
       setProtocolData(response.data);
     });
-    Axios.get<GetProtocolResponse[]>('http://localhost:3001/protocols?order=ascending').then((response) => {
+    Axios.get<GetProtocolResponse[]>('http://localhost:3001/protocols?order=descending').then((response) => {
       setProtocolDataTop(response.data);
     });
     Axios.get<string>('http://localhost:3001/ip/getClientIp').then((response) => {
@@ -100,10 +100,7 @@ function App() {
 
       let [ascendingResponse, descendingResponse] = await utils.updateProtocol(protocol, scores)
       setProtocolData(ascendingResponse.data);
-      setProtocolDataTop(descendingResponse.data);
-
-      await utils.updateProtocol(protocol, scores)
-      
+      setProtocolDataTop(descendingResponse.data);      
     }
     catch (error) {
       console.log('There was an error with the addIprequest:', error);
