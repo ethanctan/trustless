@@ -25,7 +25,7 @@ router.get("/", async (req: Request, res: Response) => {
  */
 router.post("/", async (req: Request, res: Response) => {
     try{
-        const dispute = req.body;
+        let dispute = req.body;
         const newDispute = new DisputeModel(dispute);
         await newDispute.save();
         res.json(dispute);

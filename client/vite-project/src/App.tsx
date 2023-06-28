@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import './App.css';
 import Axios from 'axios';
-import {Dispute, User, Protocol, GetProtocolResponse, DefiData} from './interfaces.ts'
+import {Dispute, User,  GetProtocolResponse, DefiData} from './interfaces.ts'
 import * as utils from './utils.ts'
 
 function App() {
@@ -93,7 +93,7 @@ function App() {
         return
       }
 
-      const response = await utils.updateDisputes(protocol, scores)
+      let response = await utils.updateDisputes(protocol, scores)
       //@ts-ignore
       setListofDisputes(response.data);
       setErrorMessage("Rating submitted!");
@@ -109,12 +109,11 @@ function App() {
 }; 
 
 const addDisputeFromOther = async () => {
-  let scores = [q1Score, q2Score, q3Score, q4Score, q5Score]
-  console.log("dropdown is open: ", isDropdownOpen);
   let isDuplicate = false;
+  console.log("Protocol: ",protocol) 
   try {
     await Axios.post('http://localhost:3001/defiData', {
-      name: protocol,
+      protocolName: protocol,
       logo: "None"
     });
     console.log("Defi data added!");
@@ -130,38 +129,14 @@ const addDisputeFromOther = async () => {
       isDuplicate = true;
     }
   }
-  console.log("isDuplicate", isDuplicate);
   setDuplicate(isDuplicate);
-  if (!isDuplicate) {
-    try{
-      
-
-      // what is this trying to say?
-      await Axios.post('http://localhost:3001/ip', {
-        ipAddress: ipAddress,
-        protocolName: protocol,
-      }).then(async (response) => {
-        // response.data will have the data from your backend.
-        console.log(response.data);
-        const response1 = await Axios.get<boolean>(`http://localhost:3001/ip?ip=${ipAddress}`);
-        const iswithin = response1.data;
-        console.log("iswithin", iswithin);
-        
-        if (iswithin) {
-          console.log("You have already rated this protocol");
-          setErrorMessage("You have already rated this protocol. Try rating another!");
-          return
-        }
-
-        await utils.updateDisputes(protocol, scores)
-        await utils.updateProtocol(protocol, scores)
+  if (isDuplicate){
+    return
+  }
   
-      });
-    }
-    catch (error) {
-      console.log('There was an error with the addIprequest:', error);
-    }  
-}
+
+  addDispute()
+
 }; 
   
   return (

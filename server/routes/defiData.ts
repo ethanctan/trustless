@@ -12,28 +12,33 @@ router.get("/", async (req: Request, res: Response) => {
     try{
         const defiData = await DefiDataModel.find({})
         res.json(defiData)
-        // const { name } = req.body;
-        // const regex = new RegExp(`^${name}$`, 'i'); // Case-insensitive RegExp
-        // const dataExists = await DefiDataModel.exists({ name: regex });
-
-        // if (dataExists){
-        //     console.log("Data exists alrady")
-        //     res.status(409).json({ message: 'Data already exists' });
-        //     return
-        // }
-
-        // console.log("Request body",req.body)
-
-        // // Create and save new data
-        // const newData = new DefiDataModel(req.body);
-        // console.log("Before save new data:", newData)
-        // await newData.save();
-        // console.log("save successful")
-        // res.json(newData);
+        
     }catch (err){
         console.log("There is an error")
         res.json(err)
     }
+    
+});
+
+/**
+ * Add defi data to the userbase
+ */
+router.post("/", async (req : Request, res : Response) => {
+    const { name } = req.body;
+    const regex = new RegExp(`^${name}$`, 'i'); // Case-insensitive RegExp 
+
+    const dataExists = await DefiDataModel.exists({ protocolName: regex });
+
+    if (dataExists) {
+        res.status(409).json({ message: 'Data already exists' });
+        return
+    }  
+
+    console.log("Saving stuff")
+    // Create and save new data
+    const newData = new DefiDataModel(req.body);
+    await newData.save();
+    res.json(newData);
     
 });
 
