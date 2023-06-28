@@ -26,31 +26,28 @@ function App() {
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   //hook for crypto data
   const [defiData, setDefiData] = useState<DefiData[]>([]);
-  //hook for other protocol
-  const [duplicate, setDuplicate] = useState(false);
-  const [isDropdownOpen, setIsDropdownOpen] = useState(true);
 
 
 
-  useEffect(() => {
-    Axios.get<Dispute[]>('http://localhost:3001/disputes').then((response) => {
-      setListofDisputes(response.data);
-    });
-    Axios.get<GetProtocolResponse[]>('http://localhost:3001/protocols?order=ascending').then((response) => {
-      setProtocolData(response.data);
-    });
-    Axios.get<GetProtocolResponse[]>('http://localhost:3001/protocols?order=descending').then((response) => {
-      setProtocolDataTop(response.data);
-    });
-    Axios.get<string>('http://localhost:3001/ip/getClientIp').then((response) => {
-      setIpAddress(response.data);
-    });
-    Axios.get<DefiData[]>('http://localhost:3001/defiData').then((response) => {
-      setDefiData(response.data);
-      console.log("Logged defi data");
-      console.log(response.data)
-    });
-  }, []);
+useEffect(() => {
+  Axios.get<Dispute[]>('http://localhost:3001/disputes').then((response) => {
+    setListofDisputes(response.data);
+  });
+  Axios.get<GetProtocolResponse[]>('http://localhost:3001/protocols?order=ascending').then((response) => {
+    setProtocolData(response.data);
+  });
+  Axios.get<GetProtocolResponse[]>('http://localhost:3001/protocols?order=descending').then((response) => {
+    setProtocolDataTop(response.data);
+  });
+  Axios.get<string>('http://localhost:3001/ip/getClientIp').then((response) => {
+    setIpAddress(response.data);
+  });
+  Axios.get<DefiData[]>('http://localhost:3001/defiData').then((response) => {
+    setDefiData(response.data);
+    console.log("Logged defi data");
+    console.log(response.data)
+  });
+}, []);
 
 
   useEffect(() => {
@@ -67,77 +64,29 @@ function App() {
     })
   };  
 
-
-  // TODO: refactor
-  const addDispute = async () => {
+  const handleUserSubmission = async () =>{
     let scores = [q1Score, q2Score, q3Score, q4Score, q5Score]
     
     if (!utils.checkScoresCorrect(scores)){
       setErrorMessage("Invalid score, re-enter a valid score")
       return
     }
-    setDuplicate(false);
 
-    try{
-      // Why are you sending a post request here?
-      await Axios.post('http://localhost:3001/ip', {
-        ipAddress: ipAddress,
-        protocolName: protocol,
-      })
-
-      const response1 = await Axios.get<boolean>(`http://localhost:3001/ip?ip=${ipAddress}`);
-      const iswithin = response1.data;
-
-      if (iswithin) {
-        setErrorMessage("You have already rated this protocol. Try rating another!");
-        return
-      }
-
-      let response = await utils.updateDisputes(protocol, scores)
-      //@ts-ignore
-      setListofDisputes(response.data);
-      setErrorMessage("Rating submitted!");
-
-      let [ascendingResponse, descendingResponse] = await utils.updateProtocol(protocol, scores)
-      setProtocolData(ascendingResponse.data);
-      setProtocolDataTop(descendingResponse.data);      
+    let isWithin = await utils.checkIp(ipAddress, protocol)
+    if (isWithin) {
+      setErrorMessage("You have already rated this protocol. Try rating another!");
+      return
     }
-    catch (error) {
-      console.log('There was an error with the addIprequest:', error);
-    }  
-  
-}; 
 
-const addDisputeFromOther = async () => {
-  let isDuplicate = false;
-  console.log("Protocol: ",protocol) 
-  try {
-    await Axios.post('http://localhost:3001/defiData', {
-      protocolName: protocol,
-      logo: "None"
-    });
-    console.log("Defi data added!");
-  }
-  catch (error : any) {
-    if (error.response) {
-      console.log('Protocol already exists:', error.response.data.message);
-      setErrorMessage("");
-      isDuplicate = true;
-    } else {
-      console.log('Error', error.message);
-      setErrorMessage("");
-      isDuplicate = true;
-    }
-  }
-  setDuplicate(isDuplicate);
-  if (isDuplicate){
-    return
-  }
-  
+    let [disputeResponse, ascendingResponse, descendingResponse] = 
+      await utils.addDispute(protocol, scores)
 
-  addDispute()
+    setListofDisputes(disputeResponse.data);
+    setProtocolData(ascendingResponse.data);
+    setProtocolDataTop(descendingResponse.data); 
+  }
 
-}; 
+
   
   return (
     <div className="App">
@@ -183,33 +132,25 @@ const addDisputeFromOther = async () => {
       </div>
 
       <div>
-              {isDropdownOpen &&
-                <select 
-                  onChange={(event) => {setProtocol(event.target.value);setIsDropdownOpen(true)}}
-                >
-                  <option value="">Select Protocol</option>
-                  {defiData.map((protocol) => (
-                    <option key={protocol._id} value={protocol.name}>
-                      {protocol.name}
-                    </option>
-                  ))}
-                </select>}
+            {
+              <select 
+                onChange={(event) => {setProtocol(event.target.value)}}
+              >
+                <option value="">Select Protocol</option>
+                {defiData.map((protocol) => (
+                  <option key={protocol._id} value={protocol.name}>
+                    {protocol.name}
+                  </option>
+                ))}
+              </select>}
                 
-                <button onClick={() => {setIsDropdownOpen(!isDropdownOpen); setErrorMessage("")}}> {isDropdownOpen ? "Can't find protocol?" : "Back"} </button> 
-                {!isDropdownOpen && <input 
-                  type="text" 
-                  placeholder="Other" 
-                  onChange={(event) => {setProtocol(event.target.value)}}
-                />}
-              
            
             <input type="number" placeholder="Question 1" onChange={(event) => {setQ1Score(parseInt(event.target.value))}}/>
             <input type="number" placeholder="Question 2" onChange={(event) => {setQ2Score(parseInt(event.target.value))}}/>
             <input type="number" placeholder="Question 3" onChange={(event) => {setQ3Score(parseInt(event.target.value))}}/>
             <input type="number" placeholder="Question 4" onChange={(event) => {setQ4Score(parseInt(event.target.value))}}/>
             <input type="number" placeholder="Question 5" onChange={(event) => {setQ5Score(parseInt(event.target.value))}}/>
-            <button onClick={isDropdownOpen ? addDispute : addDisputeFromOther}>Submit</button>
-            <h5>{duplicate ? "This protocol is in the dropdown." : ""}</h5>
+            <button onClick={handleUserSubmission}>Submit</button>
             <h5 style={{ color: 'grey' }}>{errorMessage}</h5>
         </div> 
         <div>
