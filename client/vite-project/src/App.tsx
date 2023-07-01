@@ -153,6 +153,16 @@ function App() {
   const filteredDisputes = listofDisputes.filter((dispute) =>
     dispute.protocol.toLowerCase().includes(searchTerm.toLowerCase())
   );
+
+  // for searching protocolData
+  const filteredProtocolData = protocolData.filter((protocol) =>
+  protocol.protocolName.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  // for searching protocolDataTop
+  const filteredProtocolDataTop = protocolDataTop.filter((protocol) =>
+  protocol.protocolName.toLowerCase().includes(searchTerm.toLowerCase())
+  );
   
   return (
     <div className="App">
@@ -560,165 +570,163 @@ function App() {
 
       {/* TABLES */}
 
-      {/* Search bar */}
-      {activeButton === ActiveButton.LiveResponses && (
-        <div className="p-4">
-          <input
-            type="text"
-            placeholder="Search protocol..."
-            className="poppins w-50 rounded-lg p-2 border bg-gray-900 bg-opacity-50 backdrop-filter backdrop-blur-md border-gray-800 hover:border-white focus:outline-none transition-all duration-100"
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-          />
-        </div>
-      )}
+    {/* Search bar */}
+      <div className="p-4">
+        <input
+          type="text"
+          placeholder="Search protocol..."
+          className="poppins w-50 rounded-lg p-2 border bg-gray-900 bg-opacity-50 backdrop-filter backdrop-blur-md border-gray-800 hover:border-white focus:outline-none transition-all duration-100"
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+        />
+      </div>
 
-<div className="flex flex-col">
-  <div className="-m-1.5 overflow-x-auto">
-    <div className="p-1.5 min-w-full inline-block align-middle">
-      {activeButton === ActiveButton.LiveResponses && (
-        <div className="border rounded-lg overflow-hidden bg-gray-900 bg-opacity-50 backdrop-filter backdrop-blur-md border-gray-700">
-          <table className="min-w-full divide-y divide-gray-200 divide-gray-700">
-            <thead>
-              <tr>
-                <th scope="col" className="p-6 py-3 text-center text-xs font-medium text-white uppercase poppins">
-                  Protocol Name
-                </th>
-                <th scope="col" className="p-6 py-3 text-center text-xs font-medium text-white uppercase poppins">
-                  Contracts
-                </th>
-                <th scope="col" className="p-6 py-3 text-center text-xs font-medium text-white uppercase poppins">
-                  Security
-                </th>
-                <th scope="col" className="p-6 py-3 text-center text-xs font-medium text-white uppercase poppins">
-                  Roadmap
-                </th>
-                <th scope="col" className="p-6 py-3 text-center text-xs font-medium text-white uppercase poppins">
-                  Governance
-                </th>
-                <th scope="col" className="p-6 py-3 text-center text-xs font-medium text-white uppercase poppins">
-                  Team
-                </th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-gray-200 divide-gray-700">
-              {filteredDisputes.slice(0, 10).map((dispute, rowIndex) => (
-                <tr
-                  key={dispute._id}
-                  className={`${
-                    rowIndex % 2 === 0 ? 'bg-gray-900' : 'bg-gray-600'
-                  } bg-opacity-50 backdrop-filter backdrop-blur-md`}
-                  style={{ marginBottom: '10px', height: '50px' }}
-                >
-                  <td className="p-6 py-4 whitespace-nowrap text-sm font-medium text-white poppins">
-                    {dispute.protocol}
-                  </td>
-                  {dispute.qVals.map((val, colIndex) => (
-                    <td
-                      key={colIndex}
-                      className="p-6 py-4 whitespace-nowrap text-sm text-white poppins"
-                    >
-                      {val}
-                    </td>
-                  ))}
-                </tr>
-              ))}
-            </tbody>
-          </table>
-          {filteredDisputes.length === 0 && (
-            <p className="p-6 py-4 whitespace-nowrap text-sm font-medium text-white poppins">No protocols found.</p>
-          )}
+      <div className="flex flex-col">
+        <div className="-m-1.5 overflow-x-auto">
+          <div className="p-1.5 min-w-full inline-block align-middle">
+            {activeButton === ActiveButton.LiveResponses && (
+              <div className="border rounded-lg overflow-hidden bg-gray-900 bg-opacity-50 backdrop-filter backdrop-blur-md border-gray-700">
+                <table className="min-w-full divide-y divide-gray-200 divide-gray-700">
+                  <thead>
+                    <tr>
+                      <th scope="col" className="p-6 py-3 text-center text-xs font-medium text-white uppercase poppins">
+                        Protocol Name
+                      </th>
+                      <th scope="col" className="p-6 py-3 text-center text-xs font-medium text-white uppercase poppins">
+                        Contracts
+                      </th>
+                      <th scope="col" className="p-6 py-3 text-center text-xs font-medium text-white uppercase poppins">
+                        Security
+                      </th>
+                      <th scope="col" className="p-6 py-3 text-center text-xs font-medium text-white uppercase poppins">
+                        Roadmap
+                      </th>
+                      <th scope="col" className="p-6 py-3 text-center text-xs font-medium text-white uppercase poppins">
+                        Governance
+                      </th>
+                      <th scope="col" className="p-6 py-3 text-center text-xs font-medium text-white uppercase poppins">
+                        Team
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-gray-200 divide-gray-700">
+                    {filteredDisputes.slice(0, 10).map((dispute, rowIndex) => (
+                      <tr
+                        key={dispute._id}
+                        className={`${
+                          rowIndex % 2 === 0 ? 'bg-gray-900' : 'bg-gray-600'
+                        } bg-opacity-50 backdrop-filter backdrop-blur-md`}
+                        style={{ marginBottom: '10px', height: '50px' }}
+                      >
+                        <td className="p-6 py-4 whitespace-nowrap text-sm font-medium text-white poppins">
+                          {dispute.protocol}
+                        </td>
+                        {dispute.qVals.map((val, colIndex) => (
+                          <td
+                            key={colIndex}
+                            className="p-6 py-4 whitespace-nowrap text-sm text-white poppins"
+                          >
+                            {val}
+                          </td>
+                        ))}
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+                {filteredDisputes.length === 0 && (
+                  <p className="p-6 py-4 whitespace-nowrap text-sm font-medium text-white poppins">No protocols found.</p>
+                )}
+              </div>
+            )}
+            {activeButton === ActiveButton.MostTrusted && (
+              <div className="border rounded-lg overflow-hidden bg-gray-900 bg-opacity-50 backdrop-filter backdrop-blur-md border-gray-700">
+                <table className="min-w-full divide-y divide-gray-200 divide-gray-700">
+                  <thead>
+                    <tr>
+                      <th scope="col" className="p-6 py-3 text-center text-xs font-medium text-white uppercase poppins">
+                        Protocol
+                      </th>
+                      <th scope="col" className="p-6 py-3 text-center text-xs font-medium text-white uppercase poppins">
+                        Number of Ratings
+                      </th>
+                      <th scope="col" className="p-6 py-3 text-center text-xs font-medium text-white uppercase poppins">
+                        Average Score
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-gray-200 divide-gray-700">
+                    {filteredProtocolData.slice(0, 10).map((protocol, rowIndex) => (
+                      <tr
+                        key={protocol._id}
+                        className={`${
+                          rowIndex % 2 === 0 ? 'bg-gray-900' : 'bg-gray-600'
+                        } bg-opacity-50 backdrop-filter backdrop-blur-md`}
+                        style={{ marginBottom: '10px', height: '50px' }}
+                      >
+                        <td className="p-6 py-4 whitespace-nowrap text-sm font-medium text-white poppins">
+                          {protocol.protocolName}
+                        </td>
+                        <td className="p-6 py-4 whitespace-nowrap text-sm text-white poppins">
+                          {protocol.disputeCount}
+                        </td>
+                        <td className="p-6 py-4 whitespace-nowrap text-sm text-white poppins">
+                          {protocol.averageScore.toFixed(1)}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+                {protocolData.length === 0 && (
+                  <p className="p-6 py-4 whitespace-nowrap text-sm font-medium text-white poppins">No protocols found.</p>
+                )}
+              </div>
+            )}
+            {activeButton === ActiveButton.LeastTrusted && (
+              <div className="border rounded-lg overflow-hidden bg-gray-900 bg-opacity-50 backdrop-filter backdrop-blur-md border-gray-700">
+                <table className="min-w-full divide-y divide-gray-200 divide-gray-700">
+                  <thead>
+                    <tr>
+                      <th scope="col" className="p-6 py-3 text-center text-xs font-medium text-white uppercase poppins">
+                        Protocol
+                      </th>
+                      <th scope="col" className="p-6 py-3 text-center text-xs font-medium text-white uppercase poppins">
+                        Number of Ratings
+                      </th>
+                      <th scope="col" className="p-6 py-3 text-center text-xs font-medium text-white uppercase poppins">
+                        Average Score
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-gray-200 divide-gray-700">
+                    {filteredProtocolDataTop.slice(0, 10).map((protocol, rowIndex) => (
+                      <tr
+                        key={protocol._id}
+                        className={`${
+                          rowIndex % 2 === 0 ? 'bg-gray-900' : 'bg-gray-600'
+                        } bg-opacity-50 backdrop-filter backdrop-blur-md`}
+                        style={{ marginBottom: '10px', height: '50px' }}
+                      >
+                        <td className="p-6 py-4 whitespace-nowrap text-sm font-medium text-white poppins">
+                          {protocol.protocolName}
+                        </td>
+                        <td className="p-6 py-4 whitespace-nowrap text-sm text-white poppins">
+                          {protocol.disputeCount}
+                        </td>
+                        <td className="p-6 py-4 whitespace-nowrap text-sm text-white poppins">
+                          {protocol.averageScore.toFixed(1)}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+                {protocolDataTop.length === 0 && (
+                  <p className="p-6 py-4 whitespace-nowrap text-sm font-medium text-white poppins">No protocols found.</p>
+                )}
+              </div>
+            )}
+          </div>
         </div>
-      )}
-      {activeButton === ActiveButton.MostTrusted && (
-        <div className="m-5 border rounded-lg overflow-hidden bg-gray-900 bg-opacity-50 backdrop-filter backdrop-blur-md border-gray-700">
-          <table className="min-w-full divide-y divide-gray-200 divide-gray-700">
-            <thead>
-              <tr>
-                <th scope="col" className="p-6 py-3 text-center text-xs font-medium text-white uppercase poppins">
-                  Protocol
-                </th>
-                <th scope="col" className="p-6 py-3 text-center text-xs font-medium text-white uppercase poppins">
-                  Number of Ratings
-                </th>
-                <th scope="col" className="p-6 py-3 text-center text-xs font-medium text-white uppercase poppins">
-                  Average Score
-                </th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-gray-200 divide-gray-700">
-              {protocolData.slice(0, 10).map((protocol, rowIndex) => (
-                <tr
-                  key={protocol._id}
-                  className={`${
-                    rowIndex % 2 === 0 ? 'bg-gray-900' : 'bg-gray-600'
-                  } bg-opacity-50 backdrop-filter backdrop-blur-md`}
-                  style={{ marginBottom: '10px', height: '50px' }}
-                >
-                  <td className="p-6 py-4 whitespace-nowrap text-sm font-medium text-white poppins">
-                    {protocol.protocolName}
-                  </td>
-                  <td className="p-6 py-4 whitespace-nowrap text-sm text-white poppins">
-                    {protocol.disputeCount}
-                  </td>
-                  <td className="p-6 py-4 whitespace-nowrap text-sm text-white poppins">
-                    {protocol.averageScore.toFixed(1)}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-          {protocolData.length === 0 && (
-            <p className="p-6 py-4 whitespace-nowrap text-sm font-medium text-white poppins">No protocols found.</p>
-          )}
-        </div>
-      )}
-      {activeButton === ActiveButton.LeastTrusted && (
-        <div className="m-5 border rounded-lg overflow-hidden bg-gray-900 bg-opacity-50 backdrop-filter backdrop-blur-md border-gray-700">
-          <table className="min-w-full divide-y divide-gray-200 divide-gray-700">
-            <thead>
-              <tr>
-                <th scope="col" className="p-6 py-3 text-center text-xs font-medium text-white uppercase poppins">
-                  Protocol
-                </th>
-                <th scope="col" className="p-6 py-3 text-center text-xs font-medium text-white uppercase poppins">
-                  Number of Ratings
-                </th>
-                <th scope="col" className="p-6 py-3 text-center text-xs font-medium text-white uppercase poppins">
-                  Average Score
-                </th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-gray-200 divide-gray-700">
-              {protocolDataTop.slice(0, 10).map((protocol, rowIndex) => (
-                <tr
-                  key={protocol._id}
-                  className={`${
-                    rowIndex % 2 === 0 ? 'bg-gray-900' : 'bg-gray-600'
-                  } bg-opacity-50 backdrop-filter backdrop-blur-md`}
-                  style={{ marginBottom: '10px', height: '50px' }}
-                >
-                  <td className="p-6 py-4 whitespace-nowrap text-sm font-medium text-white poppins">
-                    {protocol.protocolName}
-                  </td>
-                  <td className="p-6 py-4 whitespace-nowrap text-sm text-white poppins">
-                    {protocol.disputeCount}
-                  </td>
-                  <td className="p-6 py-4 whitespace-nowrap text-sm text-white poppins">
-                    {protocol.averageScore.toFixed(1)}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-          {protocolDataTop.length === 0 && (
-            <p className="p-6 py-4 whitespace-nowrap text-sm font-medium text-white poppins">No protocols found.</p>
-          )}
-        </div>
-      )}
-    </div>
-  </div>
-</div>
+      </div>
     </div>
   );
 }
