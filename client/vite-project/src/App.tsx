@@ -11,7 +11,7 @@ function App() {
   const [protocol, setProtocol] = useState<string>("");
   //hooks for user address
   const [address, setAddress] = useState<string | null>(null);
-  const [submitted, setSubmitted] = useState<boolean>(false);
+  const [submitted, setSubmitted] = useState<string>("");
   //hooks for protocol list
   const [protocolData, setProtocolData] = useState<GetProtocolResponse[]>([]);
   const [protocolDataTop, setProtocolDataTop] = useState<GetProtocolResponse[]>([]);
@@ -26,11 +26,15 @@ function App() {
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   //hook for crypto data
   const [defiData, setDefiData] = useState<DefiData[]>([]);
+  //hook for website down
+  const [websiteDown, setWebsiteDown] = useState<string>("")
 
+  
 
 
 useEffect(() => {
-  Axios.get<Dispute[]>('http://localhost:3001/disputes').then((response) => {
+  try{
+    Axios.get<Dispute[]>('http://localhost:3001/disputes').then((response) => {
     setListofDisputes(response.data);
   });
   Axios.get<GetProtocolResponse[]>('http://localhost:3001/protocols?order=ascending').then((response) => {
@@ -44,46 +48,60 @@ useEffect(() => {
   });
   Axios.get<DefiData[]>('http://localhost:3001/defiData').then((response) => {
     setDefiData(response.data);
-    console.log("Logged defi data");
-    console.log(response.data)
   });
+  setWebsiteDown("")
+  }catch (error){
+    setWebsiteDown("Something went wrong with the website!")
+  }
 }, []);
 
 
   useEffect(() => {
-    setSubmitted(false);
+    setSubmitted("");
   }, [address]);
 
 
-  const addUser = () => {
-    Axios.post<User[]>('http://localhost:3001/users', {
-      address: address,
-    }).then((response) => {
-      console.log("User added!");
-      setSubmitted(true);
-    })
+  const addUser = async () => {
+    if (!address || !(utils.validHex(address))){
+      setSubmitted("Invalid address")
+    }
+    try{
+      await Axios.post<User[]>('http://localhost:3001/users', {
+        address: address,
+      })
+      setSubmitted("Thank you for submitting your address")
+    }catch (err){ // catch 409 address
+      setSubmitted("You already submitted this address!");
+    }
+    
+
   };  
 
   const handleUserSubmission = async () =>{
-    let scores = [q1Score, q2Score, q3Score, q4Score, q5Score]
+    try{
+      let scores = [q1Score, q2Score, q3Score, q4Score, q5Score]
+
+      if (!utils.checkScoresCorrect(scores)){
+        setErrorMessage("Invalid score, re-enter a valid score")
+        return
+      }
+
+      let alreadyRated = await utils.checkIp(ipAddress, protocol)
+      if (alreadyRated) {
+        setErrorMessage("You have already rated this protocol. Try rating another!");
+        return
+      }
+
+      let [disputeResponse, ascendingResponse, descendingResponse] = 
+        await utils.addDispute(protocol, scores)
+
+      setListofDisputes(disputeResponse.data);
+      setProtocolData(ascendingResponse.data);
+      setProtocolDataTop(descendingResponse.data); 
+    }catch(err){
+      setErrorMessage("Oops! Something went wrong with your submission")
+    }
     
-    if (!utils.checkScoresCorrect(scores)){
-      setErrorMessage("Invalid score, re-enter a valid score")
-      return
-    }
-
-    let isWithin = await utils.checkIp(ipAddress, protocol)
-    if (isWithin) {
-      setErrorMessage("You have already rated this protocol. Try rating another!");
-      return
-    }
-
-    let [disputeResponse, ascendingResponse, descendingResponse] = 
-      await utils.addDispute(protocol, scores)
-
-    setListofDisputes(disputeResponse.data);
-    setProtocolData(ascendingResponse.data);
-    setProtocolDataTop(descendingResponse.data); 
   }
 
 
@@ -91,6 +109,7 @@ useEffect(() => {
   return (
     <div className="App">
       <h1>Aegis Protocol Tracker</h1>
+      <h1>{websiteDown}</h1>
       <div style={{ display: 'flex', justifyContent: 'space-between', paddingRight:'20%', paddingLeft:'20%'}}>
         <div>
           <h4>Live Responses</h4>
@@ -156,7 +175,7 @@ useEffect(() => {
         <div>
           Drop your address here: <input type="text" placeholder="Enter your address" onChange={(event) => setAddress(event.target.value)} />
           <button onClick={addUser}>Submit</button>
-          <h5>{submitted ? "Thank you for submitting your address." : ""}</h5>
+          <h5>{submitted}</h5>
         </div>
 
     </div>

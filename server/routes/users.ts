@@ -16,9 +16,16 @@ router.get("/", async(req: Request, res: Response) => {
 });
 
 /**
- * Add user to mongodb
+ * Add user to database
  */
 router.post("/", async (req: Request, res: Response) => {
+
+    let userExists = await UserModel.exists({address: req.body.address})
+    if (userExists){
+        res.status(409).json({message: "Address already exists"})
+        return
+    }
+
     const user = req.body;
     const newUser = new UserModel(user);
     await newUser.save();
