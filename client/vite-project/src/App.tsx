@@ -8,43 +8,8 @@ import Slider from '@mui/material/Slider';
 import React, { useState, useEffect, useMemo } from 'react';
 import Select from 'react-select';
 import { Tooltip, Button, TextField } from '@mui/material';
-
-
-interface Dispute {
-  _id: string;
-  protocol: string;
-  qVals: [number];
-}
-
-interface User {
-  address: string;
-}
-
-interface Protocol {
-  _id: string;
-  disputeCount: number;
-  protocolName: string;
-  averageScore: number;
-  qScores: [number];
-}
-
-interface GetProtocolResponse {
-  _id: string;
-  protocolName: string;
-  disputeCount: number;
-  averageScore: number;
-}
-
-interface IpAddress {
-  ipAddress: string;
-  protocolName: string;
-}
-
-interface DefiData {
-  _id: string;
-  name: string;
-  logo: string;
-}
+import {Dispute, User,  GetProtocolResponse, DefiData} from './interfaces.ts'
+import * as utils from './utils.ts'
 
 enum ActiveButton {
   LiveResponses,
@@ -55,13 +20,12 @@ enum ActiveButton {
 function App() {
   const [listofDisputes, setListofDisputes] = useState<Dispute[]>([]);
   const [protocol, setProtocol] = useState<string>("");
-  const [question1, setQuestion1] = useState<number>(1);
-  const [question2, setQuestion2] = useState<number>(1);
-  const [question3, setQuestion3] = useState<number>(1);
-  const [question4, setQuestion4] = useState<number>(1);
-  const [question5, setQuestion5] = useState<number>(1);
+  // TODO: Merge questionX and qXScore
+
+  //hooks for user address
   const [address, setAddress] = useState<string | null>(null);
-  const [submitted, setSubmitted] = useState<boolean>(false);
+  const [submitted, setSubmitted] = useState<string>("");
+  //hooks for protocol list
   const [protocolData, setProtocolData] = useState<GetProtocolResponse[]>([]);
   const [protocolDataTop, setProtocolDataTop] = useState<GetProtocolResponse[]>([]);
   const [q1Score, setQ1Score] = useState<number>(1);
@@ -73,96 +37,57 @@ function App() {
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [defiData, setDefiData] = useState<DefiData[]>([]);
   const [activeButton, setActiveButton] = useState<ActiveButton | null>(null);
+  //hook for website down
+  const [websiteDown, setWebsiteDown] = useState<string>("")
 
   useEffect(() => {
-    Axios.get<Dispute[]>('http://localhost:3001/getDisputes').then((response) => {
-      setListofDisputes(response.data);
-    });
-  }, []);
-
-  useEffect(() => {
-    setSubmitted(false);
+    setSubmitted("");
   }, [address]);
 
   useEffect(() => {
-    Axios.get<GetProtocolResponse[]>('http://localhost:3001/getProtocols').then((response) => {
+    try{
+      Axios.get<Dispute[]>('http://localhost:3001/disputes').then((response) => {
+      setListofDisputes(response.data);
+    });
+    Axios.get<GetProtocolResponse[]>('http://localhost:3001/protocols?order=ascending').then((response) => {
       setProtocolData(response.data);
     });
-  }, []);
-
-  useEffect(() => {
-    Axios.get<string>('http://localhost:3001/get-ip').then((response) => {
-      setIpAddress(response.data);
-      console.log(response.data);
+    Axios.get<GetProtocolResponse[]>('http://localhost:3001/protocols?order=descending').then((response) => {
+      setProtocolDataTop(response.data);
     });
+    Axios.get<string>('http://localhost:3001/ip/getClientIp').then((response) => {
+      setIpAddress(response.data);
+    });
+    Axios.get<DefiData[]>('http://localhost:3001/defiData').then((response) => {
+      setDefiData(response.data);
+    });
+    setWebsiteDown("")
+    }catch (error){
+      setWebsiteDown("Something went wrong with the website!")
+    }
   }, []);
 
+  const addUser = async () => { // TODO: Add ENS validation
+    if (!address || !(utils.validHex(address))){
+      setSubmitted("Invalid address")
+    }
+    try{
+      await Axios.post<User[]>('http://localhost:3001/users', {
+        address: address,
+      })
+      setSubmitted("Thank you for submitting your address")
+    }catch (err){ // catch 409 address
+      setSubmitted("You already submitted this address!");
+    }
+  };
+    
+
   useEffect(() => {
-    Axios.get<DefiData[]>('http://localhost:3001/getDefiData').then((response) => {
+    Axios.get<DefiData[]>('http://localhost:3001/defiData').then((response) => {
       setDefiData(response.data);
       console.log(response.data);
     });
   }, []);
-
-  const addUser = () => {
-    Axios.post<User[]>('http://localhost:3001/addUser', {
-      address: address,
-    }).then((response) => {
-      console.log("User added!");
-      setSubmitted(true);
-    })
-  };
-
-  const addDispute = async () => {
-    try {
-      await Axios.post('http://localhost:3001/addIp', {
-        ipAddress: ipAddress,
-        protocolName: protocol,
-      }).then(async (response) => {
-        console.log(response.data);
-        const response1 = await Axios.get<boolean>(`http://localhost:3001/getIpWithin?ip=${ipAddress}`);
-        const iswithin = response1.data;
-        console.log("iswithin", iswithin);
-
-        if (iswithin) {
-          console.log("You have already rated this protocol");
-          setErrorMessage("You have already rated this protocol. Try rating another!");
-        } else {
-          try {
-            await Axios.post('http://localhost:3001/addDispute', {
-              protocol: protocol,
-              qVals: [question1, question2, question3, question4, question5],
-            });
-
-            const response = await Axios.get<Dispute[]>('http://localhost:3001/getDisputes');
-            setListofDisputes(response.data);
-            setErrorMessage("Rating submitted!");
-          } catch (error) {
-            console.error('There was an error with the addDispute request:', error);
-          }
-
-          try {
-            await Axios.post<Protocol>('http://localhost:3001/addProtocol', {
-              disputeCount: 1,
-              protocolName: protocol,
-              averageScore: (q1Score + q2Score + q3Score + q4Score + q5Score) / 5,
-              qScores: [q1Score, q2Score, q3Score, q4Score, q5Score],
-            });
-
-            const response = await Axios.get<GetProtocolResponse[]>('http://localhost:3001/getProtocols');
-            setProtocolData(response.data);
-            const response1 = await Axios.get<GetProtocolResponse[]>('http://localhost:3001/getProtocolsTop');
-            setProtocolDataTop(response1.data);
-            console.log(response1.data);
-          } catch (error) {
-            console.error('There was an error with the addProtocol request:', error);
-          }
-        }
-      });
-    } catch (error) {
-      console.log('There was an error with the addIprequest:', error);
-    }
-  };
 
   const handleButtonClick = (button: ActiveButton) => {
     setActiveButton(button);
@@ -183,11 +108,35 @@ function App() {
     setExpanded(!expanded);
   };
 
-  const handleSubmit = () => {
-    if (address) {
-      addUser();
+  const handleUserSubmission = async () =>{ 
+    try{
+      if (address) {
+        addUser();
+      }
+      
+      let scores = [q1Score, q2Score, q3Score, q4Score, q5Score]
+
+      if (!utils.checkScoresCorrect(scores)){
+        setErrorMessage("Invalid score, re-enter a valid score")
+        return
+      }
+
+      let alreadyRated = await utils.checkIp(ipAddress, protocol)
+      if (alreadyRated) {
+        setErrorMessage("You have already rated this protocol. Try rating another!");
+        return
+      }
+
+      let [disputeResponse, ascendingResponse, descendingResponse] = 
+        await utils.addDispute(protocol, scores)
+
+      setListofDisputes(disputeResponse.data);
+      setProtocolData(ascendingResponse.data);
+      setProtocolDataTop(descendingResponse.data); 
+    }catch(err){
+      setErrorMessage("Oops! Something went wrong with your submission")
     }
-    addDispute();
+    
   }
 
   // for generating form content
@@ -363,19 +312,18 @@ function App() {
               min={1}
               max={10}
               step={1}
-              defaultValue={question1}
-              value={question1}
+              defaultValue={q1Score}
+              value={q1Score}
               onChange={(event, value) => {
                 const selectedValue = Array.isArray(value) ? value[0] : value;
                 setQ1Score(selectedValue);
-                setQuestion1(selectedValue);
               }}
               marks
               valueLabelDisplay="off"
             />
           </div>
           <div className="md:col-span-1 flex items-center">
-            <p className="text-white ml-2">{question1}</p>
+            <p className="text-white ml-2">{q1Score}</p>
           </div>
           {/* end question component */}
 
@@ -402,19 +350,18 @@ function App() {
               min={1}
               max={10}
               step={1}
-              defaultValue={question2}
-              value={question2}
+              defaultValue={q2Score}
+              value={q2Score}
               onChange={(event, value) => {
                 const selectedValue = Array.isArray(value) ? value[0] : value;
                 setQ2Score(selectedValue);
-                setQuestion2(selectedValue);
               }}
               marks
               valueLabelDisplay="off"
             />
           </div>
           <div className="md:col-span-1 flex items-center">
-            <p className="text-white ml-2">{question2}</p>
+            <p className="text-white ml-2">{q2Score}</p>
           </div>
           {/* end question component */}
 
@@ -442,19 +389,18 @@ function App() {
               min={1}
               max={10}
               step={1}
-              defaultValue={question3}
-              value={question3}
+              defaultValue={q3Score}
+              value={q3Score}
               onChange={(event, value) => {
                 const selectedValue = Array.isArray(value) ? value[0] : value;
                 setQ3Score(selectedValue);
-                setQuestion3(selectedValue);
               }}
               marks
               valueLabelDisplay="off"
             />
           </div>
           <div className="md:col-span-1 flex items-center">
-            <p className="text-white ml-2">{question3}</p>
+            <p className="text-white ml-2">{q3Score}</p>
           </div>
           {/* end question component */}
 
@@ -482,21 +428,22 @@ function App() {
               min={1}
               max={10}
               step={1}
-              defaultValue={question4}
-              value={question4}
+              defaultValue={q4Score}
+              value={q4Score}
               onChange={(event, value) => {
                 const selectedValue = Array.isArray(value) ? value[0] : value;
                 setQ4Score(selectedValue);
-                setQuestion4(selectedValue);
               }}
               marks
               valueLabelDisplay="off"
             />
           </div>
           <div className="md:col-span-1 flex items-center">
-            <p className="text-white ml-2">{question4}</p>
+            <p className="text-white ml-2">{q4Score}</p>
           </div>
           {/* end question component */}
+
+          
 
           {/* question 5 component */}
           <div className="md:col-span-3 flex items-center justify-left pl-6 ">
@@ -521,19 +468,18 @@ function App() {
               min={1}
               max={10}
               step={1}
-              defaultValue={question5}
-              value={question5}
+              defaultValue={q5Score}
+              value={q5Score}
               onChange={(event, value) => {
                 const selectedValue = Array.isArray(value) ? value[0] : value;
                 setQ5Score(selectedValue);
-                setQuestion5(selectedValue);
               }}
               marks
               valueLabelDisplay="off"
             />
           </div>
           <div className="md:col-span-1 flex items-center">
-            <p className="text-white ml-2">{question5}</p>
+            <p className="text-white ml-2">{q5Score}</p>
           </div>
           {/* end question component */}
           <div className="md:col-span-4 flex items-start justify-start text-left pl-6">
@@ -590,7 +536,7 @@ function App() {
             />
           </div>
         </div>
-        <button className='mb-3 mt-3 bg-blue-700 hover:bg-blue-600 hover:border-white focus:outline-none' onClick={handleSubmit}>Submit</button>
+        <button className='mb-3 mt-3 bg-blue-700 hover:bg-blue-600 hover:border-white focus:outline-none' onClick={handleUserSubmission}>Submit</button>
         <h5 style={ errorMessage == 'Rating submitted!' ? { color: 'white' } : {color: 'red' }}>{errorMessage}</h5>
         </div>
       )}
@@ -776,5 +722,6 @@ function App() {
     </div>
   );
 }
+
 
 export default App;

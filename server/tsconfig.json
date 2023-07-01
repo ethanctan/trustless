@@ -8,7 +8,7 @@
       "skipLibCheck": true,
       "forceConsistentCasingInFileNames": true,
       "noImplicitAny": true,
-      "suppressImplicitAnyIndexErrors": true
+      "suppressImplicitAnyIndexErrors": true,
     },
     "include": ["**/*.ts"],
     "exclude": ["node_modules"]
