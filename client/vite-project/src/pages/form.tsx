@@ -4,11 +4,11 @@ import '@fontsource/poppins';
 import Axios from 'axios';
 
 import { TextField } from '@mui/material';
-import {User} from '../interfaces.ts'
-import * as utils from '../utils.ts'
+import {User} from '../utils/interfaces.ts'
+import * as utils from '../utils/utils.ts'
 
-import {Question} from './question.tsx'
-import SearchBar from './searchBar.tsx';
+import {Question} from '../components/question.tsx'
+import SearchBar from '../components/searchBar.tsx';
 import { textFieldDesc } from './formConsts.ts';
 
 //@ts-ignore
@@ -112,32 +112,32 @@ function Form({setListofDisputes, setProtocolData , setProtocolDataTop, defiData
 
             <div className="bg-gray-900 backdrop-blur-md bg-opacity-50 p-4 rounded-lg mb-4">
             <div className="grid grid-cols-1 md:grid-cols-8 gap-4 py-4">
-            <Question questionScore={q1Score} setScore={setQ1Score} 
-            text={text1} title="Contracts"/>
-            <Question questionScore={q2Score} setScore={setQ2Score} 
-            text={text2} title="Treasury"/>
-            <Question questionScore={q3Score} setScore={setQ3Score} 
-            text={text3} title="Roadmap"/>
-            <Question questionScore={q4Score} setScore={setQ4Score} 
-            text={text4} title="Governance"/>
-            <Question questionScore={q5Score} setScore={setQ5Score} 
-            text={text5} title="Team"/>
-            
-            <div className="md:col-span-4 flex items-start justify-start text-left pl-6">
-                Optional: Drop your (Ethereum) address. 👀
-            </div>
-            <div className="md:col-span-4 pr-5">
-                <TextField 
-                className="poppins"
-                id="outlined-basic" 
-                sx={textFieldDesc}
-                placeholder="0x... or ENS" 
-                label="Wallet Address..." 
-                variant="outlined" 
-                onChange={(event) => setAddress(event.target.value)}
-                color="primary"
-                />
-            </div>
+                <Question questionScore={q1Score} setScore={setQ1Score} 
+                text={text1} title="Contracts"/>
+                <Question questionScore={q2Score} setScore={setQ2Score} 
+                text={text2} title="Treasury"/>
+                <Question questionScore={q3Score} setScore={setQ3Score} 
+                text={text3} title="Roadmap"/>
+                <Question questionScore={q4Score} setScore={setQ4Score} 
+                text={text4} title="Governance"/>
+                <Question questionScore={q5Score} setScore={setQ5Score} 
+                text={text5} title="Team"/>
+                
+                <div className="md:col-span-4 flex items-start justify-start text-left pl-6">
+                    Optional: Drop your (Ethereum) address. 👀
+                </div>
+                <div className="md:col-span-4 pr-5">
+                    <TextField 
+                    className="poppins"
+                    id="outlined-basic" 
+                    sx={textFieldDesc}
+                    placeholder="0x... or ENS" 
+                    label="Wallet Address..." 
+                    variant="outlined" 
+                    onChange={(event) => setAddress(event.target.value)}
+                    color="primary"
+                    />
+                </div>
             </div>
             <button className='mb-3 mt-3 bg-blue-700 hover:bg-blue-600 hover:border-white focus:outline-none' onClick={handleUserSubmission}>Submit</button>
             <h5 style={ errorMessage == 'Rating submitted!' ? { color: 'white' } : {color: 'red' }}>{errorMessage}</h5>

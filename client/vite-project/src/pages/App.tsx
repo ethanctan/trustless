@@ -5,11 +5,11 @@ import Axios from 'axios';
 import '@fontsource-variable/unbounded';
 import '@fontsource/poppins';
 import React, { useState, useEffect, useMemo } from 'react';
-import {Dispute,  GetProtocolResponse, DefiData} from './interfaces.ts'
+import {Dispute,  GetProtocolResponse, DefiData} from '../utils/interfaces.ts'
 
-import Introduction from './title.tsx'
-import Form from './form/form.tsx'
-import {SubmissionTable, TableHeading} from './submissionTable.tsx';
+import Introduction from '../components/title.tsx'
+import Form from './form.tsx'
+import {SubmissionTable} from '../components/submissionTable.tsx';
 
 enum ActiveButton {
   LiveResponses,
@@ -119,9 +119,6 @@ function App() {
 }
   //@ts-ignore
   function listDisputes({protocol, rowIndex}){
-    console.log("Filtered disputes: ", filteredDisputes)
-    console.log("dispute list", protocol)
-    console.log("row index",rowIndex)
     return(
       <tr
       key={protocol._id}

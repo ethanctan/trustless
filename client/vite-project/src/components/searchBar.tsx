@@ -1,5 +1,5 @@
 import Select from 'react-select';
-import {DefiData} from '../interfaces.ts'
+import {DefiData} from '../utils/interfaces.ts'
 import React, {useState, useEffect, useMemo} from 'react';
 
 //@ts-ignore
