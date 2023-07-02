@@ -21,6 +21,9 @@ function Form({setListofDisputes, setProtocolData , setProtocolDataTop, defiData
     const [q5Score, setQ5Score] = useState<number>(1);
     const [submitted, setSubmitted] = useState<string>("");
 
+    const [address, setAddress] = useState<string | null>(null);
+    const [errorMessage, setErrorMessage] = useState<string | null>(null);
+
     const [protocol, setProtocol] = useState<string>("");
     const [text1, setText1] = useState<string>(""); // tooltips
     const [text2, setText2] = useState<string>("");
@@ -86,63 +89,61 @@ function Form({setListofDisputes, setProtocolData , setProtocolDataTop, defiData
     
   }
 
-  const [address, setAddress] = useState<string | null>(null);
-  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
     return (
         
-            <div className="flex flex-col justify-items-stretch poppins mx-auto max-w-lg">
-                <div>
-                <p className="mb-2"> Rate protocols you've used according to our trust framework. </p>
-                <p className="mb-2"> Every submission is quick, anonymous, and noticed 👀. </p>
-                <p className=""> To begin, search for a protocol you'd like to rate. </p>
-                </div>
-
-                <SearchBar protocol={protocol} defiData={defiData} handleSetProtocol={handleSetProtocol} />
-
-                { protocol && (
-                <div className="mb-4"> 
-                    <p className="mb-2"> Our framework for trust consists of 5 factors, rated on a scale of 1-10, with 1 being the least trustworthy and 10 being the most. </p>
-                    <p className="mb-2"> Rate {protocol}'s trustworthiness in these 5 areas. </p>
-                </div>
-                )}
-
-                { protocol && (
-
-                <div className="bg-gray-900 backdrop-blur-md bg-opacity-50 p-4 rounded-lg mb-4">
-                <div className="grid grid-cols-1 md:grid-cols-8 gap-4 py-4">
-                <Question questionScore={q1Score} setScore={setQ1Score} 
-                text={text1} title="Contracts"/>
-                <Question questionScore={q2Score} setScore={setQ2Score} 
-                text={text2} title="Treasury"/>
-                <Question questionScore={q3Score} setScore={setQ3Score} 
-                text={text3} title="Roadmap"/>
-                <Question questionScore={q4Score} setScore={setQ4Score} 
-                text={text4} title="Governance"/>
-                <Question questionScore={q5Score} setScore={setQ5Score} 
-                text={text5} title="Team"/>
-                
-                <div className="md:col-span-4 flex items-start justify-start text-left pl-6">
-                    Optional: Drop your (Ethereum) address. 👀
-                </div>
-                <div className="md:col-span-4 pr-5">
-                    <TextField 
-                    className="poppins"
-                    id="outlined-basic" 
-                    sx={textFieldDesc}
-                    placeholder="0x... or ENS" 
-                    label="Wallet Address..." 
-                    variant="outlined" 
-                    onChange={(event) => setAddress(event.target.value)}
-                    color="primary"
-                    />
-                </div>
-                </div>
-                <button className='mb-3 mt-3 bg-blue-700 hover:bg-blue-600 hover:border-white focus:outline-none' onClick={handleUserSubmission}>Submit</button>
-                <h5 style={ errorMessage == 'Rating submitted!' ? { color: 'white' } : {color: 'red' }}>{errorMessage}</h5>
-                </div>
-            )}
+        <div className="flex flex-col justify-items-stretch poppins mx-auto max-w-lg">
+            <div>
+            <p className="mb-2"> Rate protocols you've used according to our trust framework. </p>
+            <p className="mb-2"> Every submission is quick, anonymous, and noticed 👀. </p>
+            <p className=""> To begin, search for a protocol you'd like to rate. </p>
             </div>
+
+            <SearchBar protocol={protocol} defiData={defiData} handleSetProtocol={handleSetProtocol} />
+
+            { protocol && (
+            <div className="mb-4"> 
+                <p className="mb-2"> Our framework for trust consists of 5 factors, rated on a scale of 1-10, with 1 being the least trustworthy and 10 being the most. </p>
+                <p className="mb-2"> Rate {protocol}'s trustworthiness in these 5 areas. </p>
+            </div>
+            )}
+
+            { protocol && (
+
+            <div className="bg-gray-900 backdrop-blur-md bg-opacity-50 p-4 rounded-lg mb-4">
+            <div className="grid grid-cols-1 md:grid-cols-8 gap-4 py-4">
+            <Question questionScore={q1Score} setScore={setQ1Score} 
+            text={text1} title="Contracts"/>
+            <Question questionScore={q2Score} setScore={setQ2Score} 
+            text={text2} title="Treasury"/>
+            <Question questionScore={q3Score} setScore={setQ3Score} 
+            text={text3} title="Roadmap"/>
+            <Question questionScore={q4Score} setScore={setQ4Score} 
+            text={text4} title="Governance"/>
+            <Question questionScore={q5Score} setScore={setQ5Score} 
+            text={text5} title="Team"/>
+            
+            <div className="md:col-span-4 flex items-start justify-start text-left pl-6">
+                Optional: Drop your (Ethereum) address. 👀
+            </div>
+            <div className="md:col-span-4 pr-5">
+                <TextField 
+                className="poppins"
+                id="outlined-basic" 
+                sx={textFieldDesc}
+                placeholder="0x... or ENS" 
+                label="Wallet Address..." 
+                variant="outlined" 
+                onChange={(event) => setAddress(event.target.value)}
+                color="primary"
+                />
+            </div>
+            </div>
+            <button className='mb-3 mt-3 bg-blue-700 hover:bg-blue-600 hover:border-white focus:outline-none' onClick={handleUserSubmission}>Submit</button>
+            <h5 style={ errorMessage == 'Rating submitted!' ? { color: 'white' } : {color: 'red' }}>{errorMessage}</h5>
+            </div>
+        )}
+        </div>
         
     )
 }

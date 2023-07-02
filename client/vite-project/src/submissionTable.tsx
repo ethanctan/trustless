@@ -18,8 +18,8 @@ function TableHeading({headings}){
 
 
 //@ts-ignore
-function SubmissionTable({submissions}){
-    const headings = ["Protocol", "Number of Ratings", "Average Score"]
+function SubmissionTable({headings, submissions, RowGenerator}){
+    console.log("\n\n\nSubmissions: ", submissions)
     return (
         <div className="border rounded-lg overflow-hidden bg-gray-900 bg-opacity-50 backdrop-filter backdrop-blur-md border-gray-700">
                 <table className="min-w-full divide-y divide-gray-200 divide-gray-700">
@@ -28,23 +28,7 @@ function SubmissionTable({submissions}){
                   <tbody className="divide-y divide-gray-200 divide-gray-700">
                     {submissions.slice(0, 10).map((protocol : any, rowIndex : number) => (
 
-                      <tr
-                        key={protocol._id}
-                        className={`${
-                          rowIndex % 2 === 0 ? 'bg-gray-900' : 'bg-gray-600'
-                        } bg-opacity-50 backdrop-filter backdrop-blur-md`}
-                        style={{ marginBottom: '10px', height: '50px' }}
-                      >
-                        <td className="p-6 py-4 whitespace-nowrap text-sm font-medium text-white poppins">
-                          {protocol.protocolName}
-                        </td>
-                        <td className="p-6 py-4 whitespace-nowrap text-sm text-white poppins">
-                          {protocol.disputeCount}
-                        </td>
-                        <td className="p-6 py-4 whitespace-nowrap text-sm text-white poppins">
-                          {protocol.averageScore.toFixed(1)}
-                        </td>
-                      </tr>
+                      <RowGenerator protocol={protocol} rowIndex={rowIndex}/>
                     ))}
                   </tbody>
                 </table>
