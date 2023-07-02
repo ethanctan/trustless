@@ -4,17 +4,12 @@ import Axios from 'axios';
 // ADDITIONAL IMPORTS
 import '@fontsource-variable/unbounded';
 import '@fontsource/poppins';
-import Slider from '@mui/material/Slider';
 import React, { useState, useEffect, useMemo } from 'react';
-import Select from 'react-select';
-import { Tooltip, Button, TextField } from '@mui/material';
-import {Dispute, User,  GetProtocolResponse, DefiData} from './interfaces.ts'
-import * as utils from './utils.ts'
+import {Dispute,  GetProtocolResponse, DefiData} from './interfaces.ts'
 
 import Introduction from './title.tsx'
-import {Question, QuestionPrompt, ModifiedSlider} from './form/question.tsx'
-import SearchBar from './form/searchBar.tsx';
 import Form from './form/form.tsx'
+import {SubmissionTable, TableHeading} from './submissionTable.tsx';
 
 enum ActiveButton {
   LiveResponses,
@@ -24,7 +19,6 @@ enum ActiveButton {
 
 function App() {
   const [listofDisputes, setListofDisputes] = useState<Dispute[]>([]);
-  const [protocol, setProtocol] = useState<string>("");
   // TODO: Merge questionX and qXScore
 
   //hooks for user address
@@ -33,18 +27,14 @@ function App() {
   //hooks for protocol list
   const [protocolData, setProtocolData] = useState<GetProtocolResponse[]>([]);
   const [protocolDataTop, setProtocolDataTop] = useState<GetProtocolResponse[]>([]);
-  const [q1Score, setQ1Score] = useState<number>(1);
-  const [q2Score, setQ2Score] = useState<number>(1);
-  const [q3Score, setQ3Score] = useState<number>(1);
-  const [q4Score, setQ4Score] = useState<number>(1);
-  const [q5Score, setQ5Score] = useState<number>(1);
+
   const [ipAddress, setIpAddress] = useState<string>("");
-  const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [defiData, setDefiData] = useState<DefiData[]>([]);
   const [activeButton, setActiveButton] = useState<ActiveButton | null>(null);
   //hook for website down
   const [websiteDown, setWebsiteDown] = useState<string>("")
 
+  // What is this hook for?
   useEffect(() => {
     setSubmitted("");
   }, [address]);
@@ -72,19 +62,6 @@ function App() {
     }
   }, []);
 
-  const addUser = async () => { // TODO: Add ENS validation
-    if (!address || !(utils.validHex(address))){
-      setSubmitted("Invalid address")
-    }
-    try{
-      await Axios.post<User[]>('http://localhost:3001/users', {
-        address: address,
-      })
-      setSubmitted("Thank you for submitting your address")
-    }catch (err){ // catch 409 address
-      setSubmitted("You already submitted this address!");
-    }
-  };
     
 
   useEffect(() => {
@@ -99,60 +76,10 @@ function App() {
   };
 
   // ADDITIONAL VARIABLES/FUNCTIONS (ADD IN WHEN MERGING)
-
-  const [expanded, setExpanded] = useState(false); //for about window
-  const [menuIsOpen, setMenuIsOpen] = React.useState(false); //for search dropdown
-  const [text1, setText1] = useState<string>(""); // tooltips
-  const [text2, setText2] = useState<string>("");
-  const [text3, setText3] = useState<string>("");
-  const [text4, setText4] = useState<string>("");
-  const [text5, setText5] = useState<string>("");
   const [searchTerm, setSearchTerm] = useState(''); // for searching submissions
 
-  const toggleDropdown = () => {
-    setExpanded(!expanded);
-  };
 
-  const handleUserSubmission = async () =>{ 
-    try{
-      if (address) {
-        addUser();
-      }
-      
-      let scores = [q1Score, q2Score, q3Score, q4Score, q5Score]
 
-      if (!utils.checkScoresCorrect(scores)){
-        setErrorMessage("Invalid score, re-enter a valid score")
-        return
-      }
-
-      let alreadyRated = await utils.checkIp(ipAddress, protocol)
-      if (alreadyRated) {
-        setErrorMessage("You have already rated this protocol. Try rating another!");
-        return
-      }
-
-      let [disputeResponse, ascendingResponse, descendingResponse] = 
-        await utils.addDispute(protocol, scores)
-
-      setListofDisputes(disputeResponse.data);
-      setProtocolData(ascendingResponse.data);
-      setProtocolDataTop(descendingResponse.data); 
-    }catch(err){
-      setErrorMessage("Oops! Something went wrong with your submission")
-    }
-    
-  }
-
-  // for generating form content
-  const handleSetProtocol = (protocol: string) => {
-    setProtocol(protocol);
-    setText1("How secure do you believe " + protocol + "'s smart contracts are? Have they been audited and open-sourced? Or have they been exploited before?");
-    setText2("How robust, transparent, and community-oriented is " + protocol + "'s treasury? Does it mostly comprise of the protocol's native token, creating concentrated risk? Or does it have a diverse range of assets? Is value regularly distributed to the community?");
-    setText3("How confident are you in " + protocol + "'s ability to deliver on their roadmap? Have they delivered in the past? Do their goals seem feasible, or are they overpromising?");
-    setText4("How robust is " + protocol + "'s governance system? If decentralized, is there strong voter participation, or is voting controlled by a few whales? If centralized, is there a clear and transparent decision-making process?");
-    setText5("How strong is the track record of " + protocol + "'s team? If they're doxxed, do they have strong credentials and experience? If undoxxed, do they have a good reputation and history?");
-  }
 
   // for searching submissions
   const filteredDisputes = listofDisputes.filter((dispute) =>
@@ -203,8 +130,6 @@ function App() {
       </div>
 
 
-      {/* TABLES */}
-
     {/* Search bar */}
       <div className="p-4">
         <input
@@ -222,28 +147,7 @@ function App() {
             {activeButton === ActiveButton.LiveResponses && (
               <div className="border rounded-lg overflow-hidden bg-gray-900 bg-opacity-50 backdrop-filter backdrop-blur-md border-gray-700">
                 <table className="min-w-full divide-y divide-gray-200 divide-gray-700">
-                  <thead>
-                    <tr>
-                      <th scope="col" className="p-6 py-3 text-center text-xs font-medium text-white uppercase poppins">
-                        Protocol Name
-                      </th>
-                      <th scope="col" className="p-6 py-3 text-center text-xs font-medium text-white uppercase poppins">
-                        Contracts
-                      </th>
-                      <th scope="col" className="p-6 py-3 text-center text-xs font-medium text-white uppercase poppins">
-                        Security
-                      </th>
-                      <th scope="col" className="p-6 py-3 text-center text-xs font-medium text-white uppercase poppins">
-                        Roadmap
-                      </th>
-                      <th scope="col" className="p-6 py-3 text-center text-xs font-medium text-white uppercase poppins">
-                        Governance
-                      </th>
-                      <th scope="col" className="p-6 py-3 text-center text-xs font-medium text-white uppercase poppins">
-                        Team
-                      </th>
-                    </tr>
-                  </thead>
+                 <TableHeading headings={["PROTOCOL", "NAME",	"CONTRACTS",	"SECURITY",	"ROADMAP",	"GOVERNANCE",	"TEAM"]}/>
                   <tbody className="divide-y divide-gray-200 divide-gray-700">
                     {filteredDisputes.slice(0, 10).map((dispute, rowIndex) => (
                       <tr
@@ -274,90 +178,10 @@ function App() {
               </div>
             )}
             {activeButton === ActiveButton.MostTrusted && (
-              <div className="border rounded-lg overflow-hidden bg-gray-900 bg-opacity-50 backdrop-filter backdrop-blur-md border-gray-700">
-                <table className="min-w-full divide-y divide-gray-200 divide-gray-700">
-                  <thead>
-                    <tr>
-                      <th scope="col" className="p-6 py-3 text-center text-xs font-medium text-white uppercase poppins">
-                        Protocol
-                      </th>
-                      <th scope="col" className="p-6 py-3 text-center text-xs font-medium text-white uppercase poppins">
-                        Number of Ratings
-                      </th>
-                      <th scope="col" className="p-6 py-3 text-center text-xs font-medium text-white uppercase poppins">
-                        Average Score
-                      </th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-gray-200 divide-gray-700">
-                    {filteredProtocolData.slice(0, 10).map((protocol, rowIndex) => (
-                      <tr
-                        key={protocol._id}
-                        className={`${
-                          rowIndex % 2 === 0 ? 'bg-gray-900' : 'bg-gray-600'
-                        } bg-opacity-50 backdrop-filter backdrop-blur-md`}
-                        style={{ marginBottom: '10px', height: '50px' }}
-                      >
-                        <td className="p-6 py-4 whitespace-nowrap text-sm font-medium text-white poppins">
-                          {protocol.protocolName}
-                        </td>
-                        <td className="p-6 py-4 whitespace-nowrap text-sm text-white poppins">
-                          {protocol.disputeCount}
-                        </td>
-                        <td className="p-6 py-4 whitespace-nowrap text-sm text-white poppins">
-                          {protocol.averageScore.toFixed(1)}
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-                {protocolData.length === 0 && (
-                  <p className="p-6 py-4 whitespace-nowrap text-sm font-medium text-white poppins">No protocols found.</p>
-                )}
-              </div>
+              <SubmissionTable submissions={filteredProtocolData}/>
             )}
             {activeButton === ActiveButton.LeastTrusted && (
-              <div className="border rounded-lg overflow-hidden bg-gray-900 bg-opacity-50 backdrop-filter backdrop-blur-md border-gray-700">
-                <table className="min-w-full divide-y divide-gray-200 divide-gray-700">
-                  <thead>
-                    <tr>
-                      <th scope="col" className="p-6 py-3 text-center text-xs font-medium text-white uppercase poppins">
-                        Protocol
-                      </th>
-                      <th scope="col" className="p-6 py-3 text-center text-xs font-medium text-white uppercase poppins">
-                        Number of Ratings
-                      </th>
-                      <th scope="col" className="p-6 py-3 text-center text-xs font-medium text-white uppercase poppins">
-                        Average Score
-                      </th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-gray-200 divide-gray-700">
-                    {filteredProtocolDataTop.slice(0, 10).map((protocol, rowIndex) => (
-                      <tr
-                        key={protocol._id}
-                        className={`${
-                          rowIndex % 2 === 0 ? 'bg-gray-900' : 'bg-gray-600'
-                        } bg-opacity-50 backdrop-filter backdrop-blur-md`}
-                        style={{ marginBottom: '10px', height: '50px' }}
-                      >
-                        <td className="p-6 py-4 whitespace-nowrap text-sm font-medium text-white poppins">
-                          {protocol.protocolName}
-                        </td>
-                        <td className="p-6 py-4 whitespace-nowrap text-sm text-white poppins">
-                          {protocol.disputeCount}
-                        </td>
-                        <td className="p-6 py-4 whitespace-nowrap text-sm text-white poppins">
-                          {protocol.averageScore.toFixed(1)}
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-                {protocolDataTop.length === 0 && (
-                  <p className="p-6 py-4 whitespace-nowrap text-sm font-medium text-white poppins">No protocols found.</p>
-                )}
-              </div>
+              <SubmissionTable submissions={filteredProtocolDataTop}/>
             )}
           </div>
         </div>

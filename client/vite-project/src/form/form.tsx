@@ -3,8 +3,8 @@ import '@fontsource-variable/unbounded';
 import '@fontsource/poppins';
 import Axios from 'axios';
 
-import { Tooltip, Button, TextField } from '@mui/material';
-import {Dispute, User,  GetProtocolResponse, DefiData} from '../interfaces.ts'
+import { TextField } from '@mui/material';
+import {User} from '../interfaces.ts'
 import * as utils from '../utils.ts'
 
 import {Question} from './question.tsx'
