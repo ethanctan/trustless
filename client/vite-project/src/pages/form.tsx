@@ -10,6 +10,14 @@ import * as utils from '../utils/utils.ts'
 import {Question} from '../components/question.tsx'
 import SearchBar from '../components/searchBar.tsx';
 import { textFieldDesc } from './formConsts.ts';
+import { ethers } from 'ethers';
+
+//Typescript declaration for window.ethereum
+declare global {
+  interface Window { 
+    ethereum: any; 
+  }
+}
 
 //@ts-ignore
 function Form({setListofDisputes, setProtocolData , setProtocolDataTop, defiData, ipAddress }){
@@ -30,6 +38,8 @@ function Form({setListofDisputes, setProtocolData , setProtocolDataTop, defiData
     const [text3, setText3] = useState<string>("");
     const [text4, setText4] = useState<string>("");
     const [text5, setText5] = useState<string>("");
+    
+    const [connectWallet, setConnectWallet] = useState<boolean>(false);
     
     // for generating form content
   const handleSetProtocol = (protocol: string) => {
@@ -88,6 +98,27 @@ function Form({setListofDisputes, setProtocolData , setProtocolDataTop, defiData
     }
     
   }
+  
+  // function to connect to metamask
+  async function connect() {
+    if (typeof window.ethereum !== 'undefined') {
+        // Ethereum user detected. You can now use the provider.
+        const provider = new ethers.providers.Web3Provider(window.ethereum);
+        try {
+            await window.ethereum.enable(); // This will request the user to grant access to their MetaMask
+            const signer = provider.getSigner();
+            const account = await signer.getAddress();
+            //add post request to send account to backend under address collection
+            console.log("Account:", account);
+            setConnectWallet(true);
+        } catch (err) {
+            // User denied access
+            console.error("User denied access:", err);
+        }
+    } else {
+        console.log('No Ethereum interface injected into browser. Read-only access');
+    }
+}
 
 
     return (
@@ -124,9 +155,9 @@ function Form({setListofDisputes, setProtocolData , setProtocolDataTop, defiData
                 text={text5} title="Team"/>
                 
                 <div className="md:col-span-4 flex items-start justify-start text-left pl-6">
-                    Optional: Drop your (Ethereum) address. 👀
+                    Connect your wallet to submit and receive your airdrop. 👀
                 </div>
-                <div className="md:col-span-4 pr-5">
+                {/* <div className="md:col-span-4 pr-5">
                     <TextField 
                     className="poppins"
                     id="outlined-basic" 
@@ -137,9 +168,16 @@ function Form({setListofDisputes, setProtocolData , setProtocolDataTop, defiData
                     onChange={(event) => setAddress(event.target.value)}
                     color="primary"
                     />
-                </div>
+                </div> */}
+                <button style={{
+                  width:'300%'
+              }}
+                  onClick={connect}
+              >
+                  {connectWallet ? "Success!" : "Connect Metamask"}
+              </button>
             </div>
-            <button className='mb-3 mt-3 bg-blue-700 hover:bg-blue-600 hover:border-white focus:outline-none' onClick={handleUserSubmission}>Submit</button>
+            {connectWallet ? <button className='mb-3 mt-3 bg-blue-700 hover:bg-blue-600 hover:border-white focus:outline-none' onClick={handleUserSubmission}>Submit</button> : null}
             <h5 style={ errorMessage == 'Rating submitted!' ? { color: 'white' } : {color: 'red' }}>{errorMessage}</h5>
             </div>
         )}
