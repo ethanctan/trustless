@@ -3,6 +3,7 @@
 export interface Dispute {
     _id: string; 
     protocol: string;
+    influencer: string;
     qVals: [number]
   }
 
@@ -35,3 +36,11 @@ export interface DefiData {
     logo: string;
     _id: string;
 }
+
+declare global {
+    interface Window {
+        ethereum: any;
+    }
+}
+
+

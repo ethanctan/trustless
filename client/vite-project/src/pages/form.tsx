@@ -12,13 +12,6 @@ import SearchBar from '../components/searchBar.tsx';
 import { textFieldDesc } from './formConsts.ts';
 import { ethers } from 'ethers';
 
-//Typescript declaration for window.ethereum
-declare global {
-  interface Window { 
-    ethereum: any; 
-  }
-}
-
 //@ts-ignore
 function Form({setListofDisputes, setProtocolData , setProtocolDataTop, defiData, ipAddress }){
 
@@ -27,6 +20,7 @@ function Form({setListofDisputes, setProtocolData , setProtocolDataTop, defiData
     const [q3Score, setQ3Score] = useState<number>(1);
     const [q4Score, setQ4Score] = useState<number>(1);
     const [q5Score, setQ5Score] = useState<number>(1);
+    const [influencer, setInfluencer] = useState<string>("");
     const [submitted, setSubmitted] = useState<string>("");
 
     const [address, setAddress] = useState<string | null>(null);
@@ -86,7 +80,7 @@ function Form({setListofDisputes, setProtocolData , setProtocolDataTop, defiData
       }
 
       let [disputeResponse, ascendingResponse, descendingResponse] = 
-        await utils.addDispute(protocol, scores)
+        await utils.addDispute(protocol, influencer, scores)
 
       setListofDisputes(disputeResponse.data);
       setProtocolData(ascendingResponse.data);
@@ -111,6 +105,7 @@ function Form({setListofDisputes, setProtocolData , setProtocolDataTop, defiData
             //add post request to send account to backend under address collection
             console.log("Account:", account);
             setConnectWallet(true);
+            setAddress(account);
         } catch (err) {
             // User denied access
             console.error("User denied access:", err);
@@ -120,19 +115,29 @@ function Form({setListofDisputes, setProtocolData , setProtocolDataTop, defiData
     }
 }
 
+  //might want to move this to a separate component for cleaner code
+  useEffect(() => {
+    // Reset the errorMessage each time the protocol changes
+    setErrorMessage(null);
+  }, [protocol]);
+
 
     return (
         
         <div className="flex flex-col justify-items-stretch poppins mx-auto max-w-lg">
-            <div>
-            <p className="mb-2"> Rate protocols you've used according to our trust framework. </p>
-            <p className="mb-2"> Every submission is quick, anonymous, and noticed 👀. </p>
-            <p className=""> To begin, search for a protocol you'd like to rate. </p>
-            </div>
-
-            <SearchBar protocol={protocol} defiData={defiData} handleSetProtocol={handleSetProtocol} />
-
-            { protocol && (
+              {/* edit this ugly ass button */}
+              <button style={{
+                padding: "10px",
+                width:'80%',
+                alignSelf:'center',
+                backgroundColor: "#1a202c",
+            }}
+                onClick={connect}
+            >
+                {connectWallet ? "Success!" : "Connect your wallet to submit a rating 👀"}
+            </button>
+            {connectWallet ? <SearchBar protocol={protocol} defiData={defiData} handleSetProtocol={handleSetProtocol} /> : null}
+            {protocol && (
             <div className="mb-4"> 
                 <p className="mb-2"> Our framework for trust consists of 5 factors, rated on a scale of 1-10, with 1 being the least trustworthy and 10 being the most. </p>
                 <p className="mb-2"> Rate {protocol}'s trustworthiness in these 5 areas. </p>
@@ -155,30 +160,42 @@ function Form({setListofDisputes, setProtocolData , setProtocolDataTop, defiData
                 text={text5} title="Team"/>
                 
                 <div className="md:col-span-4 flex items-start justify-start text-left pl-6">
-                    Connect your wallet to submit and receive your airdrop. 👀
+                    Enter a twitter influencer code. 🐦
                 </div>
-                {/* <div className="md:col-span-4 pr-5">
+                <div className="md:col-span-4 pr-5">
                     <TextField 
                     className="poppins"
                     id="outlined-basic" 
                     sx={textFieldDesc}
-                    placeholder="0x... or ENS" 
-                    label="Wallet Address..." 
+                    placeholder="@twitterhandle" 
+                    label="Twitter Code..." 
                     variant="outlined" 
-                    onChange={(event) => setAddress(event.target.value)}
+                    onChange={(event) => setInfluencer(event.target.value)}
                     color="primary"
                     />
-                </div> */}
-                <button style={{
-                  width:'300%'
-              }}
-                  onClick={connect}
-              >
-                  {connectWallet ? "Success!" : "Connect Metamask"}
-              </button>
+                </div>
             </div>
-            {connectWallet ? <button className='mb-3 mt-3 bg-blue-700 hover:bg-blue-600 hover:border-white focus:outline-none' onClick={handleUserSubmission}>Submit</button> : null}
-            <h5 style={ errorMessage == 'Rating submitted!' ? { color: 'white' } : {color: 'red' }}>{errorMessage}</h5>
+          {connectWallet ? 
+            <button 
+              className='mb-3 mt-3 bg-blue-700 hover:bg-blue-600 hover:border-white focus:outline-none' 
+              onClick={handleUserSubmission}
+            >
+              Submit
+            </button> 
+          : null}
+          {/* to be updated */}
+          {errorMessage == 'Thanks for submitting!' ? 
+            <div 
+              className='mb-3 mt-3 bg-blue-500 hover:bg-blue-400 hover:border-white focus:outline-none cursor-pointer'
+              onClick={() => {
+                window.open(`https://twitter.com/intent/tweet?text=I%20just%20rated%20${protocol}%20with%20scores%20of%20${[q1Score, q2Score, q3Score, q4Score, q5Score].join(', ')}%20on%20TRUST%20and%20earned%20a%20$TRUST%20airdrop.%20Check%20it%20out%20at%20http://localhost:5173&via=YourTwitterHandle`);
+              }}
+            >
+              Share on Twitter
+            </div>
+          : null}
+
+            <h5 style={ errorMessage == 'Thanks for submitting!' ? { color: 'white' } : {color: 'red' }}>{errorMessage}</h5>
             </div>
         )}
         </div>

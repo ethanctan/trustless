@@ -8,6 +8,7 @@ import React, { useState, useEffect, useMemo } from 'react';
 import {Dispute,  GetProtocolResponse, DefiData} from '../utils/interfaces.ts'
 
 import Introduction from '../components/title.tsx'
+import Instructions from '../components/instructions.tsx';
 import Form from './form.tsx'
 import {SubmissionTable} from '../components/submissionTable.tsx';
 
@@ -150,6 +151,8 @@ function App() {
 
       <Introduction />
 
+      <Instructions />
+
       <Form setListofDisputes={setListofDisputes}
       setProtocolData={setProtocolData}
       setProtocolDataTop={setProtocolDataTop}
@@ -158,7 +161,7 @@ function App() {
 
 
       {/* SELECTORS */}
-      <h4 className="mb-4 poppins"> View the community's trust ratings below. </h4>
+      <h4 className="mt-4 mb-4 poppins"> View the community's trust ratings below. </h4>
       <div className="poppins space-x-2 flex max-w-lg mx-auto items-center">
         <button className={`toggle-button flex-1 bg-blue-700 hover:bg-blue-600 hover:border-white focus:outline-none ${activeButton === ActiveButton.LiveResponses ? 'active' : ''}`} onClick={() => handleButtonClick(ActiveButton.LiveResponses)}>
           Most Recent

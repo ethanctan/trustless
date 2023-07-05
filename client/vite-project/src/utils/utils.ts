@@ -16,9 +16,9 @@ async function checkIp(ipAddress : string, protocol : string) : Promise<boolean>
   return isWithin
 }
 
-async function addDispute(protocol: string, scores : number[]) : Promise<[any, any, any]>{
+async function addDispute(protocol: string, influencer: string, scores : number[]) : Promise<[any, any, any]>{
   try{
-    let disputeResponse = await updateDisputes(protocol, scores)
+    let disputeResponse = await updateDisputes(protocol, influencer, scores)
     let [ascendingResponse, descendingResponse] = await updateProtocol(protocol, scores)
     return [disputeResponse, ascendingResponse, descendingResponse]    
   }
@@ -28,11 +28,12 @@ async function addDispute(protocol: string, scores : number[]) : Promise<[any, a
   }  
 }; 
 
-async function updateDisputes(protocol : string, scores : number[]){
+async function updateDisputes(protocol : string, influencer: string, scores : number[]){
      // send data to disputes
      try {
       await Axios.post('http://localhost:3001/disputes', {
       protocol: protocol,
+      influencer: influencer,
       qVals: scores
     });
     const response = await Axios.get<Dispute[]>('http://localhost:3001/disputes');
