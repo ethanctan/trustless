@@ -79,8 +79,8 @@ function checkScoresCorrect(dispute : number[]) : boolean{
   return true
 }
 
-const HEXREGEX = /^0x[0-9A-F]/g
-function validHex(str: string){
+const HEXREGEX = /^0x[0-9A-F].eth/g
+function validAddr(str: string){
     str = str.toLocaleLowerCase()
     return str.match(HEXREGEX)
 }
@@ -88,4 +88,4 @@ function validHex(str: string){
   
 
 export {updateProtocol, updateDisputes, checkScoresCorrect, checkIp, 
-  addDispute, validHex}
+  addDispute, validAddr}

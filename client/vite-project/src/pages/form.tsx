@@ -11,10 +11,13 @@ import {Question} from '../components/question.tsx'
 import SearchBar from '../components/searchBar.tsx';
 import { textFieldDesc } from './formConsts.ts';
 import { ethers } from 'ethers';
+import Cookies from 'js-cookie';
+import { v4 as generateUuidv4 } from 'uuid';
+
 
 //@ts-ignore
 function Form({setListofDisputes, setProtocolData , setProtocolDataTop, defiData, ipAddress }){
-
+    
     const [q1Score, setQ1Score] = useState<number>(1);
     const [q2Score, setQ2Score] = useState<number>(1);
     const [q3Score, setQ3Score] = useState<number>(1);
@@ -32,6 +35,7 @@ function Form({setListofDisputes, setProtocolData , setProtocolDataTop, defiData
     const [text3, setText3] = useState<string>("");
     const [text4, setText4] = useState<string>("");
     const [text5, setText5] = useState<string>("");
+    const [user_id, set_uid] = useState<string>("");
     
     const [connectWallet, setConnectWallet] = useState<boolean>(false);
     
@@ -45,9 +49,23 @@ function Form({setListofDisputes, setProtocolData , setProtocolDataTop, defiData
     setText5("How strong is the track record of " + protocol + "'s team? If they're doxxed, do they have strong credentials and experience? If undoxxed, do they have a good reputation and history?");
   }
 
+  useEffect(() =>{
+    try{
+      let cookieAddr = Cookies.get("user_id")
+      if (cookieAddr === undefined){
+        cookieAddr = generateUuidv4()
+      }
+      set_uid(cookieAddr)
+    }catch(error){
+      console.log("Bruh")
+    }
+  })
+
+
   const addUser = async () => { // TODO: Add ENS validation
-    if (!address || !(utils.validHex(address))){
+    if (!address || !(utils.validAddr(address))){
       setSubmitted("Invalid address")
+      return
     }
     try{
       await Axios.post<User[]>('http://localhost:3001/users', {
@@ -65,20 +83,17 @@ function Form({setListofDisputes, setProtocolData , setProtocolDataTop, defiData
       if (address) {
         addUser();
       }
-      
-      let scores = [q1Score, q2Score, q3Score, q4Score, q5Score]
-
-      if (!utils.checkScoresCorrect(scores)){
-        setErrorMessage("Invalid score, re-enter a valid score")
-        return
-      }
-
       let alreadyRated = await utils.checkIp(ipAddress, protocol)
       if (alreadyRated) {
         setErrorMessage("You have already rated this protocol. Try rating another!");
         return
       }
-
+      
+      let scores = [q1Score, q2Score, q3Score, q4Score, q5Score]
+      if (!utils.checkScoresCorrect(scores)){
+        setErrorMessage("Invalid score, re-enter a valid score")
+        return
+      }
       let [disputeResponse, ascendingResponse, descendingResponse] = 
         await utils.addDispute(protocol, influencer, scores)
 
@@ -86,7 +101,7 @@ function Form({setListofDisputes, setProtocolData , setProtocolDataTop, defiData
       setProtocolData(ascendingResponse.data);
       setProtocolDataTop(descendingResponse.data); 
       setErrorMessage("Thanks for submitting!");
-        
+      
     }catch(err){
       setErrorMessage("Oops! Something went wrong with your submission")
     }
