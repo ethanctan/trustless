@@ -85,7 +85,12 @@ function validAddr(str: string){
     return str.match(HEXREGEX)
 }
 
+function generateReferralCode(){
+
+  return "1"
+}
+
   
 
 export {updateProtocol, updateDisputes, checkScoresCorrect, checkIp, 
-  addDispute, validAddr}
+  addDispute, validAddr, generateReferralCode}

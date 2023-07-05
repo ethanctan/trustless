@@ -13,6 +13,8 @@ import { textFieldDesc } from './formConsts.ts';
 import { ethers } from 'ethers';
 import Cookies from 'js-cookie';
 import { v4 as generateUuidv4 } from 'uuid';
+import { generateReferralCode } from '../utils/utils.ts';
+import { create } from '@mui/material/styles/createTransitions';
 
 
 //@ts-ignore
@@ -54,15 +56,17 @@ function Form({setListofDisputes, setProtocolData , setProtocolDataTop, defiData
       let cookieAddr = Cookies.get("user_id")
       if (cookieAddr === undefined){
         cookieAddr = generateUuidv4()
+        Cookies.set('user_id', cookieAddr)
       }
       set_uid(cookieAddr)
+      
     }catch(error){
       console.log("Bruh")
     }
-  })
+  }, [])
 
 
-  const addUser = async () => { // TODO: Add ENS validation
+  const addUser = async () => { 
     if (!address || !(utils.validAddr(address))){
       setSubmitted("Invalid address")
       return
@@ -101,7 +105,7 @@ function Form({setListofDisputes, setProtocolData , setProtocolDataTop, defiData
       setProtocolData(ascendingResponse.data);
       setProtocolDataTop(descendingResponse.data); 
       setErrorMessage("Thanks for submitting!");
-      
+
     }catch(err){
       setErrorMessage("Oops! Something went wrong with your submission")
     }
@@ -128,7 +132,11 @@ function Form({setListofDisputes, setProtocolData , setProtocolDataTop, defiData
     } else {
         console.log('No Ethereum interface injected into browser. Read-only access');
     }
-}
+  }
+
+  function createCode(){
+    return "1"
+  }
 
   //might want to move this to a separate component for cleaner code
   useEffect(() => {
@@ -188,6 +196,15 @@ function Form({setListofDisputes, setProtocolData , setProtocolDataTop, defiData
                     onChange={(event) => setInfluencer(event.target.value)}
                     color="primary"
                     />
+                </div>
+
+
+               
+                <div className="md:col-span-10 pr-5">
+                    <button 
+                  className='mb-3 mt-3 bg-blue-700 hover:bg-blue-600 hover:border-white focus:outline-none' 
+                  onClick={createCode}
+                > Generate your own code here</button>
                 </div>
             </div>
           {connectWallet ? 
