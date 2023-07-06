@@ -110,7 +110,7 @@ router.post("/:cookieId/:walletId/updateRating", async (req: Request, res: Respo
     if (!user.protocolRatings.get(protocolName)) return res.status(404).json({ message: 'Rating not found' });
     user.protocolRatings.set(protocolName, updatedRating);
     await user.save();
-
+    console.log("Success");
     res.json({ message: 'Rating updated successfully' });
 });
 
