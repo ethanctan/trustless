@@ -1,20 +1,20 @@
 import mongoose, { Document } from 'mongoose';
 
-interface UserReferral{
-    [key: string]: string;
-}
 
 interface Rating{
     scores: [number],
     code: string
 }
-
 type Protocol = string
 
 interface protocolRating{
     [key: Protocol]: Rating
 }
 
+interface UserReferral extends Document {
+    // [key: string]: string;
+    hello: string;
+}
 
 interface User extends Document {
     cookieId: string;
@@ -24,27 +24,33 @@ interface User extends Document {
     protocolRatings: protocolRating[];
 }
 
-const UserReferral = new mongoose.Schema({
+
+
+const ReferralSchema = new mongoose.Schema({
     type: Map,
     of: String
 })
 
-// Map protocol to (ratings, referral code)
-const UserRating = new mongoose.Schema({
+// Map protocol to [ratings, referral code]
+const RatingSchema = new mongoose.Schema({
     type: Map,
     of: new mongoose.Schema({
         scores: {type: [Number], required: true},
-        referralCode: {type: String, required: false}
+        code: {type: String, required: false}
     })
 })
 
 const UserSchema = new mongoose.Schema({
-    cookie_id: {type: mongoose.Types.ObjectId, required: true},
-    wallet_id: {type: String, required: true},
-    referral_code: {type: String, required: false},
-    referred_users: {type: [UserReferral], required: false},
-    user_ratings: {type: [UserRating], required: false}
+    // cookie_id: {type: mongoose.Types.ObjectId, required: true},
+    cookieId: {type: String, required: true},
+    walletId: {type: String, required: true},
+    referralCode: {type: String, required: false},
+    referredUsers: {type: [ReferralSchema], required: false},
+    protocolRatings: {type: [RatingSchema], required: false}
 });
 
 const UserModel = mongoose.model<User>('user', UserSchema);
+const RatingModel = mongoose.model<protocolRating[]>('rating', RatingSchema)
+const ReferralModel = mongoose.model<UserReferral>('referral', ReferralSchema)
 export default UserModel;
+export {RatingModel, ReferralModel}

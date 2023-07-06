@@ -4,7 +4,7 @@ import cors from 'cors';
 
 const app = express();
 
-const userRoute = require('./routes/users')
+const userRoute = require('./routes/user')
 const disputeRoute = require('./routes/disputes')
 const protocolsRoute = require('./routes/protocols')
 const ipRouter = require('./routes/ip')

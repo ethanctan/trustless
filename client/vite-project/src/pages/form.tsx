@@ -12,7 +12,7 @@ import SearchBar from '../components/searchBar.tsx';
 import { textFieldDesc } from './formConsts.ts';
 import { ethers } from 'ethers';
 import Cookies from 'js-cookie';
-import { v4 as generateUuidv4 } from 'uuid';
+import { v1 as generateUuidv1 } from 'uuid';
 import { generateReferralCode } from '../utils/utils.ts';
 import { create } from '@mui/material/styles/createTransitions';
 
@@ -55,7 +55,7 @@ function Form({setListofDisputes, setProtocolData , setProtocolDataTop, defiData
     try{
       let cookieAddr = Cookies.get("user_id")
       if (cookieAddr === undefined){
-        cookieAddr = generateUuidv4()
+        cookieAddr = generateUuidv1()
         Cookies.set('user_id', cookieAddr)
       }
       set_uid(cookieAddr)
@@ -67,14 +67,26 @@ function Form({setListofDisputes, setProtocolData , setProtocolDataTop, defiData
 
 
   const addUser = async () => { 
-    if (!address || !(utils.validAddr(address))){
-      setSubmitted("Invalid address")
-      return
-    }
+
+    console.log("Front end is calling")
     try{
       await Axios.post<User[]>('http://localhost:3001/users', {
-        address: address,
+        cookieId: user_id,
+        walletId: "0xDEADBEEF",
+        referralCode: "Your mom",
+        referredUsers: [{"Skydoesminecraft" : "Uwu"}],
+        userRatings: [{"MakerDao" : {
+          scores : [1,2,3,4,5]},
+          code : "12345"
+        }]
       })
+
+      await Axios.get<User[]>("http://localhost:3001/users", {
+
+      }).then(function (response){
+        console.log("Response", response)
+      })
+      
       setSubmitted("Thank you for submitting your address")
     }catch (err){ // catch 409 address
       setSubmitted("You already submitted this address!");
@@ -84,14 +96,16 @@ function Form({setListofDisputes, setProtocolData , setProtocolDataTop, defiData
 
   const handleUserSubmission = async () =>{ 
     try{
-      if (address) {
-        addUser();
-      }
-      let alreadyRated = await utils.checkIp(ipAddress, protocol)
-      if (alreadyRated) {
-        setErrorMessage("You have already rated this protocol. Try rating another!");
-        return
-      }
+      console.log("Handling user submission")
+      addUser()
+      // if (address) {
+      //   addUser();
+      // }
+      // let alreadyRated = await utils.checkIp(ipAddress, protocol)
+      // if (alreadyRated) {
+      //   setErrorMessage("You have already rated this protocol. Try rating another!");
+      //   return
+      // }
       
       let scores = [q1Score, q2Score, q3Score, q4Score, q5Score]
       if (!utils.checkScoresCorrect(scores)){
@@ -136,7 +150,7 @@ function Form({setListofDisputes, setProtocolData , setProtocolDataTop, defiData
 
   function createCode(){
     let code = utils.generateReferralCode()
-    
+
     return "1"
   }
 
