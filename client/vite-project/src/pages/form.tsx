@@ -135,6 +135,8 @@ function Form({setListofDisputes, setProtocolData , setProtocolDataTop, defiData
   }
 
   function createCode(){
+    let code = utils.generateReferralCode()
+    
     return "1"
   }
 
