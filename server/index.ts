@@ -15,7 +15,7 @@ app.use(cors());
 
 mongoose.connect("mongodb+srv://dyang:RrrwmSWGDb1vqNZy@cluster0.vtkcvkm.mongodb.net/disputeboard?retryWrites=true&w=majority");
 
-app.use("/users", userRoute)
+app.use("/user", userRoute)
 app.use("/disputes", disputeRoute)
 app.use("/protocols", protocolsRoute)
 app.use("/ip", ipRouter)
