@@ -1,14 +1,25 @@
 
 
-export interface Dispute {
-    _id: string; 
-    protocol: string;
-    influencer: string;
-    qVals: [number]
-  }
+// export interface Dispute {
+//     _id: string; 
+//     protocol: string;
+//     influencer: string;
+//     qVals: [number]
+//   }
 
-export interface User {
-    address: string;
+export interface NewUser {
+    cookieId: string;
+    walletId: string;
+    referralCode: string;
+}
+
+export interface Rating {
+    scores: [number];
+    code: string;
+}
+
+export interface ProtocolRating {
+    [protocolName: string]: Rating;
 }
 
 export interface Protocol {
