@@ -23,6 +23,7 @@ router.get("/", async(req: Request, res: Response) => {
  */
 // Client-side interface: cookieId, walletId, randomly-generated referralCode (run get request below first)
 // works
+// ADD CODE GENERATION HEREE
 router.post("/", async (req: Request, res: Response) => {
     const user = req.body;
   
@@ -130,7 +131,7 @@ router.post("/:cookieId/:walletId/addReferral", async (req: Request, res: Respon
     res.json({ message: 'Referral added successfully' });
 });
 
-// Still need a get request to get a user's rating mapping
+// Use cookieId and load user referralCode, ratings, wallet address
 // Works
 router.get("/:cookieId/:walletId/getRatings", async (req: Request, res: Response) => {
     const { cookieId, walletId } = req.params;
