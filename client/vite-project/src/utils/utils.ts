@@ -1,7 +1,7 @@
 //Helper functions for app.ts
 import Axios from 'axios';
 import {Protocol, GetProtocolResponse, ProtocolRatings} from './interfaces.ts'
-import {NewUser, Rating, UserInfo} from './interfaces.ts'
+import {NewUser, Rating, UserInfo, UserReferral} from './interfaces.ts'
 
 
 
@@ -30,9 +30,13 @@ export async function addUser(user: NewUser): Promise<void> {
 }
 
 // Check if a user with a specific referralCode exists
-export async function checkUser(referralCode: string): Promise<boolean> {
+export async function checkUser(referralCode?: string): Promise<boolean> {
   try {
-    const response = await Axios.get<boolean>(`http://localhost:3001/user?referralCode=${referralCode}`);
+    const url = referralCode 
+      ? `http://localhost:3001/user/checkReferralCode?referralCode=${referralCode}`
+      : 'http://localhost:3001/user/checkReferralCode';
+
+    const response = await Axios.get<boolean>(url);
     console.log(response.data);
     return response.data;
   } catch (error) {
@@ -92,11 +96,11 @@ export async function updateRating(cookieId: string, walletId: string, protocolN
 }
 
 // Add a walletaddress:protocol pair to the user's referredUser mapping
-export async function addReferral(referralCode: string, walletAddress: string, referral: string): Promise<void> {
+export async function addReferral(referralCode: string, walletAddress: string, referralprotocol: UserReferral): Promise<void> {
   try {
     const response = await Axios.post(`http://localhost:3001/user/${referralCode}/addReferral`, {
       walletAddress: walletAddress,
-      referral: referral
+      referralprotocol: referralprotocol
     });
     console.log(response.data);
   } catch (error) {

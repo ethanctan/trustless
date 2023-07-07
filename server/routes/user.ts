@@ -86,11 +86,11 @@ router.post("/", async (req: Request, res: Response) => {
 
 // GET request to check if a user with a specific referralCode exists
 // works
-router.get("/", async (req: Request, res: Response) => {
+router.get("/checkReferralCode", async (req: Request, res: Response) => {
     const { referralCode } = req.query;
     
-    // If referralCode is null, return false immediately
-    if (referralCode === null) {
+    // If referralCode is null or undefined, return true immediately
+    if (referralCode === null || referralCode === undefined) {
         return res.json(true);
     }
 
@@ -100,6 +100,7 @@ router.get("/", async (req: Request, res: Response) => {
     }
     res.json(true);
 });
+
 
 
 
@@ -145,15 +146,11 @@ router.post("/:referralCode/addReferral", async (req: Request, res: Response) =>
     const user = await UserModel.findOne({ referralCode: referralCode });
     if (!user) return res.status(404).json({ message: 'No matching referral code found' });
     
-    const walletAddress = req.body.walletAddress;
-    const referral = new ReferralModel(req.body.referral);
+    const { walletAddress, referralprotocol } = req.body;  
+    console.log(req.body);
+    const referralProtocolModel = new ReferralModel(referralprotocol);
 
-    // Check if a referral for this protocol already exists from this walletAddress
-    const existingReferral = user.referredUsers.get(walletAddress);
-    if (existingReferral && existingReferral.protocol === referral.protocol) {
-        return res.status(400).json({ message: 'This wallet address has already submitted a referral for this protocol' });
-    }
-    user.referredUsers.set(walletAddress, referral);
+    user.referredUsers.set(walletAddress, referralProtocolModel);
     await user.save();
 
     res.json({ message: 'Referral added successfully' });

@@ -21,6 +21,10 @@ export interface ProtocolRatings {
     [protocolName: string]: Rating;
 }
 
+export interface UserReferral {
+    protocol: string;
+}
+
 export interface UserInfo {
     walletId: string;
     referralCode: string;

@@ -3,7 +3,7 @@ import '@fontsource-variable/unbounded';
 import '@fontsource/poppins';
 
 import { TextField } from '@mui/material';
-import {NewUser, Rating, ProtocolRatings} from '../utils/interfaces.ts'
+import {NewUser, Rating, ProtocolRatings, UserReferral} from '../utils/interfaces.ts'
 import * as utils from '../utils/utils.ts'
 
 import {Question} from '../components/question.tsx'
@@ -25,7 +25,6 @@ function Form({setProtocolData , setProtocolDataTop, defiData, ipAddress }){
     const [q4Score, setQ4Score] = useState<number>(1);
     const [q5Score, setQ5Score] = useState<number>(1);
     const [influencer, setInfluencer] = useState<string>(""); //other people's code
-    const [submitted, setSubmitted] = useState<string>("");
 
     const [address, setAddress] = useState<string | null>(null);
     const [errorMessage, setErrorMessage] = useState<string | null>(null);
@@ -81,7 +80,7 @@ function Form({setProtocolData , setProtocolDataTop, defiData, ipAddress }){
 
         }catch(error){
             console.log("Bruh")
-            console.log(error)
+            console.log("cookie error", error)
         }
     }
     fetchData();
@@ -103,31 +102,44 @@ function Form({setProtocolData , setProtocolDataTop, defiData, ipAddress }){
       };
   
       const exists = await checkUser(influencer); //check if influencer exists
+      console.log("does influencer exist?", exists);
       if (exists){
         if (address !== null) {
           try{ 
             //submit rating
-            const response = await addRating(user_id, address, protocol, newRating);
-            console.log(response);
-            setSubmitted("Successfully added!");
+            console.log("protocol", protocol);
+            console.log("new rating", newRating);
+            try{
+              await addRating(user_id, address, protocol, newRating);
+              setErrorMessage("Successfully added!");
+            }catch(error:any) {
+              if (error.response && error.response.status === 400){
+              setErrorMessage("You have already rated this protocol.");
+            }}
             //get updated list of ratings
             const response1 = await getProtocolRatings(user_id, address);
+            console.log("refresh protocol ratings", response1);
             if (response1 != null) {
               setProtocolRatings(response1);
             }
             //add referral to influencer
-            if (influencer !== null) {
-              const response2 = await addReferral(influencer, address, user_id);
-              console.log(response2);
+            if (influencer && influencer !== "") {
+              console.log("Protocol value: ", protocol);
+              let userReferral:UserReferral = {
+                protocol:protocol
+              }
+              console.log("user referral output", userReferral)
+              const response2 = await addReferral(influencer, address, userReferral);
+              console.log("addReferral output", response2);
             }
           }catch(error){
-            console.log(error);
+            console.log("addRating error:", error);
           }  
         } else {
           setErrorMessage("Wallet not connected. Try again!");
         }
       } else {
-        setErrorMessage("Influencer does not exist. Try again!");
+        setErrorMessage("Influencer does not exist. Try again or leave blank!");
       }
     } catch (error){
       console.log(error);
@@ -185,7 +197,6 @@ function Form({setProtocolData , setProtocolDataTop, defiData, ipAddress }){
           try{ 
             const response = await updateRating(user_id, address, protocol, newRating)
             console.log(response)
-            setSubmitted("Successfully added!")
             const response1 = await getProtocolRatings(user_id, address)
             if (response1 != null) {
               setProtocolRatings(response1)
@@ -268,7 +279,7 @@ function Form({setProtocolData , setProtocolDataTop, defiData, ipAddress }){
             </button> 
           : null}
           {/* to be updated */}
-          {errorMessage == 'Thanks for submitting!' ? 
+          {errorMessage == 'Successfully added!'? 
             <div 
               className='mb-3 mt-3 bg-blue-500 hover:bg-blue-400 hover:border-white focus:outline-none cursor-pointer'
               onClick={() => {
@@ -279,7 +290,7 @@ function Form({setProtocolData , setProtocolDataTop, defiData, ipAddress }){
             </div>
           : null}
 
-            <h5 style={ errorMessage == 'Thanks for submitting!' ? { color: 'white' } : {color: 'red' }}>{errorMessage}</h5>
+            <h5 style={ errorMessage == 'Successfully added!' ? { color: 'white' } : {color: 'red' }}>{errorMessage}</h5>
             </div>
         )}
         </div>
