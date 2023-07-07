@@ -23,7 +23,21 @@ router.get("/", async(req: Request, res: Response) => {
  */
 // Client-side interface: cookieId, walletId, randomly-generated referralCode (run get request below first)
 // works
-// ADD CODE GENERATION HEREE
+async function generateCode(codeLength = 8) : Promise<string> {
+    const str = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz'
+    let code = ""
+    let existence : any = true
+    while (existence){
+        for (let i=0; i < codeLength; i++){
+            code += str.charAt(Math.floor(Math.random() * (str.length+1)));
+        }
+        existence = await UserModel.exists({referralCode : code})
+    }
+    return code
+}
+
+
+
 router.post("/", async (req: Request, res: Response) => {
     const user = req.body;
   
