@@ -81,6 +81,7 @@ function Form({setProtocolData , setProtocolDataTop, defiData, ipAddress }){
 
         }catch(error){
             console.log("Bruh")
+            console.log(error)
         }
     }
     fetchData();
@@ -109,14 +110,16 @@ function Form({setProtocolData , setProtocolDataTop, defiData, ipAddress }){
             const response = await addRating(user_id, address, protocol, newRating);
             console.log(response);
             setSubmitted("Successfully added!");
-            //get list of ratings
+            //get updated list of ratings
             const response1 = await getProtocolRatings(user_id, address);
             if (response1 != null) {
               setProtocolRatings(response1);
             }
             //add referral to influencer
-            const response2 = await addReferral(influencer, address, user_id);
-            console.log(response2);
+            if (influencer !== null) {
+              const response2 = await addReferral(influencer, address, user_id);
+              console.log(response2);
+            }
           }catch(error){
             console.log(error);
           }  
