@@ -17,7 +17,7 @@ import { addUser, addRating, checkUser, updateRating, getUserInfo, checkCookie, 
 
 
 //@ts-ignore
-function Form({setListofDisputes, setProtocolData , setProtocolDataTop, defiData, ipAddress }){
+function Form({setProtocolData , setProtocolDataTop, defiData, ipAddress }){
     
     const [q1Score, setQ1Score] = useState<number>(1);
     const [q2Score, setQ2Score] = useState<number>(1);
@@ -69,8 +69,11 @@ function Form({setListofDisputes, setProtocolData , setProtocolDataTop, defiData
             if (exists){
                 const response = await getUserInfo(cookieAddr)
                 setReferralCode(response.referralCode)
+                console.log("referral code", response.referralCode)
                 setAddress(response.walletId)
+                console.log("wallet address", response.walletId)
                 setProtocolRatings(response.protocolRatings)
+                console.log("protocol ratings", response.protocolRatings)
             }
             else{
                 console.log("No user associated with cookie")
@@ -149,6 +152,8 @@ function Form({setListofDisputes, setProtocolData , setProtocolDataTop, defiData
                 cookieId: user_id,
                 walletId: account
               };
+              console.log("Cookie is set at uuid:", user_id);
+              console.log("Wallet is connected at address:", account);
               addUser(userInfo);
             } else {
                 console.log("Address is null");  

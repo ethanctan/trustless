@@ -5,7 +5,7 @@ import Axios from 'axios';
 import '@fontsource-variable/unbounded';
 import '@fontsource/poppins';
 import React, { useState, useEffect, useMemo } from 'react';
-import {Dispute,  GetProtocolResponse, DefiData} from '../utils/interfaces.ts'
+import { GetProtocolResponse, DefiData} from '../utils/interfaces.ts'
 
 import Introduction from '../components/title.tsx'
 import Instructions from '../components/instructions.tsx';
@@ -19,7 +19,6 @@ enum ActiveButton {
 }
 
 function App() {
-  const [listofDisputes, setListofDisputes] = useState<Dispute[]>([]);
 
   //hooks for user address
   const [address, setAddress] = useState<string | null>(null);
@@ -44,9 +43,6 @@ function App() {
 
   useEffect(() => {
     try{
-      Axios.get<Dispute[]>('http://localhost:3001/disputes').then((response) => {
-      setListofDisputes(response.data);
-    });
     Axios.get<GetProtocolResponse[]>('http://localhost:3001/protocols?order=ascending').then((response) => {
       setProtocolData(response.data);
     });
@@ -78,11 +74,6 @@ function App() {
 
   // ADDITIONAL VARIABLES/FUNCTIONS (ADD IN WHEN MERGING)
   const [searchTerm, setSearchTerm] = useState(''); // for searching submissions
-
-  // for searching submissions
-  const filteredDisputes = listofDisputes.filter((dispute) =>
-    dispute.protocol.toLowerCase().includes(searchTerm.toLowerCase())
-  );
 
   // for searching protocolData
   const filteredProtocolData = protocolData.filter((protocol) =>
@@ -153,7 +144,7 @@ function App() {
 
       <Instructions />
 
-      <Form setListofDisputes={setListofDisputes}
+      <Form 
       setProtocolData={setProtocolData}
       setProtocolDataTop={setProtocolDataTop}
       defiData={defiData}
@@ -189,12 +180,6 @@ function App() {
       <div className="flex flex-col -m-1.5 overflow-x-auto p-1.5 min-w-full inline-block align-middle">
 
           {activeButton === ActiveButton.LiveResponses && (
-            
-          <SubmissionTable headings={disputeTableHeadings} 
-            submissions={filteredDisputes}
-            RowGenerator={listDisputes}/>
-          )}
-          {activeButton === ActiveButton.MostTrusted && (
             <SubmissionTable headings={protocolTableHeadings} 
             submissions={filteredProtocolData}
             RowGenerator={listProtocols}/>
