@@ -72,14 +72,21 @@ router.post("/", async (req: Request, res: Response) => {
 
 // GET request to check if a user with a specific referralCode exists
 // works
-router.get("/:referralCode", async (req: Request, res: Response) => {
-    const { referralCode } = req.params;
+router.get("/", async (req: Request, res: Response) => {
+    const { referralCode } = req.query;
+    
+    // If referralCode is null, return false immediately
+    if (referralCode === null) {
+        return res.json(true);
+    }
+
     const user = await UserModel.findOne({ referralCode: referralCode });
     if (!user) {
         return res.json(false);
     }
     res.json(true);
 });
+
 
 
 // POST request to add a rating to a user's rating mapping
@@ -92,6 +99,7 @@ router.post("/:cookieId/:walletId/addRating", async (req: Request, res: Response
     if (!user) return res.status(404).json({ message: 'User not found' });
 
     const newRating = new RatingModel(rating);
+    if (user.protocolRatings.get(protocolName)) return res.status(400).json({ message: 'You have already rated this protocol.' });
     user.protocolRatings.set(protocolName, newRating);
     await user.save();
 
@@ -118,13 +126,19 @@ router.post("/:cookieId/:walletId/updateRating", async (req: Request, res: Respo
 // POST request to add a walletaddress:protocol pair to the user's referredUser mapping
 // Client-side interface: walletAddress, referral -> splice to form kv pair
 // Works
-router.post("/:cookieId/:walletId/addReferral", async (req: Request, res: Response) => {
-    const { cookieId, walletId } = req.params;
-    const user = await UserModel.findOne({ cookieId: cookieId, walletId: walletId });
-    if (!user) return res.status(404).json({ message: 'User not found' });
-
+router.post("/:referralCode/addReferral", async (req: Request, res: Response) => {
+    const { referralCode } = req.params;
+    const user = await UserModel.findOne({ referralCode: referralCode });
+    if (!user) return res.status(404).json({ message: 'No matching referral code found' });
+    
     const walletAddress = req.body.walletAddress;
     const referral = new ReferralModel(req.body.referral);
+
+    // Check if a referral for this protocol already exists from this walletAddress
+    const existingReferral = user.referredUsers.get(walletAddress);
+    if (existingReferral && existingReferral.protocol === referral.protocol) {
+        return res.status(400).json({ message: 'This wallet address has already submitted a referral for this protocol' });
+    }
     user.referredUsers.set(walletAddress, referral);
     await user.save();
 
@@ -133,12 +147,53 @@ router.post("/:cookieId/:walletId/addReferral", async (req: Request, res: Respon
 
 // Use cookieId and load user referralCode, ratings, wallet address
 // Works
-router.get("/:cookieId/:walletId/getRatings", async (req: Request, res: Response) => {
-    const { cookieId, walletId } = req.params;
+router.get("/:cookieId/getUserInfo", async (req: Request, res: Response) => {
+    const { cookieId } = req.params;
+    const user = await UserModel.findOne({ cookieId: cookieId });
+    if (!user) return res.status(404).json({ message: 'User not found' });
+
+    // Create an object with the properties you want to return
+    const userInfo = {
+        walletId: user.walletId,
+        referralCode: user.referralCode,
+        protocolRatings: user.protocolRatings
+    };
+
+    res.json(userInfo);
+});
+
+// Use cookieId, walletId to get latest rating for a specific protocol
+// Works
+router.get("/:cookieId/:walletId/getRating/:protocolName", async (req: Request, res: Response) => {
+    const { cookieId, walletId, protocolName } = req.params;
     const user = await UserModel.findOne({ cookieId: cookieId, walletId: walletId });
     if (!user) return res.status(404).json({ message: 'User not found' });
 
-    res.json(user.protocolRatings);
+    const rating = user.protocolRatings.get(protocolName);
+    if (!rating) return res.status(404).json({ message: 'Rating not found' });
+    res.json(rating.scores);
+});
+
+// GET request to check if a user with a specific cookieId exists
+// works
+router.get("/checkCookie/:cookieId", async (req, res) => {
+    const { cookieId } = req.params;
+    const user = await UserModel.findOne({ cookieId: cookieId });
+    if (!user) {
+      return res.json(false);
+    }
+    res.json(true);
+  });
+
+// GET request to fetch all the protocol ratings for a given user
+// Works
+router.get('/ratings', async (req, res) => {
+    const { cookieId, walletId } = req.query;
+    const user = await UserModel.findOne({ cookieId: cookieId, walletId: walletId });
+    if (!user) return res.status(404).json({ message: 'User not found' });
+
+    const ratings = user.protocolRatings;
+    res.json(ratings);
 });
 
 export default router;

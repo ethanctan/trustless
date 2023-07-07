@@ -10,16 +10,21 @@
 export interface NewUser {
     cookieId: string;
     walletId: string;
-    referralCode: string;
 }
 
 export interface Rating {
-    scores: [number];
+    scores: number[];
     code: string;
 }
 
-export interface ProtocolRating {
+export interface ProtocolRatings {
     [protocolName: string]: Rating;
+}
+
+export interface UserInfo {
+    walletId: string;
+    referralCode: string;
+    protocolRatings: ProtocolRatings;
 }
 
 export interface Protocol {

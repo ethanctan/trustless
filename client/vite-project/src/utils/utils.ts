@@ -1,7 +1,7 @@
 //Helper functions for app.ts
 import Axios from 'axios';
-import {Protocol, GetProtocolResponse} from './interfaces.ts'
-import {NewUser, Rating, ProtocolRating} from './interfaces.ts'
+import {Protocol, GetProtocolResponse, ProtocolRatings} from './interfaces.ts'
+import {NewUser, Rating, UserInfo} from './interfaces.ts'
 
 
 
@@ -21,8 +21,8 @@ async function checkIp(ipAddress : string, protocol : string) : Promise<boolean>
 // Add user to database
 export async function addUser(user: NewUser): Promise<void> {
   try {
-    await Axios.post('/api/users', user);
-    console.log('User added successfully');
+    const reponse = await Axios.post('http://localhost:3001/user', user);
+    console.log(reponse.data);
   } catch (error) {
     console.error('Error adding user:', error);
     throw error;
@@ -30,10 +30,11 @@ export async function addUser(user: NewUser): Promise<void> {
 }
 
 // Check if a user with a specific referralCode exists
-export async function checkUser(referralCode: string): Promise<void> {
+export async function checkUser(referralCode: string): Promise<boolean> {
   try {
-    const response = await Axios.get<boolean>(`/api/users/${referralCode}`);
-    console.log(response);
+    const response = await Axios.get<boolean>(`http://localhost:3001/user?referralCode=${referralCode}`);
+    console.log(response.data);
+    return response.data;
   } catch (error) {
     console.error('Error checking user:', error);
     throw error;
@@ -43,13 +44,18 @@ export async function checkUser(referralCode: string): Promise<void> {
 // Add a rating to a user's rating mapping
 export async function addRating(cookieId: string, walletId: string, protocolName: string, rating: Rating): Promise<void> {
   try {
-    await Axios.post(`/api/users/${cookieId}/${walletId}/addRating`, {
+    const response = await Axios.post(`http://localhost:3001/user/${cookieId}/${walletId}/addRating`, {
       rating: rating,
       protocolName: protocolName
     });
-    console.log('Rating added successfully');
+    console.log(response.data);
+
+    // Only update the protocol if adding the rating didn't throw an error
+    const response1 = await updateProtocol(protocolName, rating.scores);
+    console.log(response1);
+
   } catch (error) {
-    console.error('Error adding rating:', error);
+    console.error('Error adding rating or updating protocol:', error);
     throw error;
   }
 }
@@ -57,11 +63,28 @@ export async function addRating(cookieId: string, walletId: string, protocolName
 // Update a rating that already exists in a user's rating mapping
 export async function updateRating(cookieId: string, walletId: string, protocolName: string, rating: Rating): Promise<void> {
   try {
-    await Axios.post(`/api/users/${cookieId}/${walletId}/updateRating`, {
+    const prev = await Axios.get<number[]>(`http://localhost:3001/user/${cookieId}/${walletId}/getRating?protocolName=${protocolName}`);
+    console.log(prev.data);
+
+    // Reverse the values in the array
+    const reversedPrev = prev.data.map((num) => -num);
+    console.log(reversedPrev);
+
+    const response = await Axios.post(`http://localhost:3001/user/${cookieId}/${walletId}/updateRating`, {
       rating: rating,
       protocolName: protocolName
     });
-    console.log('Rating updated successfully');
+    console.log(response.data);
+
+    const response1 = await updateProtocol(protocolName, reversedPrev);
+    console.log(response1);
+
+    const updated = await Axios.get<number[]>(`http://localhost:3001/user/${cookieId}/${walletId}/getRating?protocolName=${protocolName}`);
+    console.log(updated.data);
+
+    const response2 = await updateProtocol(protocolName, updated.data);
+    console.log(response2);
+
   } catch (error) {
     console.error('Error updating rating:', error);
     throw error;
@@ -69,13 +92,13 @@ export async function updateRating(cookieId: string, walletId: string, protocolN
 }
 
 // Add a walletaddress:protocol pair to the user's referredUser mapping
-export async function addReferral(cookieId: string, walletId: string, walletAddress: string, referral: string): Promise<void> {
+export async function addReferral(referralCode: string, walletAddress: string, referral: string): Promise<void> {
   try {
-    await Axios.post(`/api/users/${cookieId}/${walletId}/addReferral`, {
+    const response = await Axios.post(`http://localhost:3001/user/${referralCode}/addReferral`, {
       walletAddress: walletAddress,
       referral: referral
     });
-    console.log('Referral added successfully');
+    console.log(response.data);
   } catch (error) {
     console.error('Error adding referral:', error);
     throw error;
@@ -83,9 +106,9 @@ export async function addReferral(cookieId: string, walletId: string, walletAddr
 }
 
 // Get ratings for a specific user
-export async function getUserRatings(cookieId: string, walletId: string): Promise<ProtocolRating> {
+export async function getUserInfo(cookieId: string): Promise<UserInfo> {
   try {
-    const response = await Axios.get<ProtocolRating>(`/api/users/${cookieId}/${walletId}/getRatings`);
+    const response = await Axios.get<UserInfo>(`http://localhost:3001/user/${cookieId}/getUserInfo`);
     return response.data;
   } catch (error) {
     console.error('Error getting user ratings:', error);
@@ -93,7 +116,30 @@ export async function getUserRatings(cookieId: string, walletId: string): Promis
   }
 }
 
-  // TODO: Better error handling
+// Check if a cookieId exists
+export async function checkCookie(cookieId: string): Promise<boolean> {
+  try {
+    const response = await Axios.get<boolean>(`http://localhost:3001/user/check/${cookieId}`);
+    console.log(response.data);
+    return response.data;
+  } catch (error) {
+    console.error('Error checking cookieId:', error);
+    throw error;
+  }
+}
+
+// Retrieving a user's ratings 
+export async function getProtocolRatings(cookieId: string, walletId: string) {
+  try {
+      const response = await Axios.get<ProtocolRatings>(`http://localhost:3001/user/ratings?cookieId=${cookieId}&walletId=${walletId}`);
+      return response.data;
+  } catch (error) {
+      console.error('Failed to fetch protocol ratings:', error);
+      return null;
+  }
+}
+
+// TODO: Better error handling
 async function updateProtocol(protocol : string, scores : number[]) : Promise<[any, any]>{
     // send data to protocols
     try {
@@ -141,35 +187,12 @@ function generateReferralCode(){
 
   
 
-export {updateProtocol, checkScoresCorrect, checkIp, 
-   validAddr, generateReferralCode}
+export {
+  updateProtocol,
+  checkScoresCorrect,
+  checkIp,
+  validAddr,
+  generateReferralCode
+};
 
 
-
-// async function addDispute(protocol: string, influencer: string, scores : number[]) : Promise<[any, any, any]>{
-//   try{
-//     let disputeResponse = await updateDisputes(protocol, influencer, scores)
-//     let [ascendingResponse, descendingResponse] = await updateProtocol(protocol, scores)
-//     return [disputeResponse, ascendingResponse, descendingResponse]    
-//   }
-//   catch (error) {
-//     console.log('There was an error with the addIprequest:', error);
-//     return [-1, -1, -1]
-//   }  
-// }; 
-
-// async function updateDisputes(protocol : string, influencer: string, scores : number[]){
-//      // send data to disputes
-//      try {
-//       await Axios.post('http://localhost:3001/disputes', {
-//       protocol: protocol,
-//       influencer: influencer,
-//       qVals: scores
-//     });
-//     const response = await Axios.get<Dispute[]>('http://localhost:3001/disputes');
-//     return response
-    
-//   } catch (error) {
-//     console.error('There was an error with the addDispute request:', error);
-//   }
-// }

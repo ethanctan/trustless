@@ -1,10 +1,9 @@
 import React, {useState, useEffect, useMemo} from 'react';
 import '@fontsource-variable/unbounded';
 import '@fontsource/poppins';
-import Axios from 'axios';
 
 import { TextField } from '@mui/material';
-import {User} from '../utils/interfaces.ts'
+import {NewUser, Rating, ProtocolRatings} from '../utils/interfaces.ts'
 import * as utils from '../utils/utils.ts'
 
 import {Question} from '../components/question.tsx'
@@ -13,8 +12,8 @@ import { textFieldDesc } from './formConsts.ts';
 import { ethers } from 'ethers';
 import Cookies from 'js-cookie';
 import { v1 as generateUuidv1 } from 'uuid';
-import { generateReferralCode } from '../utils/utils.ts';
-import { create } from '@mui/material/styles/createTransitions';
+import { addUser, addRating, checkUser, updateRating, getUserInfo, checkCookie, getProtocolRatings, addReferral} from '../utils/utils.ts';
+
 
 
 //@ts-ignore
@@ -25,7 +24,7 @@ function Form({setListofDisputes, setProtocolData , setProtocolDataTop, defiData
     const [q3Score, setQ3Score] = useState<number>(1);
     const [q4Score, setQ4Score] = useState<number>(1);
     const [q5Score, setQ5Score] = useState<number>(1);
-    const [influencer, setInfluencer] = useState<string>("");
+    const [influencer, setInfluencer] = useState<string>(""); //other people's code
     const [submitted, setSubmitted] = useState<string>("");
 
     const [address, setAddress] = useState<string | null>(null);
@@ -38,7 +37,10 @@ function Form({setListofDisputes, setProtocolData , setProtocolDataTop, defiData
     const [text4, setText4] = useState<string>("");
     const [text5, setText5] = useState<string>("");
     const [user_id, set_uid] = useState<string>("");
-    
+    const [referralCode, setReferralCode] = useState<string>("");//self-code
+    const [protocolRatings, setProtocolRatings] = useState<ProtocolRatings>({});
+
+
     const [connectWallet, setConnectWallet] = useState<boolean>(false);
     
     // for generating form content
@@ -51,82 +53,84 @@ function Form({setListofDisputes, setProtocolData , setProtocolDataTop, defiData
     setText5("How strong is the track record of " + protocol + "'s team? If they're doxxed, do they have strong credentials and experience? If undoxxed, do they have a good reputation and history?");
   }
 
+  // sets cookieid for user, and sets referral code, wallet address and protocolratings if user exists
   useEffect(() =>{
-    try{
-      let cookieAddr = Cookies.get("user_id")
-      if (cookieAddr === undefined){
-        cookieAddr = generateUuidv1()
-        Cookies.set('user_id', cookieAddr)
-      }
-      set_uid(cookieAddr)
-      
-    }catch(error){
-      console.log("Bruh")
+    const fetchData = async () => {
+        try{
+            let cookieAddr = Cookies.get("user_id")
+            if (cookieAddr === undefined){
+                cookieAddr = generateUuidv1()
+                Cookies.set('user_id', cookieAddr)
+            }
+            set_uid(cookieAddr)
+
+            const exists = await checkCookie(cookieAddr)
+            console.log("does cookie exist in db?", exists)
+            if (exists){
+                const response = await getUserInfo(cookieAddr)
+                setReferralCode(response.referralCode)
+                setAddress(response.walletId)
+                setProtocolRatings(response.protocolRatings)
+            }
+            else{
+                console.log("No user associated with cookie")
+            }
+
+        }catch(error){
+            console.log("Bruh")
+        }
     }
-  }, [])
+    fetchData();
+}, [])
 
 
-  const addUser = async () => { 
+  // Reset the errorMessage each time the protocol changes
+  useEffect(() => {
+      setErrorMessage(null);
+    }, [protocol]);
 
-    console.log("Front end is calling")
+  // checks validity of referral code entered and submits rating, and updates protocol scores
+  const handleUserSubmission = async () => { 
     try{
-      await Axios.post<User[]>('http://localhost:3001/users', {
-        cookieId: user_id,
-        walletId: "0xDEADBEEF",
-        referralCode: "Your mom",
-        referredUsers: [{"Skydoesminecraft" : "Uwu"}],
-        userRatings: [{"MakerDao" : {
-          scores : [1,2,3,4,5]},
-          code : "12345"
-        }]
-      })
-
-      await Axios.get<User[]>("http://localhost:3001/users", {
-
-      }).then(function (response){
-        console.log("Response", response)
-      })
-      
-      setSubmitted("Thank you for submitting your address")
-    }catch (err){ // catch 409 address
-      setSubmitted("You already submitted this address!");
-    }
-  };
-    
-
-  const handleUserSubmission = async () =>{ 
-    try{
-      console.log("Handling user submission")
-      addUser()
-      // if (address) {
-      //   addUser();
-      // }
-      // let alreadyRated = await utils.checkIp(ipAddress, protocol)
-      // if (alreadyRated) {
-      //   setErrorMessage("You have already rated this protocol. Try rating another!");
-      //   return
-      // }
-      
-      let scores = [q1Score, q2Score, q3Score, q4Score, q5Score]
-      if (!utils.checkScoresCorrect(scores)){
-        setErrorMessage("Invalid score, re-enter a valid score")
-        return
-      }
-      let [disputeResponse, ascendingResponse, descendingResponse] = 
-        await utils.addDispute(protocol, influencer, scores)
-
-      setListofDisputes(disputeResponse.data);
-      setProtocolData(ascendingResponse.data);
-      setProtocolDataTop(descendingResponse.data); 
-      setErrorMessage("Thanks for submitting!");
-
-    }catch(err){
-      setErrorMessage("Oops! Something went wrong with your submission")
-    }
-    
-  }
+      let scores = [q1Score, q2Score, q3Score, q4Score, q5Score];
+      let newRating: Rating = {
+        scores: scores,
+        code: influencer,
+      };
   
-  // function to connect to metamask
+      const exists = await checkUser(influencer); //check if influencer exists
+      if (exists){
+        if (address !== null) {
+          try{ 
+            //submit rating
+            const response = await addRating(user_id, address, protocol, newRating);
+            console.log(response);
+            setSubmitted("Successfully added!");
+            //get list of ratings
+            const response1 = await getProtocolRatings(user_id, address);
+            if (response1 != null) {
+              setProtocolRatings(response1);
+            }
+            //add referral to influencer
+            const response2 = await addReferral(influencer, address, user_id);
+            console.log(response2);
+          }catch(error){
+            console.log(error);
+          }  
+        } else {
+          setErrorMessage("Wallet not connected. Try again!");
+        }
+      } else {
+        setErrorMessage("Influencer does not exist. Try again!");
+      }
+    } catch (error){
+      console.log(error);
+    }
+  }; 
+  
+
+  
+  // function to connect to metamask and create new user
   async function connect() {
     if (typeof window.ethereum !== 'undefined') {
         // Ethereum user detected. You can now use the provider.
@@ -135,10 +139,20 @@ function Form({setListofDisputes, setProtocolData , setProtocolDataTop, defiData
             await window.ethereum.enable(); // This will request the user to grant access to their MetaMask
             const signer = provider.getSigner();
             const account = await signer.getAddress();
-            //add post request to send account to backend under address collection
             console.log("Account:", account);
+
             setConnectWallet(true);
             setAddress(account);
+
+            if (account !== null) {
+              let userInfo: NewUser = {
+                cookieId: user_id,
+                walletId: account
+              };
+              addUser(userInfo);
+            } else {
+                console.log("Address is null");  
+            }
         } catch (err) {
             // User denied access
             console.error("User denied access:", err);
@@ -148,18 +162,41 @@ function Form({setListofDisputes, setProtocolData , setProtocolDataTop, defiData
     }
   }
 
-  function createCode(){
-    let code = utils.generateReferralCode()
+  async function updateProtocol() {
+    try{
+      // want to reset all scores when updating protocol rating
+      let scores = [q1Score, q2Score, q3Score, q4Score, q5Score]
+      let newRating: Rating = {
+        scores: scores,
+        code: influencer,
+      }
 
-    return "1"
+      const exists = await checkUser(influencer) //check if influencer exists
+      if (exists){
+        if (address !== null) {
+          try{ 
+            const response = await updateRating(user_id, address, protocol, newRating)
+            console.log(response)
+            setSubmitted("Successfully added!")
+            const response1 = await getProtocolRatings(user_id, address)
+            if (response1 != null) {
+              setProtocolRatings(response1)
+            }
+          }catch(error){
+            console.log(error)
+          }  
+        }
+        else{
+          setErrorMessage("Wallet not connected. Try again!");
+        }
+      } else {
+        setErrorMessage("Influencer code does not exist. Try again!");
+      }
+    }
+    catch (error){
+      console.log(error)
+    };
   }
-
-  //might want to move this to a separate component for cleaner code
-  useEffect(() => {
-    // Reset the errorMessage each time the protocol changes
-    setErrorMessage(null);
-  }, [protocol]);
-
 
     return (
         
@@ -212,15 +249,6 @@ function Form({setListofDisputes, setProtocolData , setProtocolDataTop, defiData
                     onChange={(event) => setInfluencer(event.target.value)}
                     color="primary"
                     />
-                </div>
-
-
-               
-                <div className="md:col-span-10 pr-5">
-                    <button 
-                  className='mb-3 mt-3 bg-blue-700 hover:bg-blue-600 hover:border-white focus:outline-none' 
-                  onClick={createCode}
-                > Generate your own code here</button>
                 </div>
             </div>
           {connectWallet ? 
