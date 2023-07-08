@@ -62,12 +62,6 @@ describe('updating averages', () =>{
     })
 })
 
-let docFields = ["qScores", "disputeCount", "protocolName", "averageScore"]
-let protocolFields = ["protocolName", "qScores"]
-
-let docVals = [
-    [[0,0,0,0,0], 0, "aegis", 0]
-]
 
 describe("Testing updateDoc", () => {
     test("Empty person", ()=>{

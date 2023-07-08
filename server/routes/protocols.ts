@@ -6,7 +6,7 @@ const router = express.Router()
 enum Order{
     Ascending = 1,
     Descending = -1
-}
+} 
 
 router.get("/", async (req: Request, res: Response) => {
     console.log("Req query: ",req.query)
@@ -23,10 +23,9 @@ router.get("/", async (req: Request, res: Response) => {
             averageScore: result["averageScore"]
         }))
 
-        
         res.json(responseData)
     }catch(error){
-        res.json(error)
+        res.json(error) 
     }
 });
 

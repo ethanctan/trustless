@@ -185,7 +185,8 @@ router.get("/:cookieId/:walletId/getRating/:protocolName", async (req: Request, 
 
 // GET request to check if a user with a specific cookieId exists
 // works
-router.get("/checkCookie/:cookieId", async (req, res) => {
+router.get("/check/:cookieId", async (req, res) => {
+    console.log("Checking user cookie")
     const { cookieId } = req.params;
     const user = await UserModel.findOne({ cookieId: cookieId });
     if (!user) {
