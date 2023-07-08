@@ -287,8 +287,27 @@ function Form({setProtocolData , setProtocolDataTop, defiData, ipAddress }){
             <h5 style={ errorMessage == 'Successfully added!' ? { color: 'white' } : {color: 'red' }}>{errorMessage}</h5>
             </div>
         )}
+        <h5 className="text-white text-center"> {protocolRatings ? "Protocol Ratings" : null} </h5>
+        <table className="table-auto">
+            <thead>
+                <tr>
+                    <th>Protocol Name</th>
+                    <th>Scores</th>
+                </tr>
+            </thead>
+            <tbody>
+                {Object.keys(protocolRatings).map((key) => {
+                    const {scores} = protocolRatings[key];
+                    return (
+                        <tr key={key}>
+                            <td>{key}</td>
+                            <td>{scores.join(', ')}</td>
+                        </tr>
+                    );
+                })}
+            </tbody>
+        </table>
         </div>
-        
     )
 }
 
