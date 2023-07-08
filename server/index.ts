@@ -8,8 +8,7 @@ const app = express();
 
 const userRoute = require('./routes/user')
 let protocolExport = require('./routes/protocols')
-const  protocolsRoute = protocolExport.router
-console.log(protocolsRoute)
+const protocolsRoute = protocolExport.router
 const ipRouter = require('./routes/ip')
 const defiDataRouter = require('./routes/defiData')
 

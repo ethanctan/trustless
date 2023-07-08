@@ -1,16 +1,20 @@
-export default function Navbar(){
+import Button from "./button"
+import {Link, useMatch, useResolvedPath} from "react-router-dom"
+
+//@ts-ignore
+export default function Navbar({buttonFxn}){
     return (
         <nav className="nav">
             <ul>
                 <li>
-                    <a href="/about">About</a>
-                    <a href="/airdrop">Claim Airdrop</a>
-                    <a href="/mechanics">Mechanics</a>
-                    <a href="/submitRatings">Submit Ratings</a>
-                    <a href="/viewRatings">View Ratings</a>
+                    <Link to="/">About</Link>
+                    <Link to="/airdrop">Claim Airdrop</Link>
+                    <Link to="/mechanics">Mechanics</Link>
+                    <Link to="/submitRatings">Submit Ratings</Link>
+                    <Link to="/viewRatings">View Ratings</Link>
                 </li>
             </ul>
-            <button>Connect Wallet</button>
+            <Button text={'Connect Wallet'} clickFunction={buttonFxn}></Button>
         </nav>
     )
 }

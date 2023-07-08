@@ -1,16 +1,17 @@
-import './App.css';
+import '../../App.css';
 import Axios from 'axios';
 
 // ADDITIONAL IMPORTS
 import '@fontsource-variable/unbounded';
 import '@fontsource/poppins';
 import React, { useState, useEffect, useMemo } from 'react';
-import { GetProtocolResponse, DefiData} from '../utils/interfaces.ts'
+import { GetProtocolResponse, DefiData} from '../../utils/interfaces.ts'
 
-import Introduction from '../components/title.tsx'
-import Instructions from '../components/instructions.tsx';
-import Form from './form.tsx'
-import {SubmissionTable} from '../components/submissionTable.tsx';
+import Introduction from '../../components/title.tsx'
+import Instructions from '../../components/instructions.tsx';
+import Form from '../form.tsx'
+import {SubmissionTable} from '../../components/submissionTable.tsx';
+import Navbar from '../../components/navbar.tsx';
 
 enum ActiveButton {
   LiveResponses,
