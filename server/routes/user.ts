@@ -54,11 +54,13 @@ router.post("/", async (req: Request, res: Response) => {
 
     // Case: Existent cookie, non identifiable wallet
     if (userCookie && !userWallet) {
+        console.log("Existent cookie non identifiable wallet")
         return res.status(400).json({ message: 'Please switch to your previous wallet' });
     }
 
     // Case: Wrong cookie-wallet pair
     if ((userCookie && userWallet) && (userCookie.id !== userWallet.id)) {
+        console.log("Wrong cookie-wallet pair")
         return res.status(400).json({ message: 'Wrong cookie-wallet pair. Please use another wallet or clear cookies.' });
     }
 
@@ -106,14 +108,19 @@ router.get("/checkReferralCode", async (req: Request, res: Response) => {
 // Client-side interface: protocolName, rating -> splice to form kv pair
 // Works
 router.post("/:cookieId/:walletId/addRating", async (req: Request, res: Response) => {
+    console.log("Adding rating", req.body)
     const { cookieId, walletId} = req.params;
     const { protocolName, rating } = req.body;
     const user = await UserModel.findOne({ cookieId: cookieId, walletId: walletId });
-    if (!user) return res.status(404).json({ message: 'User not found' });
+    if (!user) 
+        return res.status(404).json({ message: 'User not found' });
 
     const newRating = new RatingModel(rating);
     if (user.protocolRatings.get(protocolName)) return res.status(400).json({ message: 'You have already rated this protocol.' });
+    console.log("New rating", newRating)
     user.protocolRatings.set(protocolName, newRating);
+    console.log("Setting rating", protocolName)
+    console.log("USer", user)
     await user.save();
 
     res.json({ message: 'Rating added successfully' });
@@ -147,9 +154,10 @@ router.post("/:referralCode/addReferral", async (req: Request, res: Response) =>
     const { walletAddress, referralprotocol } = req.body;  
     console.log(req.body);
     const referralProtocolModel = new ReferralModel(referralprotocol);
-
+    console.log("Hello")
     user.referredUsers.set(walletAddress, referralProtocolModel);
     await user.save();
+    console.log("Did not add successfully")
 
     res.json({ message: 'Referral added successfully' });
 });
