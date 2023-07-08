@@ -30,9 +30,6 @@ router.get("/", async (req: Request, res: Response) => {
     }
 });
 
-
-
-
 /**
  * Adds protocol data to the db if it hasn't been added already
  * Requires frontend to handle valid averages 
@@ -51,7 +48,8 @@ router.post("/", async (req: Request, res: Response) => {
                 return
             }
 
-            updateDoc(doc, protocol)
+            doc = updateDoc(doc, protocol)
+            doc.save()
         })
 
         res.json(protocol);
@@ -61,26 +59,38 @@ router.post("/", async (req: Request, res: Response) => {
     }
 });
 
-/**
- * Updates document based on new q score
- */
-function updateDoc(doc : any, protocol : object){
+
+const updateAvg = (docScores : number[], protocolScores : number[], 
+    numDisputes : number) : [number[], number]=> {
     var newQScores = [0, 0, 0, 0, 0]
     // element-wise sum on old q scores and incoming scores
-    newQScores =  protocol["qScores"].map(function (num : number, idx : number) {
-        return num + doc["qScores"][idx];
+    newQScores =  protocolScores.map(function (num : number, idx : number) {
+        return num + docScores[idx];
     })
     // use updated q scores to recompute average
     let newAvg = (newQScores.reduce(
         (partialSum : number, a: number) => 
-        partialSum + a, 0))/((doc["disputeCount"])*5)
+        partialSum + a, 0))/((numDisputes+1)*5)
+
+    return [newQScores, newAvg]
+}
+
+/**
+ * Updates document based on new q score
+ */
+const updateDoc = (doc : any, protocol : object) => {
+    let [newQScores, newAvg] = updateAvg(
+        doc["qScores"], protocol["qScores"], doc["disputeCount"]
+    )
 
     doc["disputeCount"] += 1
     doc["protocolName"] = protocol["protocolName"]
     doc["averageScore"] = newAvg
     doc["qScores"] = newQScores
-    doc.save()
+    return doc
 }
 
+module.exports.router = router
+module.exports.testFxns = { updateAvg, updateDoc}
 
-module.exports = router
+export const exportedForTesting = { updateAvg, updateDoc}

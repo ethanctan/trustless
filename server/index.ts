@@ -1,12 +1,15 @@
 import express, { Request, Response } from 'express';
 import mongoose, { NumberSchemaDefinition } from 'mongoose';
+
+
 import cors from 'cors';
 
 const app = express();
 
 const userRoute = require('./routes/user')
-const disputeRoute = require('./routes/disputes')
-const protocolsRoute = require('./routes/protocols')
+let protocolExport = require('./routes/protocols')
+const  protocolsRoute = protocolExport.router
+console.log(protocolsRoute)
 const ipRouter = require('./routes/ip')
 const defiDataRouter = require('./routes/defiData')
 
@@ -16,10 +19,10 @@ app.use(cors());
 mongoose.connect("mongodb+srv://dyang:RrrwmSWGDb1vqNZy@cluster0.vtkcvkm.mongodb.net/disputeboard?retryWrites=true&w=majority");
 
 app.use("/user", userRoute)
-app.use("/disputes", disputeRoute)
-app.use("/protocols", protocolsRoute)
+
 app.use("/ip", ipRouter)
 app.use("/defiData", defiDataRouter)
+app.use("/protocols", protocolsRoute)
 
 app.listen(3001, () => {
     console.log('server running on port 3001');

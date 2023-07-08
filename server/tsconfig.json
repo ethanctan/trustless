@@ -10,7 +10,7 @@
       "noImplicitAny": true,
       "suppressImplicitAnyIndexErrors": true,
     },
-    "include": ["**/*.ts"],
+    "include": ["**/*.ts", "tests/protocols.test.js"],
     "exclude": ["node_modules"]
   }
   

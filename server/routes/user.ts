@@ -26,12 +26,12 @@ router.get("/", async(req: Request, res: Response) => {
 async function generateCode(codeLength = 8) : Promise<string> {
     const str = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz'
     let code = ""
-    let existence : any = true
+    let existence = true
     while (existence){
         for (let i=0; i < codeLength; i++){
             code += str.charAt(Math.floor(Math.random() * (str.length+1)));
         }
-        existence = await UserModel.exists({referralCode : code})
+        existence = !!(await UserModel.exists({referralCode : code}))
     }
     return code
 }
@@ -42,32 +42,32 @@ router.post("/", async (req: Request, res: Response) => {
     const user = req.body;
   
     // Find existing user by cookieId or walletId
-    const existingUserByCookie = await UserModel.findOne({ cookieId: user.cookieId });
-    const existingUserByWallet = await UserModel.findOne({ walletId: user.walletId });
-  
+    const userCookie = await UserModel.findOne({ cookieId: user.cookieId });
+    const userWallet = await UserModel.findOne({ walletId: user.walletId });
+
     // Case: Nonexistent cookie, identifiable wallet
-    if (!existingUserByCookie && existingUserByWallet) {
-        existingUserByWallet.cookieId = user.cookieId;
-        await existingUserByWallet.save();
-        return res.json({ message: 'Cookie reassigned successfully', user: existingUserByWallet });
+    if (!userCookie && userWallet) {
+        userWallet.cookieId = user.cookieId;
+        await userWallet.save();
+        return res.json({ message: 'Cookie reassigned successfully', user: userWallet });
     }
 
     // Case: Existent cookie, non identifiable wallet
-    if (existingUserByCookie && !existingUserByWallet) {
+    if (userCookie && !userWallet) {
         return res.status(400).json({ message: 'Please switch to your previous wallet' });
     }
 
     // Case: Wrong cookie-wallet pair
-    if ((existingUserByCookie && existingUserByWallet) && (existingUserByCookie.id !== existingUserByWallet.id)) {
+    if ((userCookie && userWallet) && (userCookie.id !== userWallet.id)) {
         return res.status(400).json({ message: 'Wrong cookie-wallet pair. Please use another wallet or clear cookies.' });
     }
 
     // Case: Existent cookie, identifiable wallet - right cookie-wallet pair
-    if (existingUserByCookie && existingUserByWallet && existingUserByCookie.id === existingUserByWallet.id) {
-        return res.json({ message: 'User already created', user: existingUserByCookie});
+    if (userCookie && userWallet && userCookie.id === userWallet.id) {
+        return res.json({ message: 'User already created', user: userCookie});
     }
     // Case:  Nonexistent cookie, nonexistent wallet
-    if (!existingUserByCookie && !existingUserByWallet) {
+    if (!userCookie && !userWallet) {
         const newUser = new UserModel({
             cookieId: user.cookieId,
             walletId: user.walletId,
@@ -75,8 +75,6 @@ router.post("/", async (req: Request, res: Response) => {
             referredUsers: new Map(),
             protocolRatings: new Map()
         });
-
-        console.log("New user: ", newUser);
         await newUser.save();
         return res.json({ message: 'User added successfully', user: newUser });
     }

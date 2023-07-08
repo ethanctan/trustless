@@ -64,22 +64,17 @@ function Form({setProtocolData , setProtocolDataTop, defiData, ipAddress }){
             set_uid(cookieAddr)
 
             const exists = await checkCookie(cookieAddr)
-            console.log("does cookie exist in db?", exists)
             if (exists){
                 const response = await getUserInfo(cookieAddr)
                 setReferralCode(response.referralCode)
-                console.log("referral code", response.referralCode)
                 setAddress(response.walletId)
-                console.log("wallet address", response.walletId)
                 setProtocolRatings(response.protocolRatings)
-                console.log("protocol ratings", response.protocolRatings)
             }
             else{
                 console.log("No user associated with cookie")
             }
 
         }catch(error){
-            console.log("Bruh")
             console.log("cookie error", error)
         }
     }
