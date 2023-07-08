@@ -3,25 +3,15 @@ import Axios from 'axios';
 import {Protocol, GetProtocolResponse, ProtocolRatings} from './interfaces.ts'
 import {NewUser, Rating, UserInfo, UserReferral} from './interfaces.ts'
 
-
-
-async function checkIp(ipAddress : string, protocol : string) : Promise<boolean>{
-  // Why are you sending a post request here?
-  await Axios.post('http://localhost:3001/ip', {
-    ipAddress: ipAddress,
-    protocolName: protocol,
-  })
-
-  const response1 = await Axios.get<boolean>(`http://localhost:3001/ip?ip=${ipAddress}`);
-  const isWithin = response1.data;
-
-  return isWithin
-}
-
 // Add user to database
-export async function addUser(user: NewUser): Promise<void> {
+export async function addUser(user_id : string, account : string ): Promise<void> {
+  let userInfo: NewUser = {
+    cookieId: user_id,
+    walletId: account
+  };
+
   try {
-    const reponse = await Axios.post('http://localhost:3001/user', user);
+    const reponse = await Axios.post('http://localhost:3001/user', userInfo);
     console.log(reponse.data);
   } catch (error) {
     console.error('Error adding user:', error);
@@ -47,21 +37,16 @@ export async function checkUser(referralCode?: string): Promise<boolean> {
 
 // Add a rating to a user's rating mapping
 export async function addRating(cookieId: string, walletId: string, protocolName: string, rating: Rating): Promise<void> {
-  try {
-    const response = await Axios.post(`http://localhost:3001/user/${cookieId}/${walletId}/addRating`, {
-      rating: rating,
-      protocolName: protocolName
-    });
-    console.log(response.data);
+  const response = await Axios.post(`http://localhost:3001/user/${cookieId}/${walletId}/addRating`, {
+    rating: rating,
+    protocolName: protocolName
+  });
+  console.log(response.data);
 
-    // Only update the protocol if adding the rating didn't throw an error
-    const response1 = await updateProtocol(protocolName, rating.scores);
-    console.log(response1);
+  // Only update the protocol if adding the rating didn't throw an error
+  const response1 = await updateProtocol(protocolName, rating.scores);
+  console.log(response1);
 
-  } catch (error) {
-    console.error('Error adding rating or updating protocol:', error);
-    throw error;
-  }
 }
 
 // Update a rating that already exists in a user's rating mapping
@@ -194,7 +179,6 @@ function generateReferralCode(){
 export {
   updateProtocol,
   checkScoresCorrect,
-  checkIp,
   validAddr,
   generateReferralCode
 };

@@ -4,7 +4,7 @@ import { useCountdown } from "../hooks/countdown";
 
 /**
  * @param targetDate Date the countdown timer counts down to in the form
- * YYYY-MM-DDTHH:mm:ss.sssZ. See javascript date docs for more info
+ * YYYY-MM-DDTHH:mm:ss. See javascript date docs for more info
  */
 //@ts-ignore
 function Timer({targetDate}){

@@ -1,9 +1,10 @@
-import Navbar from "../../components/navbar"
+import FormController from "./formController"
 
 export default function SubmitRating(){
     return (
         <div>
             This is the submit ratings page
+            <FormController/>
         </div>
     )
 }
