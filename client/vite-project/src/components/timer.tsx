@@ -2,7 +2,10 @@ import { useCountdown } from "../hooks/countdown";
 
 // Used this tutorial: https://blog.greenroots.info/how-to-create-a-countdown-timer-using-react-hooks#heading-the-countdown-app
 
-
+/**
+ * @param targetDate Date the countdown timer counts down to in the form
+ * YYYY-MM-DDTHH:mm:ss.sssZ. See javascript date docs for more info
+ */
 //@ts-ignore
 function Timer({targetDate}){
     const [days, hours, minutes, seconds] = useCountdown(targetDate);

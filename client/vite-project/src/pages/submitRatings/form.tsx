@@ -3,16 +3,15 @@ import '@fontsource-variable/unbounded';
 import '@fontsource/poppins';
 
 import { TextField } from '@mui/material';
-import {NewUser, Rating, ProtocolRatings, UserReferral} from '../utils/interfaces.ts'
-import * as utils from '../utils/utils.ts'
+import {NewUser, Rating, ProtocolRatings, UserReferral} from '../../utils/interfaces.ts'
 
-import {Question} from '../components/question.tsx'
-import SearchBar from '../components/searchBar.tsx';
+import {Question} from '../../components/question.tsx'
+import SearchBar from '../../components/searchBar.tsx';
 import { textFieldDesc } from './formConsts.ts';
 import { ethers } from 'ethers';
 import Cookies from 'js-cookie';
 import { v1 as generateUuidv1 } from 'uuid';
-import { addUser, addRating, checkUser, updateRating, getUserInfo, checkCookie, getProtocolRatings, addReferral} from '../utils/utils.ts';
+import { addUser, addRating, checkUser, updateRating, getUserInfo, checkCookie, getProtocolRatings, addReferral} from '../../utils/utils.ts';
 
 
 
@@ -96,46 +95,45 @@ function Form({setProtocolData , setProtocolDataTop, defiData, ipAddress }){
         code: influencer,
       };
   
-      const exists = await checkUser(influencer); //check if influencer exists
-      console.log("does influencer exist?", exists);
-      if (exists){
-        if (address !== null) {
-          try{ 
-            //submit rating
-            console.log("protocol", protocol);
-            console.log("new rating", newRating);
-            try{
-              await addRating(user_id, address, protocol, newRating);
-              setErrorMessage("Successfully added!");
-            }catch(error:any) {
-              if (error.response && error.response.status === 400){
-              setErrorMessage("You have already rated this protocol.");
-            }}
-            //get updated list of ratings
-            const response1 = await getProtocolRatings(user_id, address);
-            console.log("refresh protocol ratings", response1);
-            if (response1 != null) {
-              setProtocolRatings(response1);
-            }
-            //add referral to influencer
-            if (influencer && influencer !== "") {
-              console.log("Protocol value: ", protocol);
-              let userReferral:UserReferral = {
-                protocol:protocol
-              }
-              console.log("user referral output", userReferral)
-              const response2 = await addReferral(influencer, address, userReferral);
-              console.log("addReferral output", response2);
-            }
-          }catch(error){
-            console.log("addRating error:", error);
-          }  
-        } else {
-          setErrorMessage("Wallet not connected. Try again!");
-        }
-      } else {
+      const influencerExists = await checkUser(influencer); //check if influencer exists
+      if (!influencerExists){
         setErrorMessage("Influencer does not exist. Try again or leave blank!");
+        return
       }
+
+      if (address == null) {
+        setErrorMessage("Wallet not connected. Try again!");
+        return
+      }
+
+      try{ 
+        //submit rating
+        try{
+          await addRating(user_id, address, protocol, newRating);
+          setErrorMessage("Successfully added!");
+        }catch(error:any) {
+          if (error.response && error.response.status === 400){
+          setErrorMessage("You have already rated this protocol.");
+        }}
+        //get updated list of ratings
+        const response1 = await getProtocolRatings(user_id, address);
+        console.log("refresh protocol ratings", response1);
+        if (response1 != null) {
+          setProtocolRatings(response1);
+        }
+        //add referral to influencer
+        if (influencer && influencer !== "") {
+          console.log("Protocol value: ", protocol);
+          let userReferral:UserReferral = {
+            protocol:protocol
+          }
+          await addReferral(influencer, address, userReferral);
+        }
+      }catch(error){
+        console.log("addRating error:", error);
+      }  
+      
+  
     } catch (error){
       console.log(error);
     }
@@ -145,36 +143,37 @@ function Form({setProtocolData , setProtocolDataTop, defiData, ipAddress }){
   
   // function to connect to metamask and create new user
   async function connect() {
-    if (typeof window.ethereum !== 'undefined') {
-        // Ethereum user detected. You can now use the provider.
-        const provider = new ethers.providers.Web3Provider(window.ethereum);
-        try {
-            await window.ethereum.enable(); // This will request the user to grant access to their MetaMask
-            const signer = provider.getSigner();
-            const account = await signer.getAddress();
-            console.log("Account:", account);
-
-            setConnectWallet(true);
-            setAddress(account);
-
-            if (account !== null) {
-              let userInfo: NewUser = {
-                cookieId: user_id,
-                walletId: account
-              };
-              console.log("Cookie is set at uuid:", user_id);
-              console.log("Wallet is connected at address:", account);
-              addUser(userInfo);
-            } else {
-                console.log("Address is null");  
-            }
-        } catch (err) {
-            // User denied access
-            console.error("User denied access:", err);
-        }
-    } else {
-        console.log('No Ethereum interface injected into browser. Read-only access');
+    if (typeof window.ethereum === 'undefined') {
+      console.log('No Ethereum interface injected into browser. Read-only access');
+      return
     }
+    // Ethereum user detected. You can now use the provider.
+    const provider = new ethers.providers.Web3Provider(window.ethereum);
+    try {
+        await window.ethereum.enable(); // This will request the user to grant access to their MetaMask
+        const signer = provider.getSigner();
+        const account = await signer.getAddress();
+        console.log("Account:", account);
+
+        setConnectWallet(true);
+        setAddress(account);
+
+        if (account == null) {
+          console.log("Address is null")
+          return
+        }
+
+        let userInfo: NewUser = {
+          cookieId: user_id,
+          walletId: account
+        };
+        addUser(userInfo);
+        
+    } catch (err) {
+        // User denied access
+        console.error("User denied access:", err);
+    }
+    
   }
 
   async function updateProtocol() {

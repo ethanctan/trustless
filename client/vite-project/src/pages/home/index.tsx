@@ -9,7 +9,7 @@ import { GetProtocolResponse, DefiData} from '../../utils/interfaces.ts'
 
 import Introduction from '../../components/title.tsx'
 import Instructions from '../../components/instructions.tsx';
-import Form from '../form.tsx'
+import Form from '../submitRatings/form.tsx'
 import {SubmissionTable} from '../../components/submissionTable.tsx';
 import Navbar from '../../components/navbar.tsx';
 
