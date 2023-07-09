@@ -4,24 +4,31 @@ import { useCountdown } from "../hooks/countdown";
 
 /**
  * @param targetDate Date the countdown timer counts down to in the form
- * YYYY-MM-DDTHH:mm:ss. See javascript date docs for more info
- */
+ * YYYY-MM-DD. See javascript date docs for more info
+ */ 
 //@ts-ignore
-function Timer({targetDate}){
-    const [days, hours, minutes, seconds] = useCountdown(targetDate);
-    if (days + hours + minutes + seconds <= 0) {
-        return <ExpiredNotice />;
-    } 
-    
-    return (
-      <ShowCounter
-        days={days}
-        hours={hours}
-        minutes={minutes}
-        seconds={seconds}
-      />
-    );
+function CountdownDisplay({targetDate}){
+
+  return <CountdownTimer 
+  targetDate={targetDate} 
+  expiredDisplay={ExpiredNotice} 
+  CountdownDisplay={ShowCounter}
+  />
 }
+
+//@ts-ignore
+function CountdownTimer({targetDate, expiredDisplay, CountdownDisplay}){
+  const [days, hours, minutes, seconds] = useCountdown(targetDate);
+  if (days + hours + minutes + seconds <= 0) {
+      return expiredDisplay;
+  } 
+  
+  return (
+    //@ts-ignore
+    <CountdownDisplay timeuntildeadline={[days, hours, minutes, seconds] } />
+  );
+  }
+
 
 const ExpiredNotice = () => {
     return (
@@ -34,7 +41,8 @@ const ExpiredNotice = () => {
   
 
 //@ts-ignore
-function ShowCounter({ days, hours, minutes, seconds}){
+function ShowCounter({ timeuntildeadline }){
+    let [ days, hours, minutes, seconds] = timeuntildeadline 
     return (
         <div className="show-counter">
           <a
@@ -65,4 +73,4 @@ const DateTimeDisplay = ({ value, type, isDanger }) => {
     );
   };
 
-export default Timer
+export default CountdownDisplay
