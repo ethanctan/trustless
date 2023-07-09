@@ -11,16 +11,16 @@ function CountdownDisplay({targetDate}){
 
   return <CountdownTimer 
   targetDate={targetDate} 
-  expiredDisplay={ExpiredNotice} 
+  ExpiredDisplay={ExpiredNotice} 
   CountdownDisplay={ShowCounter}
   />
 }
 
 //@ts-ignore
-function CountdownTimer({targetDate, expiredDisplay, CountdownDisplay}){
+export function CountdownTimer({targetDate, ExpiredDisplay, CountdownDisplay}){
   const [days, hours, minutes, seconds] = useCountdown(targetDate);
   if (days + hours + minutes + seconds <= 0) {
-      return expiredDisplay;
+      return <ExpiredDisplay />;
   } 
   
   return (
