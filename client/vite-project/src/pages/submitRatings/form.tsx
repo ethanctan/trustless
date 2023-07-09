@@ -1,15 +1,17 @@
-import React, {useState, useEffect, useMemo} from 'react';
+import {useState, useEffect} from 'react';
 import '@fontsource-variable/unbounded';
 import '@fontsource/poppins';
 
 import { TextField } from '@mui/material';
-import { Rating, ProtocolRatings, UserReferral, UserIdentity} from '../../utils/interfaces.ts'
+import { Rating, ProtocolRatings, UserIdentity} from '../../utils/interfaces.ts'
 
 import {Question} from '../../components/question.tsx'
 import SearchBar from '../../components/searchBar.tsx';
 import { textFieldDesc } from './formConsts.ts';
 import { SubmissionTable } from '../../components/submissionTable.tsx';
-
+//@ts-ignore
+import reCAPTCHA from "react-recaptcha-google"
+import ReCAPTCHA from 'react-google-recaptcha';
 
 
 //@ts-ignore
@@ -185,6 +187,7 @@ function Form({defiData, getUserData, connectMetamask, updateProtocol, handleUse
                 </div>
             </div>
 
+              <ReCAPTCHA sitekey={"6LfkugcnAAAAAJ3nBJl9dJYpW0YskzAq1o0zWzs4"}/>
 
           {connectWallet ? 
             <button 
@@ -209,6 +212,7 @@ function Form({defiData, getUserData, connectMetamask, updateProtocol, handleUse
             <h5 style={ errorMessage == 'Successfully added!' ? { color: 'white' } : {color: 'red' }}>{errorMessage}</h5>
             </div>
         )}
+
 
         <SubmissionTable 
         headings={["Protocol Name", "Scores"]}

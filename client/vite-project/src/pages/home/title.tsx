@@ -1,5 +1,4 @@
-import Axios from 'axios';
-import React, { useState, useEffect, useMemo } from 'react';
+import { useState } from 'react';
 
 
 function Introduction(){

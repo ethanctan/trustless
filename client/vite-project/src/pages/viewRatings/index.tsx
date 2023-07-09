@@ -1,6 +1,6 @@
 import {SubmissionTable} from '../../components/submissionTable.tsx';
 import { useState, useEffect } from 'react';
-import { GetProtocolResponse, DefiData} from '../../utils/interfaces.ts'
+import { GetProtocolResponse } from '../../utils/interfaces.ts'
 import Axios from 'axios';
 
 export default function ViewRatings(){

@@ -1,6 +1,5 @@
 
-import { Tooltip, Button, TextField } from '@mui/material';
-import React, { useState, useEffect, useMemo } from 'react';
+import { Tooltip } from '@mui/material';
 import Slider from '@mui/material/Slider';
 
 //@ts-ignore

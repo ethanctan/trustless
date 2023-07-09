@@ -4,7 +4,7 @@ import Axios from 'axios';
 // ADDITIONAL IMPORTS
 import '@fontsource-variable/unbounded';
 import '@fontsource/poppins';
-import React, { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect } from 'react';
 
 import Introduction from './title.tsx'
 import Instructions from './instructions.tsx';
