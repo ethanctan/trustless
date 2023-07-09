@@ -1,11 +1,11 @@
 import { v1 as generateUuidv1 } from 'uuid';
 import Cookies from 'js-cookie';
 import { addUser, addRating, checkUser, updateRating, getUserInfo, checkCookie, getProtocolRatings, addReferral} from '../../utils/utils.ts';
-import React, {useState, useEffect, useMemo} from 'react';
+import {useState, useEffect} from 'react';
 import { ethers } from 'ethers';
 import Form from './form.tsx';
-import {NewUser, Rating, ProtocolRatings, UserReferral} from '../../utils/interfaces.ts'
-import { GetProtocolResponse, DefiData} from '../../utils/interfaces.ts'
+import { Rating, UserReferral, UserIdentity} from '../../utils/interfaces.ts'
+import {  DefiData} from '../../utils/interfaces.ts'
 import Axios from 'axios';
 
 function FormController(){
@@ -19,12 +19,11 @@ function FormController(){
     }, [])
 
     function getUserCookie(){
-        let cookieAddr = Cookies.get("user_id")
-        if (cookieAddr === undefined){
-            cookieAddr = generateUuidv1()
-            Cookies.set('user_id', cookieAddr)
+        let cookieAddress = Cookies.get("user_id")
+        if (cookieAddress === undefined){
+            cookieAddress = generateUuidv1()
         }
-        return cookieAddr
+        return cookieAddress
     }
     //What error should I throw here
     // Why are we only getting info from address?
@@ -32,8 +31,6 @@ function FormController(){
         const exists = await checkCookie(cookieAddr)
         if (exists){
             const response = await getUserInfo(cookieAddr)
-            console.log("response referral code: ", response.referralCode)
-
             return response
         }
         return null
@@ -41,14 +38,14 @@ function FormController(){
 
     async function getUserData(){
         let cookieAddress = getUserCookie()
+        Cookies.set('user_id', cookieAddress)
         let user = await getUser(cookieAddress)
         return [cookieAddress, user]
     }
 
-    async function addUserRating(user_id : string, address : string, protocol : string, 
-        newRating : Rating){
+    async function addUserRating(user : UserIdentity, newRating : Rating){
             try{
-                await addRating(user_id, address, protocol, newRating);
+                await addRating(user, newRating);
                 return "Successfully added!"
             }catch(error:any) {
                 if (error.response && error.response.status === 400){
@@ -56,35 +53,33 @@ function FormController(){
         }}
     }
 
-    async function getRatings(user_id : string, address : string){
-        const response1 = await getProtocolRatings(user_id, address);
+    async function getRatings(user : UserIdentity){
+        const response1 = await getProtocolRatings(user.cookieId, user.walletId);
         if (response1 != null) {
             return response1
         }
         throw new Error("No response")
     }
 
-    async function handleUserSubmission(rating : Rating, 
-        address: string, user_id : string, protocol: string){ 
+    async function handleUserSubmission(user : UserIdentity, rating : Rating, ){ 
       
           const influencerExists = await checkUser(rating["code"]); //check if influencer exists
           if (!influencerExists){
             throw new Error("Influencer does not exist. Try again or leave blank!")
           }
-          if (address == null) {
+          if (user.walletId == null) {
             throw new Error("Wallet not connected. Try again!")
           }
-
         //add referral to influencer
         if (rating["code"] && rating["code"] !== "") {
             let userReferral:UserReferral = {
-            protocol:protocol
+                protocol:rating.protocol
             }
-            await addReferral(rating["code"], address, userReferral);
+            await addReferral(rating["code"], user.walletId, userReferral);
         }
 
-        let rating_msg = await addUserRating(user_id, address, protocol, rating)
-        let response1 = await getRatings(user_id, address)
+        let rating_msg = await addUserRating(user, rating)
+        let response1 = await getRatings(user)
         return [rating_msg, response1]
         
       }; 
@@ -100,7 +95,6 @@ function FormController(){
     await window.ethereum.enable(); 
     const signer = provider.getSigner();
     const account = await signer.getAddress();
-    console.log("Account: ", account)
     if (account == null) {
         console.log("Address is null")
         return
@@ -110,20 +104,19 @@ function FormController(){
 
   }
 
-  async function updateProtocol(rating : Rating,
-    user_id : string, address : string, protocol : string) {
+  async function updateProtocol(rating : Rating, user : UserIdentity) {
 
     //check if influencer exists
     const exists = await checkUser(rating["code"]) 
-    await updateRating(user_id, address, protocol, rating)
+    await updateRating(user, rating)
     if (!exists){
         throw new Error("Influencer code does not exist. Try again!")
     }
-    if (address == null) {
+    if (user.walletId == null) {
         throw new Error("Wallet not connected. Try again!")
     }
     
-    return getRatings(user_id, address)
+    return getRatings(user)
   }
 
   return (

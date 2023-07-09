@@ -1,11 +1,11 @@
 //Helper functions for app.ts
 import Axios from 'axios';
 import {Protocol, GetProtocolResponse, ProtocolRatings} from './interfaces.ts'
-import {NewUser, Rating, UserInfo, UserReferral} from './interfaces.ts'
+import { UserIdentity, Rating, UserInfo, UserReferral} from './interfaces.ts'
 
 // Add user to database
 export async function addUser(user_id : string, account : string ): Promise<void> {
-  let userInfo: NewUser = {
+  let userInfo: UserIdentity = {
     cookieId: user_id,
     walletId: account
   };
@@ -35,43 +35,54 @@ export async function checkUser(referralCode?: string): Promise<boolean> {
   }
 }
 
-// Add a rating to a user's rating mapping
-export async function addRating(cookieId: string, walletId: string, protocolName: string, rating: Rating): Promise<void> {
-  const response = await Axios.post(`http://localhost:3001/user/${cookieId}/${walletId}/addRating`, {
-    rating: rating,
-    protocolName: protocolName
+async function postRating(user : UserIdentity, rating : Rating){
+
+  let scoreAndCode = {scores: rating.scores, code: rating.code}
+
+  const response = await Axios.post(`http://localhost:3001/user/${user.cookieId}/${user.walletId}/addRating`, {
+    rating: scoreAndCode,
+    protocolName: rating.protocol
   });
+  return response
+}
+
+
+// Add a rating to a user's rating mapping
+export async function addRating(user: UserIdentity, rating: Rating): Promise<void> {
+  // const response = await Axios.post(`http://localhost:3001/user/${cookieId}/${walletId}/addRating`, {
+  //   rating: rating,
+  //   protocolName: protocolName
+  // });
+
+  const response = await postRating(user, rating)
   console.log(response.data);
 
   // Only update the protocol if adding the rating didn't throw an error
-  const response1 = await updateProtocol(protocolName, rating.scores);
+  const response1 = await updateProtocol(rating.protocol, rating.scores);
   console.log(response1);
 
 }
 
 // Update a rating that already exists in a user's rating mapping
-export async function updateRating(cookieId: string, walletId: string, protocolName: string, rating: Rating): Promise<void> {
+export async function updateRating(user: UserIdentity, rating: Rating): Promise<void> {
   try {
-    const prev = await Axios.get<number[]>(`http://localhost:3001/user/${cookieId}/${walletId}/getRating?protocolName=${protocolName}`);
+    const prev = await Axios.get<number[]>(`http://localhost:3001/user/${user.cookieId}/${user.walletId}/getRating?protocolName=${rating.protocol}`);
     console.log(prev.data);
 
     // Reverse the values in the array
     const reversedPrev = prev.data.map((num) => -num);
     console.log(reversedPrev);
 
-    const response = await Axios.post(`http://localhost:3001/user/${cookieId}/${walletId}/updateRating`, {
-      rating: rating,
-      protocolName: protocolName
-    });
+    const response = await postRating(user, rating)
     console.log(response.data);
 
-    const response1 = await updateProtocol(protocolName, reversedPrev);
+    const response1 = await updateProtocol(rating.protocol, reversedPrev);
     console.log(response1);
 
-    const updated = await Axios.get<number[]>(`http://localhost:3001/user/${cookieId}/${walletId}/getRating?protocolName=${protocolName}`);
+    const updated = await Axios.get<number[]>(`http://localhost:3001/user/${user.cookieId}/${user.walletId}/getRating?protocolName=${rating.protocol}`);
     console.log(updated.data);
 
-    const response2 = await updateProtocol(protocolName, updated.data);
+    const response2 = await updateProtocol(rating.protocol, updated.data);
     console.log(response2);
 
   } catch (error) {

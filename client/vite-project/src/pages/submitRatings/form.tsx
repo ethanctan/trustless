@@ -3,12 +3,11 @@ import '@fontsource-variable/unbounded';
 import '@fontsource/poppins';
 
 import { TextField } from '@mui/material';
-import {NewUser, Rating, ProtocolRatings, UserReferral} from '../../utils/interfaces.ts'
+import { Rating, ProtocolRatings, UserReferral, UserIdentity} from '../../utils/interfaces.ts'
 
 import {Question} from '../../components/question.tsx'
 import SearchBar from '../../components/searchBar.tsx';
 import { textFieldDesc } from './formConsts.ts';
-import { addRating, checkUser, updateRating, getProtocolRatings, addReferral} from '../../utils/utils.ts';
 import { SubmissionTable } from '../../components/submissionTable.tsx';
 
 
@@ -79,10 +78,12 @@ function Form({defiData, getUserData, connectMetamask, updateProtocol, handleUse
     try{
       let scores = [q1Score, q2Score, q3Score, q4Score, q5Score];
       let newRating: Rating = {
+        protocol: protocol,
         scores: scores,
         code: influencer,
       };
-      let [rating_msg, ratings] = await handleUserSubmission(newRating, address, user_id, protocol)
+      let user: UserIdentity = {cookieId: user_id, walletId: String(address) }
+      let [rating_msg, ratings] = await handleUserSubmission(user, newRating)
       console.log("Ratings: ", ratings)
       setProtocolRatings(ratings);
       setErrorMessage(rating_msg)
@@ -108,10 +109,12 @@ function Form({defiData, getUserData, connectMetamask, updateProtocol, handleUse
     try{
       let scores = [q1Score, q2Score, q3Score, q4Score, q5Score]
       let newRating: Rating = {
+        protocol: protocol,
         scores: scores,
         code: influencer,
       }
-      let response = updateProtocol(newRating, user_id, address, protocol)
+      let user: UserIdentity = {cookieId: user_id, walletId: String(address) }
+      let response = updateProtocol(user, newRating)
       setProtocolRatings(response)
     }catch(error : any){
       // set error message here. Make sure you're only doing it for a specific subset in formController
@@ -119,7 +122,7 @@ function Form({defiData, getUserData, connectMetamask, updateProtocol, handleUse
     }
   }
 
-  function listUserRatings(key : any, temp : any){
+  function listUserRatings(key : any){
     const {scores} = protocolRatings[key];
     return (
         <tr key={key}>
@@ -181,6 +184,8 @@ function Form({defiData, getUserData, connectMetamask, updateProtocol, handleUse
                     />
                 </div>
             </div>
+
+
           {connectWallet ? 
             <button 
               className='mb-3 mt-3 bg-blue-700 hover:bg-blue-600 hover:border-white focus:outline-none' 

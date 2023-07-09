@@ -6,7 +6,6 @@ import Axios from 'axios';
 export default function ViewRatings(){
 
     enum ActiveButton {
-        LiveResponses,
         MostTrusted,
         LeastTrusted,
       }
@@ -17,7 +16,7 @@ export default function ViewRatings(){
     const [searchTerm, setSearchTerm] = useState(''); // for searching submissions
     const protocolTableHeadings = ["PROTOCOL",	"NUMBER OF RATINGS", "AVERAGE SCORE"]
   
-    const filteredProtocolDataTop = protocolDataTop.filter((protocol) =>
+    const ascendingSortedProtocol = protocolDataTop.filter((protocol) =>
       protocol.protocolName.toLowerCase().includes(searchTerm.toLowerCase())
     );
 
@@ -64,10 +63,7 @@ export default function ViewRatings(){
         setActiveButton(button);
     };
 
-    
-
-    
-    const filteredProtocolData = protocolData.filter((protocol) =>
+    const descendingSortedProtocol = protocolData.filter((protocol) =>
     protocol.protocolName.toLowerCase().includes(searchTerm.toLowerCase())
     );
 
@@ -75,9 +71,6 @@ export default function ViewRatings(){
         <div>
             <h4 className="mt-4 mb-4 poppins"> View the community's trust ratings below. </h4>
             <div className="poppins space-x-2 flex max-w-lg mx-auto items-center">
-                <button className={`toggle-button flex-1 bg-blue-700 hover:bg-blue-600 hover:border-white focus:outline-none ${activeButton === ActiveButton.LiveResponses ? 'active' : ''}`} onClick={() => handleButtonClick(ActiveButton.LiveResponses)}>
-                Most Recent
-                </button>
                 <button className={`toggle-button flex-1 bg-blue-700 hover:bg-blue-600 hover:border-white focus:outline-none ${activeButton === ActiveButton.MostTrusted ? 'active' : ''}`} onClick={() => handleButtonClick(ActiveButton.MostTrusted)}>
                 Most Trusted
                 </button>
@@ -98,14 +91,14 @@ export default function ViewRatings(){
 
         <div className="flex flex-col -m-1.5 overflow-x-auto p-1.5 min-w-full inline-block align-middle">
 
-            {activeButton === ActiveButton.LiveResponses && (
+            {activeButton === ActiveButton.MostTrusted && (
                 <SubmissionTable headings={protocolTableHeadings} 
-                submissions={filteredProtocolData.slice(0, 10)}
+                submissions={descendingSortedProtocol.slice(0, 10)}
                 RowGenerator={listProtocols}/>
             )}
             {activeButton === ActiveButton.LeastTrusted && (
                 <SubmissionTable headings={protocolTableHeadings} 
-                submissions={filteredProtocolDataTop.slice(0, 10)}
+                submissions={ascendingSortedProtocol.slice(0, 10)}
                 RowGenerator={listProtocols}/>
             )}
             </div>
