@@ -8,7 +8,7 @@
   font-weight: 400;
 
   color: rgba(255, 255, 255, 0.87);
-  background-color: #242424;
+  background-color: #0f172a;
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
@@ -17,14 +17,16 @@
   -webkit-text-size-adjust: 100%;
 }
 
-a {
+/* affects links */
+
+/* a {
   font-weight: 500;
   color: #646cff;
   text-decoration: inherit;
 }
 a:hover {
   color: #535bf2;
-}
+} */
 
 body {
   margin: 0;
@@ -32,7 +34,8 @@ body {
   place-items: center;
   min-width: 320px;
   min-height: 100vh;
-  background-image: url('./assets/background.png');
+  background-color: #0f172a;
+  background-image: url('./assets/background_dark.jpg');
   background-repeat: no-repeat;
   background-size: cover;
 }
@@ -41,7 +44,7 @@ h1 {
   font-size: 3.2em;
   line-height: 1.1;
 }
-
+/* 
 button {
   border-radius: 8px;
   border: 1px solid transparent;
@@ -59,4 +62,4 @@ button:hover {
 button:focus,
 button:focus-visible {
   outline: 4px auto -webkit-focus-ring-color;
-}
+} */

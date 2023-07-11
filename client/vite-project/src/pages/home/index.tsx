@@ -5,7 +5,6 @@ import '@fontsource/poppins';
 
 import Introduction from './title.tsx'
 import Instructions from './instructions.tsx';
-import CountdownDisplay from '../../components/timer.tsx';
 
 function App() {
 
@@ -15,13 +14,13 @@ function App() {
 
       {/* BACKGROUND IMAGE */}
 
-      <Introduction />
+      <div className="flex flex-col items-center">
 
-      <CountdownDisplay targetDate={"2024-03-25"}/>
+        <Introduction />
 
-      <Instructions />
+        <Instructions />
 
-
+      </div>
 
     </div>
   );
