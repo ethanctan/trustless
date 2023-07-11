@@ -36,8 +36,6 @@ function Form({defiData, getUserData, connectMetamask, updateProtocol, handleUse
     const [user_id, set_uid] = useState<string>("");
     const [referralCode, setReferralCode] = useState<string>("");//self-code
     const [protocolRatings, setProtocolRatings] = useState<ProtocolRatings>({});
-
-
     const [connectWallet, setConnectWallet] = useState<boolean>(false);
     
     // for generating form content

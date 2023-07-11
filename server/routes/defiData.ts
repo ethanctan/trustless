@@ -6,11 +6,13 @@ const router = express.Router()
 
 /** 
  * Adds defi data to the backend
+ * TODO Improve efficiency
  */
 router.get("/", async (req: Request, res: Response) => {
     console.log("Getting defi data")
     try{
         const defiData = await DefiDataModel.find({})
+        console.log("Defi data: ", defiData)
         res.json(defiData)
         
     }catch (err){

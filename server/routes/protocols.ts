@@ -1,6 +1,6 @@
 import express, { Request, Response, response } from 'express';
 import ProtocolModel from '../models/Protocols';
-
+import { wrappedFindOne } from '../models/wrappedModelFunctions';
 const router = express.Router()
 
 enum Order{
@@ -9,13 +9,13 @@ enum Order{
 } 
 
 router.get("/", async (req: Request, res: Response) => {
-    console.log("Req query: ",req.query)
     let order = Order.Descending
-    if (req.query.order == 'ascending'){
+    if (req.query && req.query.order == 'ascending'){
         order = Order.Ascending
     }
 
     try{
+        // what if protocolModel returns null?
         const test = await ProtocolModel.find({}).sort({averageScore : order})
         let responseData = test.map(result => ({
             protocolName: result["protocolName"],
@@ -23,9 +23,9 @@ router.get("/", async (req: Request, res: Response) => {
             averageScore: result["averageScore"]
         }))
 
-        res.json(responseData)
+        res.status(200).json(responseData)
     }catch(error){
-        res.json(error) 
+        res.status(400).json(error) 
     }
 });
 
@@ -34,22 +34,21 @@ router.get("/", async (req: Request, res: Response) => {
  * Requires frontend to handle valid averages 
  */
 router.post("/", async (req: Request, res: Response) => {
+    const protocol = req.body;
     try {
-        const protocol = req.body;
-
-        await ProtocolModel.findOne(
+        let doc = await ProtocolModel.findOne(
             {protocolName: protocol["protocolName"]},
-        ).then((doc : any)=>{
-            // Check if doc is null
-            if (!doc){
-                const newProtocol = new ProtocolModel(protocol);
-                newProtocol.save();
-                return
-            }
+        )
 
-            doc = updateDoc(doc, protocol)
-            doc.save()
-        })
+        if (doc == null){
+            const newProtocol = new ProtocolModel(protocol);
+            newProtocol.save();
+            res.json(protocol)
+            return
+        }
+        doc = updateDoc(doc, protocol)
+        //@ts-ignore
+        doc.save()
 
         res.json(protocol);
     } catch (error) {
@@ -91,5 +90,3 @@ const updateDoc = (doc : any, protocol : object) => {
 
 module.exports.router = router
 module.exports.testFxns = { updateAvg, updateDoc}
-
-export const exportedForTesting = { updateAvg, updateDoc}
