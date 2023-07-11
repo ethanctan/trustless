@@ -1,27 +1,42 @@
-// const request = require("supertest")
+const request = require("supertest")
 const protocolExports = require("../routes/protocols")
 const { updateAvg, updateDoc} = protocolExports.testFxns
-
-
+const mockingoose = require('mockingoose');
+import ProtocolModel from '../models/Protocols';
 import {describe, expect, test} from '@jest/globals';
+let protocolExport = require('../routes/protocols')
+const protocolsRouter = protocolExport.router
+jest.useFakeTimers();
 
-// const protocolsRoute = require('./routes/protocols')
 
-function addRandomScore(cumScore : number[]){
-    let randVec = [0,0,0,0,0]
-    for (let i = 0; i < cumScore.length; i++){
-        let val = Math.floor(Math.random()*11)
-        randVec[i] += val;
-        cumScore[i] += val
-    }
-    return [cumScore, randVec]
-} 
+describe("post tests", () => {
+    
+    it("should output in ascending order", async () => {
+        let test_list = []
+        for (let i =0; i < 20; i++){
+            test_list.push({
+            protocolName:"a", 
+            disputeCount : 10, 
+            averageScore : i, 
+            qScores : [i,i,i,i,i]})
+        }
+      
+        mockingoose(ProtocolModel).toReturn(test_list)
+        
 
-function getAvg(times : number[], num : number){
-    const sum = times.reduce((a, b) => a + b, 0);
-    const avg = (sum / (times.length * (num))) || 0;
-    return avg
-}
+        request(protocolsRouter)
+            .get('/')
+            // .expect('Content-Type', /json/)
+            // .expect('Content-Length', '15')
+            // .expect(200)
+            // .expect(isValidOrg)
+            .end(function(err : any, response : any) {
+            if (err) throw err;
+            });
+    })
+})
+
+
 
 
 describe('updating averages', () =>{
@@ -62,6 +77,22 @@ describe('updating averages', () =>{
     })
 })
 
+
+function addRandomScore(cumScore : number[]){
+    let randVec = [0,0,0,0,0]
+    for (let i = 0; i < cumScore.length; i++){
+        let val = Math.floor(Math.random()*11)
+        randVec[i] += val;
+        cumScore[i] += val
+    }
+    return [cumScore, randVec]
+} 
+
+function getAvg(times : number[], num : number){
+    const sum = times.reduce((a, b) => a + b, 0);
+    const avg = (sum / (times.length * (num))) || 0;
+    return avg
+}
 
 describe("Testing updateDoc", () => {
     test("Empty person", ()=>{

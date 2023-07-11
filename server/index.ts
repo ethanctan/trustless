@@ -8,7 +8,7 @@ const app = express();
 
 const userRoute = require('./routes/user')
 let protocolExport = require('./routes/protocols')
-const protocolsRoute = protocolExport.router
+const protocolsRouter = protocolExport.router
 const ipRouter = require('./routes/ip')
 const defiDataRouter = require('./routes/defiData')
 
@@ -21,7 +21,7 @@ app.use("/user", userRoute)
 
 app.use("/ip", ipRouter)
 app.use("/defiData", defiDataRouter)
-app.use("/protocols", protocolsRoute)
+app.use("/protocols", protocolsRouter)
 
 app.listen(3001, () => {
     console.log('server running on port 3001');

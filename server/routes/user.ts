@@ -18,11 +18,7 @@ router.get("/", async(req: Request, res: Response) => {
     }
 });
 
-/**
- * Add user to database
- */
-// Client-side interface: cookieId, walletId, randomly-generated referralCode (run get request below first)
-// works
+
 async function generateCode(codeLength = 8) : Promise<string> {
     const str = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz'
     let code = ""
@@ -37,7 +33,11 @@ async function generateCode(codeLength = 8) : Promise<string> {
 }
 
 
-
+/**
+ * Add user to database
+ * Client-side interface: cookieId, walletId, 
+ * randomly-generated referralCode (run get request below first)
+ */
 router.post("/", async (req: Request, res: Response) => {
     const user = req.body;
   
@@ -54,13 +54,11 @@ router.post("/", async (req: Request, res: Response) => {
 
     // Case: Existent cookie, non identifiable wallet
     if (userCookie && !userWallet) {
-        console.log("Existent cookie non identifiable wallet")
         return res.status(400).json({ message: 'Please switch to your previous wallet' });
     }
 
     // Case: Wrong cookie-wallet pair
     if ((userCookie && userWallet) && (userCookie.id !== userWallet.id)) {
-        console.log("Wrong cookie-wallet pair")
         return res.status(400).json({ message: 'Wrong cookie-wallet pair. Please use another wallet or clear cookies.' });
     }
 
@@ -70,6 +68,7 @@ router.post("/", async (req: Request, res: Response) => {
     }
     // Case:  Nonexistent cookie, nonexistent wallet
     if (!userCookie && !userWallet) {
+        
         const newUser = new UserModel({
             cookieId: user.cookieId,
             walletId: user.walletId,
@@ -83,13 +82,17 @@ router.post("/", async (req: Request, res: Response) => {
 });
 
 
-
-// GET request to check if a user with a specific referralCode exists
 // works
+/**
+ * GET request to check if a user with a specific referralCode exists
+ * Returns true if there is a user with a valid code, false otherwise
+ * @requires req.query to have {referralCode} in the json body
+ */
 router.get("/checkReferralCode", async (req: Request, res: Response) => {
     const { referralCode } = req.query;
     
     // If referralCode is null or undefined, return true immediately
+    // Why return true for referral code?
     if (referralCode === null || referralCode === undefined) {
         return res.json(true);
     }
@@ -101,14 +104,13 @@ router.get("/checkReferralCode", async (req: Request, res: Response) => {
     res.json(true);
 });
 
-
-
-
-// POST request to add a rating to a user's rating mapping
-// Client-side interface: protocolName, rating -> splice to form kv pair
 // Works
+/**
+ * POST request to add a rating to a user's rating mapping
+ * Client-side interface: protocolName, rating -> splice to form kv pair
+ * Why do we have two post requests for doing basically the exact same thing?
+ */
 router.post("/:cookieId/:walletId/addRating", async (req: Request, res: Response) => {
-    console.log("Adding rating", req.body)
     const { cookieId, walletId} = req.params;
     const { protocolName, rating } = req.body;
     const user = await UserModel.findOne({ cookieId: cookieId, walletId: walletId });
@@ -116,11 +118,10 @@ router.post("/:cookieId/:walletId/addRating", async (req: Request, res: Response
         return res.status(404).json({ message: 'User not found' });
 
     const newRating = new RatingModel(rating);
-    if (user.protocolRatings.get(protocolName)) return res.status(400).json({ message: 'You have already rated this protocol.' });
-    console.log("New rating", newRating)
+    if (user.protocolRatings.get(protocolName)) 
+        return res.status(400).json(
+            { message: 'You have already rated this protocol.' });
     user.protocolRatings.set(protocolName, newRating);
-    console.log("Setting rating", protocolName)
-    console.log("USer", user)
     await user.save();
 
     res.json({ message: 'Rating added successfully' });
@@ -133,31 +134,32 @@ router.post("/:cookieId/:walletId/updateRating", async (req: Request, res: Respo
     const { cookieId, walletId} = req.params;
     const { protocolName, rating } = req.body;
     const user = await UserModel.findOne({ cookieId: cookieId, walletId: walletId });
-    if (!user) return res.status(404).json({ message: 'User not found' });
+    if (!user) return 
+        res.status(404).json({ message: 'User not found' });
 
     const updatedRating = new RatingModel(rating);
     if (!user.protocolRatings.get(protocolName)) return res.status(404).json({ message: 'Rating not found' });
     user.protocolRatings.set(protocolName, updatedRating);
     await user.save();
-    console.log("Success");
     res.json({ message: 'Rating updated successfully' });
 });
 
-// POST request to add a walletaddress:protocol pair to the user's referredUser mapping
-// Client-side interface: walletAddress, referral -> splice to form kv pair
-// Works
+
+/**
+ * POST request to add a walletaddress:protocol pair to the user's referredUser mapping
+ * Returns 404 error if a referral code does not exist
+ * Returns 404 error if a user uses its own referral code
+ */
 router.post("/:referralCode/addReferral", async (req: Request, res: Response) => {
     const { referralCode } = req.params;
     const user = await UserModel.findOne({ referralCode: referralCode });
-    if (!user) return res.status(404).json({ message: 'No matching referral code found' });
+    if (!user) 
+        return res.status(404).json({ message: 'No matching referral code found' });
     
-    const { walletAddress, referralprotocol } = req.body;  
-    console.log(req.body);
+    const { walletAddress, referralprotocol } = req.body; 
     const referralProtocolModel = new ReferralModel(referralprotocol);
-    console.log("Hello")
     user.referredUsers.set(walletAddress, referralProtocolModel);
     await user.save();
-    console.log("Did not add successfully")
 
     res.json({ message: 'Referral added successfully' });
 });
@@ -184,17 +186,20 @@ router.get("/:cookieId/getUserInfo", async (req: Request, res: Response) => {
 router.get("/:cookieId/:walletId/getRating/:protocolName", async (req: Request, res: Response) => {
     const { cookieId, walletId, protocolName } = req.params;
     const user = await UserModel.findOne({ cookieId: cookieId, walletId: walletId });
-    if (!user) return res.status(404).json({ message: 'User not found' });
+    if (!user) 
+        return res.status(404).json({ message: 'User not found' });
 
     const rating = user.protocolRatings.get(protocolName);
     if (!rating) return res.status(404).json({ message: 'Rating not found' });
     res.json(rating.scores);
 });
 
-// GET request to check if a user with a specific cookieId exists
-// works
+
+/**
+ * GET request to check if a user with a specific cookieId exists
+ * @returns false if user does not exist and true otherwise
+ */
 router.get("/check/:cookieId", async (req, res) => {
-    console.log("Checking user cookie")
     const { cookieId } = req.params;
     const user = await UserModel.findOne({ cookieId: cookieId });
     if (!user) {
@@ -203,8 +208,10 @@ router.get("/check/:cookieId", async (req, res) => {
     res.json(true);
   });
 
-// GET request to fetch all the protocol ratings for a given user
-// Works
+/**
+ * GET request to fetch all the protocol ratings for a given user
+ * @returns 404 if user not found. Returns the rating otherwise
+ */
 router.get('/ratings', async (req, res) => {
     const { cookieId, walletId } = req.query;
     const user = await UserModel.findOne({ cookieId: cookieId, walletId: walletId });
