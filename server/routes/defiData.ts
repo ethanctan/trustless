@@ -5,18 +5,14 @@ import DefiDataModel from '../models/DefiData';
 const router = express.Router()
 
 /** 
- * Adds defi data to the backend
+ * Returns defi data
  * TODO Improve efficiency
  */
 router.get("/", async (req: Request, res: Response) => {
-    console.log("Getting defi data")
     try{
         const defiData = await DefiDataModel.find({})
-        console.log("Defi data: ", defiData)
         res.json(defiData)
-        
     }catch (err){
-        console.log("There is an error")
         res.json(err)
     }
     

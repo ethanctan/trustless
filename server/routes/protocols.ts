@@ -1,29 +1,21 @@
 import express, { Request, Response, response } from 'express';
 import ProtocolModel from '../models/Protocols';
-import { wrappedFindOne } from '../models/wrappedModelFunctions';
 const router = express.Router()
+import ProtocolController from '../controllers/protocolController';
+import UserModel from '../models/User';
 
-enum Order{
-    Ascending = 1,
-    Descending = -1
-} 
 
+/**
+ * Retrieves protocol data from the database. 
+ * Returns list in ascending order if req.query = ascending, 
+ * in descending otherwise
+ * If db is empty then we should tell the users
+ */
 router.get("/", async (req: Request, res: Response) => {
-    let order = Order.Descending
-    if (req.query && req.query.order == 'ascending'){
-        order = Order.Ascending
-    }
-
+    let protocolController = new ProtocolController(UserModel)
     try{
-        // what if protocolModel returns null?
-        const test = await ProtocolModel.find({}).sort({averageScore : order})
-        let responseData = test.map(result => ({
-            protocolName: result["protocolName"],
-            disputeCount: result["disputeCount"],
-            averageScore: result["averageScore"]
-        }))
-
-        res.status(200).json(responseData)
+        let jsonResponse = protocolController.getProtocolJson(req)
+        res.status(200).json(jsonResponse)
     }catch(error){
         res.status(400).json(error) 
     }

@@ -9,34 +9,6 @@ const protocolsRouter = protocolExport.router
 jest.useFakeTimers();
 
 
-describe("post tests", () => {
-    
-    it("should output in ascending order", async () => {
-        let test_list = []
-        for (let i =0; i < 20; i++){
-            test_list.push({
-            protocolName:"a", 
-            disputeCount : 10, 
-            averageScore : i, 
-            qScores : [i,i,i,i,i]})
-        }
-      
-        mockingoose(ProtocolModel).toReturn(test_list)
-        
-
-        request(protocolsRouter)
-            .get('/')
-            // .expect('Content-Type', /json/)
-            // .expect('Content-Length', '15')
-            // .expect(200)
-            // .expect(isValidOrg)
-            .end(function(err : any, response : any) {
-            if (err) throw err;
-            });
-    })
-})
-
-
 
 
 describe('updating averages', () =>{

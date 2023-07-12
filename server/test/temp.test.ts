@@ -13,7 +13,6 @@ app.get('/user', function(req : any, res : any) {
 // const API = "http://localhost:3001"
 
 describe("Temp test", () => {
-    console.log("App", app)
     it("Should work", () => {
         request(app)
         .get('/user')
