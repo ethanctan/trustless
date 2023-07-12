@@ -44,14 +44,15 @@ const ExpiredNotice = () => {
 function ShowCounter({ timeuntildeadline }){
     let [ days, hours, minutes, seconds] = timeuntildeadline 
     return (
-        <div className="show-counter">
-          <DateTimeDisplay value={days} type={'Days'} isDanger={days <= 3} />
-          <p>:</p>
-          <DateTimeDisplay value={hours} type={'Hours'} isDanger={false} />
-          <p>:</p>
-          <DateTimeDisplay value={minutes} type={'Mins'} isDanger={false} />
-          <p>:</p>
-          <DateTimeDisplay value={seconds} type={'Seconds'} isDanger={false} />
+        <div className="show-counter text-zinc-300 shadow-2xl shadow-purple-800/70 unbounded text-5xl p-7 bg-gradient-to-br from-purple-500/80 via-indigo-500/80 to-blue-500 w-1/3 bg-opacity-80 backdrop-filter backdrop-blur-md rounded-2xl flex flex-col">
+          <p className="unbounded text-2xl font-light mb-2"> Ratings open in: </p>
+          <div className="unbounded w-full flex flex-row justify-center">
+            <DateTimeDisplay value={hours + (days * 24) < 10 ? `0${hours + (days * 24)}` : hours + (days * 24)} type={'Hours'} isDanger={false} />
+            <p>:</p>
+            <DateTimeDisplay value={minutes < 10 ? `0${minutes}` : minutes} type={'Mins'} isDanger={false} />
+            <p>:</p>
+            <DateTimeDisplay value={seconds < 10 ? `0${seconds}` : seconds} type={'Seconds'} isDanger={false} />
+          </div>
         </div>
       );
 }
@@ -61,7 +62,6 @@ const DateTimeDisplay = ({ value, type, isDanger }) => {
     return (
       <div className={isDanger ? 'countdown danger' : 'countdown'}>
         <p>{value}</p>
-        <span>{type}</span>
       </div>
     );
   };
