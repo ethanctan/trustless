@@ -1,5 +1,5 @@
 import Button from "./button";
-import { Link, NavLink, useLocation } from "react-router-dom";
+import { NavLink, useLocation } from "react-router-dom";
 
 // @ts-ignore
 export default function Navbar({ buttonFxn }) {
@@ -19,14 +19,14 @@ export default function Navbar({ buttonFxn }) {
           </NavLink>
         </li>
         <li>
-          <NavLink
-            to="/airdrop"
+          <span // DISABLED: REPLACE WITH NavLink WHEN ENABLING
+            // to="/airdrop"
             className={`${
-              location.pathname === "/airdrop" ? "text-purple-400 text-glow " : "text-gray-400 hover:text-gray-100"
+              location.pathname === "/airdrop" ? "text-purple-400 text-glow " : "text-gray-400 " //hover:text-gray-100
             }`}
           >
             Claim Airdrop
-          </NavLink>
+          </span>
         </li>
         <li>
           <NavLink

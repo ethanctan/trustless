@@ -16,7 +16,7 @@ function App() {
           <Route path="/airdrop" element={<Airdrop />} />
           <Route path="/mechanics" element={<Mechanics />} />
           <Route path="/submitRatings" element={<SubmitRating />} />
-          <Route path="/viewRatings" element={<ViewRatings />} />
+          <Route path="/viewRatings" element={<ViewRatings />} />c
         </Routes>
       </div>
     </>

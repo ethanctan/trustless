@@ -185,7 +185,7 @@ function Form({defiData, getUserData, connectMetamask, updateProtocol, handleUse
                 </div>
             </div>
 
-              <ReCAPTCHA sitekey={"6LfkugcnAAAAAJ3nBJl9dJYpW0YskzAq1o0zWzs4"}/>
+              <ReCAPTCHA sitekey={"6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI"}/>
 
           {connectWallet ? 
             <button 

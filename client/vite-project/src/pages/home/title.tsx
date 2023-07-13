@@ -20,7 +20,7 @@ function Introduction(){
           Rate protocols, earn $TRUST.
         </h2>
 
-        <CountdownDisplay targetDate={"2023-07-12"}/>
+        <CountdownDisplay targetDate={"2023-07-17"}/>
 
 
         <div className="flex flex-col mt-5 w-3/4">
