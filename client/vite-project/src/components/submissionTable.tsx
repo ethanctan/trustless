@@ -17,7 +17,7 @@ function SubmissionTable({headings, submissions, RowGenerator}){
             </tbody>
           </table>
           {submissions.length === 0 && (
-            <p className="p-6 py-4 whitespace-nowrap text-sm font-medium text-white poppins">No protocols found.</p>
+            <p className="p-6 py-4 whitespace-nowrap text-sm font-medium text-white poppins">No entries found. Submit a rating!</p>
           )}
         </div>
     )

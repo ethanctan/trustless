@@ -205,7 +205,7 @@ function Form({defiData, getUserData, updateProtocol, handleUserSubmission, acco
           {/* to be updated */}
           {errorMessage == 'Successfully added!'? 
             <div 
-              className='mb-3 mt-3 bg-blue-500 hover:bg-blue-400 hover:border-white focus:outline-none cursor-pointer'
+              className='mb-3 mt-3 bg-blue-700 hover:bg-blue-600 hover:border-white focus:outline-none py-2 px-4 rounded-lg cursor-pointer'
               onClick={() => {
                 window.open(`https://twitter.com/intent/tweet?text=I%20just%20rated%20${protocol}%20with%20scores%20of%20${[q1Score, q2Score, q3Score, q4Score, q5Score].join(', ')}%20on%20TRUST%20and%20earned%20a%20$TRUST%20airdrop.%20Check%20it%20out%20at%20http://localhost:5173&via=YourTwitterHandle`);
               }}
