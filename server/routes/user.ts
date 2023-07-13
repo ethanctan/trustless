@@ -1,8 +1,7 @@
 import express, { Request, Response } from 'express';
-import UserModel from '../models/User';
+import UserModel from '../models/user/UserModel';
 
-import mongoose from 'mongoose';
-import {RatingModel, ReferralModel} from '../models/User';
+import {RatingModel, ReferralModel} from '../models/user/UserModel';
 
 const router = express.Router()
 
@@ -144,8 +143,8 @@ router.post("/:referralCode/addReferral", async (req: Request, res: Response) =>
     
     const { walletAddress, referralprotocol } = req.body; 
     const referralProtocolModel = new ReferralModel(referralprotocol);
-    user.referredUsers.set(walletAddress, referralProtocolModel);
-    await user.save();
+    // user.referredUsers.set(walletAddress, referralProtocolModel);
+    // await user.save();
 
     res.json({ message: 'Referral added successfully' });
 });

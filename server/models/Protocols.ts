@@ -14,5 +14,7 @@ const ProtocolSchema = new mongoose.Schema({
     qScores: {type: [Number], required: true}
 });
 
+
+
 const ProtocolModel = mongoose.model<IProtocol>('protocols', ProtocolSchema);
 export default ProtocolModel;

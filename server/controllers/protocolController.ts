@@ -46,6 +46,22 @@ export default class ProtocolController{
         return order
     }
 
+    async addProtocolJson(protocol : object){
+
+        let doc = await ProtocolModel.findOne(
+            {protocolName: protocol["protocolName"]},
+        )
+
+        if (doc == null){
+            const newProtocol = new ProtocolModel(protocol);
+            newProtocol.save();
+            return {message : "Success"}
+        }
+        doc = this.updateDoc(doc, protocol)
+        //@ts-ignore
+        doc.save()
+        return {message : "Success"}
+    }
 
     updateAvg (docScores : number[], protocolScores : number[], 
         numDisputes : number) : [number[], number] {

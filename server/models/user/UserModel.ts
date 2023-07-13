@@ -1,6 +1,6 @@
 import mongoose, { Document } from 'mongoose';
 
-interface Rating extends Document {
+interface IRating extends Document {
     scores: [number],
     code: string
 }
@@ -9,12 +9,12 @@ interface UserReferral extends Document {
     protocol: string;
 }
 
-interface User extends Document {
+interface IUser extends Document {
     cookieId: string;
     walletId: string;
     referralCode: string;
-    referredUsers: Map<string, UserReferral>;
-    protocolRatings: Map<string, Rating>;
+    referredUsers: Map<string, string>;
+    protocolRatings: Map<string, IRating>;
 }
 
 const RatingSchema = new mongoose.Schema({
@@ -30,13 +30,17 @@ const UserSchema = new mongoose.Schema({
     cookieId: {type: String, required: true},
     walletId: {type: String, required: true},
     referralCode: {type: String, required: false},
-    referredUsers: {type: Map, of: ReferralSchema, required: false},
+    referredUsers: {type: Map, of: String, required: false},
     protocolRatings: {type: Map, of: RatingSchema, required: false}
 });
 
-const UserModel = mongoose.model<User>('user', UserSchema);
-const RatingModel = mongoose.model<Rating>('rating', RatingSchema);
+
+
+
+
+const UserModel = mongoose.model<IUser>('user', UserSchema);
+const RatingModel = mongoose.model<IRating>('rating', RatingSchema);
 const ReferralModel = mongoose.model<UserReferral>('referral', ReferralSchema);
 
 export default UserModel;
-export { RatingModel, ReferralModel };
+export { RatingModel, ReferralModel, IRating };

@@ -2,10 +2,8 @@
 import { MongoClient } from 'mongodb';
 import { MongoMemoryServer } from 'mongodb-memory-server';
 import mongoose from 'mongoose';
-import MyModel from '../dependencies/testModel';
 import ProtocolModel from '../../models/Protocols';
 import ProtocolController from '../../controllers/protocolController';
-// This is an Example test, do not merge it with others and do not delete this file
 
 describe('Single MongoMemoryServer', () => {
   let con: MongoClient;
@@ -36,6 +34,12 @@ describe('Single MongoMemoryServer', () => {
     await mongoose.disconnect()
   });
 
+  let unit = {
+        protocolName: "c",
+        disputeCount: 18,
+        averageScore: 8,
+        qScores: [8, 8, 8, 8, 8]
+    }
   let jsonList = [
     {
         protocolName: "b",
@@ -49,17 +53,12 @@ describe('Single MongoMemoryServer', () => {
         averageScore: 3,
         qScores: [3, 3, 3, 3, 3]
     },
-      {
-        protocolName: "c",
-        disputeCount: 18,
-        averageScore: 8,
-        qScores: [8, 8, 8, 8, 8]
-    }]
+      unit]
 
     
     it("Should give json data in ascending", async () => {
         await ProtocolModel.insertMany(jsonList)
-        
+
         let protocolController = new ProtocolController(ProtocolModel)
         let jsonData = await protocolController.getProtocolJson({query : 
             {order : "ascending"}})
@@ -83,6 +82,22 @@ describe('Single MongoMemoryServer', () => {
             {order : "uwu"}})
         expect(jsonData[0]["protocolName"]).toBe("c")
     })
+
+    it("Should return an empty array if empty", async () => {
+        let protocolController = new ProtocolController(ProtocolModel)
+        let response = await protocolController.getProtocolJson({query : 
+            {order : "uwu"}}) 
+        expect(response).toStrictEqual([])
+    })
+
+    it("Should successfully update db", async() => {
+        let protocolController = new ProtocolController(ProtocolModel)
+        let response = await protocolController.addProtocolJson(unit)
+        expect(response).toStrictEqual({message : "Success"})
+        let numDocs = await ProtocolModel.count()
+        expect(numDocs).toBe(1)
+    })
+
 
 
 });
