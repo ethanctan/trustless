@@ -1,10 +1,11 @@
 import FormController from "./formController"
 
-export default function SubmitRating(){
+//@ts-ignore
+export default function SubmitRating({account}){
     return (
         <div>
             This is the submit ratings page
-            <FormController/>
+            <FormController account = {account}/>
         </div>
     )
 }

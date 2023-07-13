@@ -4,8 +4,9 @@ import '@fontsource/poppins';
 
 import { TextField } from '@mui/material';
 import { Rating, ProtocolRatings, UserIdentity} from '../../utils/interfaces.ts'
+import { addUser } from '../../utils/utils.ts'
 
-import {Question} from '../../components/question.tsx'
+import { Question } from '../../components/question.tsx'
 import SearchBar from '../../components/searchBar.tsx';
 import { textFieldDesc } from './formConsts.ts';
 import { SubmissionTable } from '../../components/submissionTable.tsx';
@@ -15,7 +16,7 @@ import ReCAPTCHA from 'react-google-recaptcha';
 
 
 //@ts-ignore
-function Form({defiData, getUserData, connectMetamask, updateProtocol, handleUserSubmission}){
+function Form({defiData, getUserData, updateProtocol, handleUserSubmission, account}){
     
     const [q1Score, setQ1Score] = useState<number>(1);
     const [q2Score, setQ2Score] = useState<number>(1);
@@ -63,6 +64,14 @@ function Form({defiData, getUserData, connectMetamask, updateProtocol, handleUse
     }
   }
 
+  useEffect(() => {
+    if (account){
+      setAddress(account);
+      addUser(user_id, account);
+      setConnectWallet(true);
+    }
+  }, [account]);
+
   // sets cookieid for user, and sets referral code, wallet address and protocolratings if user exists
   useEffect(() =>{
     getUserDataWrapped();
@@ -92,18 +101,18 @@ function Form({defiData, getUserData, connectMetamask, updateProtocol, handleUse
     }
   }
   
-  async function connectWrapped(){
-    try{
-      let walletAccount = await connectMetamask(user_id) // better return value
-      setConnectWallet(true)
-      if (walletAccount){
-        console.log("WalletAccount", walletAccount)
-        setAddress(walletAccount)
-      }
-    }catch(error){
-      console.log("erorr")
-    }
-  }
+  // async function connectWrapped(){ // TODO: EDIT THIS
+  //   try{
+  //     let walletAccount = await connectMetamask(user_id) // this will be the passed variable instead
+  //     setConnectWallet(true)
+  //     if (walletAccount){
+  //       console.log("WalletAccount", walletAccount)
+  //       setAddress(walletAccount)
+  //     }
+  //   }catch(error){
+  //     console.log("erorr")
+  //   }
+  // }
 
   async function updateProtocolWrapped(){
     try{
@@ -134,8 +143,8 @@ function Form({defiData, getUserData, connectMetamask, updateProtocol, handleUse
 
     return (
         <div className="flex flex-col justify-items-stretch poppins mx-auto max-w-lg">
-              {/* edit this ugly ass button */}
-              <button style={{
+              {/* MOVED TO NAVBAR */}
+              {/* <button style={{
                 padding: "10px",
                 width:'80%',
                 alignSelf:'center',
@@ -144,7 +153,7 @@ function Form({defiData, getUserData, connectMetamask, updateProtocol, handleUse
                 onClick={connectWrapped}
             >
                 {connectWallet ? "Success!" : "Connect your wallet to submit a rating 👀"}
-            </button>
+            </button> */}
             {connectWallet ? <SearchBar protocol={protocol} defiData={defiData} handleSetProtocol={handleSetProtocol} /> : null}
             {protocol && (
             <div className="mb-4"> 
