@@ -142,8 +142,6 @@ export default function Navbar({ passAccount }) {
       </ul>
       <div className="ml-auto flex items-center justify-end px-8 py-2">
       {/* <ConnectWallet
-        theme="dark"
-        btnTitle="Connect Wallet"
       /> */}
         <Button
           text={

@@ -8,10 +8,10 @@ import { ThirdwebProvider } from "@thirdweb-dev/react";
 
 ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
   <React.StrictMode>
-    <BrowserRouter>
-      {/* <ThirdwebProvider activeChain="ethereum"> */}
-          <App />
-      {/* </ThirdwebProvider> */}
-    </BrowserRouter>
+    <ThirdwebProvider activeChain="ethereum">
+      <BrowserRouter>
+            <App />
+      </BrowserRouter>
+    </ThirdwebProvider>
   </React.StrictMode>,
 )
