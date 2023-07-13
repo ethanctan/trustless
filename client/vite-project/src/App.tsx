@@ -4,6 +4,7 @@ import Mechanics from "./pages/mechanics";
 import SubmitRating from "./pages/submitRatings";
 import ViewRatings from "./pages/viewRatings";
 import Airdrop from "./pages/airdrop"; 
+import Stake from "./pages/stake";
 import { Route, Routes } from "react-router-dom";
 import { useState } from "react";
 
@@ -20,10 +21,11 @@ function App() {
       <div className="container mx-auto pt-24">
         <Routes>
           <Route path="/" element={<Home />} />
-          <Route path="/airdrop" element={<Airdrop />} />
+          {/* <Route path="/airdrop" element={<Airdrop />} />
+          <Route path="/stake" element={<Stake />} /> Uncomment when pages go live */}
           <Route path="/mechanics" element={<Mechanics />} />
           <Route path="/submitRatings" element={<SubmitRating account={account}/>} />
-          <Route path="/viewRatings" element={<ViewRatings />} />c
+          <Route path="/viewRatings" element={<ViewRatings />} />
         </Routes>
       </div>
     </>

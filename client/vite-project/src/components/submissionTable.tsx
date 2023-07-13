@@ -1,10 +1,9 @@
 //@ts-ignore
 function SubmissionTable({headings, submissions, RowGenerator}){
     return (
-        <div className="border rounded-lg overflow-hidden bg-gray-900 bg-opacity-50 backdrop-filter backdrop-blur-md border-gray-700">
-          <table className="min-w-full divide-y divide-gray-200 divide-gray-700">
-
-                  <thead>
+        <div className="w-fit border rounded-lg overflow-hidden bg-gray-900 bg-opacity-50 backdrop-filter backdrop-blur-md border-gray-700 poppins">
+          <table className="divide-y divide-gray-200 divide-gray-700 table-auto">
+          <thead>
               <tr>
               {headings.map((heading : string) => (
                   <th scope="col" className="p-6 py-3 text-center text-xs font-medium text-white uppercase poppins">

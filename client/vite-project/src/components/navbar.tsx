@@ -3,6 +3,7 @@ import { NavLink, useLocation } from "react-router-dom";
 import { Tooltip } from '@mui/material';
 import { ethers } from 'ethers';
 import { useState, useEffect } from 'react';
+import { ConnectWallet } from "@thirdweb-dev/react";
 
 //@ts-ignore
 export default function Navbar({ passAccount }) {
@@ -98,6 +99,17 @@ export default function Navbar({ passAccount }) {
           </Tooltip>
         </li>
         <li>
+          <Tooltip title={"Available after the rating phase is complete."} placement="top" arrow>
+            <span
+              className={`${
+                location.pathname === "/stake" ? "text-purple-400 text-glow " : "text-gray-400 "
+              }`}
+            >
+              Stake
+            </span>
+          </Tooltip>
+        </li>
+        <li>
           <NavLink
             to="/mechanics"
             className={`${
@@ -129,6 +141,10 @@ export default function Navbar({ passAccount }) {
         </li>
       </ul>
       <div className="ml-auto flex items-center justify-end px-8 py-2">
+      {/* <ConnectWallet
+        theme="dark"
+        btnTitle="Connect Wallet"
+      /> */}
         <Button
           text={
             correctNetwork ? 
@@ -142,3 +158,5 @@ export default function Navbar({ passAccount }) {
     </nav>
   );
 }
+
+

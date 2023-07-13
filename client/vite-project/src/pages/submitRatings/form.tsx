@@ -134,37 +134,34 @@ function Form({defiData, getUserData, updateProtocol, handleUserSubmission, acco
   function listUserRatings(key : any){
     const {scores} = protocolRatings[key];
     return (
-        <tr key={key}>
+        <tr key={key} className="py-2">
             <td>{key}</td>
-            <td>{scores.join(', ')}</td>
+            <td>{scores[0]}</td>
+            <td>{scores[1]}</td>
+            <td>{scores[2]}</td>
+            <td>{scores[3]}</td>
+            <td>{scores[4]}</td>
         </tr>
     );
   }
 
     return (
-        <div className="flex flex-col justify-items-stretch poppins mx-auto max-w-lg">
-              {/* MOVED TO NAVBAR */}
-              {/* <button style={{
-                padding: "10px",
-                width:'80%',
-                alignSelf:'center',
-                backgroundColor: "#1a202c",
-            }}
-                onClick={connectWrapped}
-            >
-                {connectWallet ? "Success!" : "Connect your wallet to submit a rating 👀"}
-            </button> */}
-            {connectWallet ? <SearchBar protocol={protocol} defiData={defiData} handleSetProtocol={handleSetProtocol} /> : null}
-            {protocol && (
-            <div className="mb-4"> 
-                <p className="mb-2"> Our framework for trust consists of 5 factors, rated on a scale of 1-10, with 1 being the least trustworthy and 10 being the most. </p>
-                <p className="mb-2"> Rate {protocol}'s trustworthiness in these 5 areas. </p>
+      <div className="flex flex-col justify-center"> 
+        <div className="flex flex-col justify-items-stretch poppins">
+          {!connectWallet ?  
+            <div className="bg-red-500/50 rounded-2xl backdrop-filter backdrop-blur-md p-7 poppins mx-auto text-xl mt-6">
+              Connect your wallet first!
             </div>
-            )}
+          : null}
+            {connectWallet ? <SearchBar protocol={protocol} defiData={defiData} handleSetProtocol={handleSetProtocol} /> : null}
 
             { protocol && (
 
-            <div className="bg-gray-900 backdrop-blur-md bg-opacity-50 p-4 rounded-lg mb-4">
+            <div className="bg-gray-900 backdrop-blur-md bg-opacity-50 p-4 rounded-lg mb-4 mx-auto max-w-xl">
+            <div className="m-4"> 
+                <p className="mb-2"> Our framework for trust consists of 5 factors, rated on a scale of 1-10, with 1 being the least trustworthy and 10 being the most. </p>
+                <p className="mb-2"> Rate {protocol}'s trustworthiness in these 5 areas. </p>
+            </div>
             <div className="grid grid-cols-1 md:grid-cols-8 gap-4 py-4">
                 <Question questionScore={q1Score} setScore={setQ1Score} 
                 text={text1} title="Contracts"/>
@@ -193,12 +190,13 @@ function Form({defiData, getUserData, updateProtocol, handleUserSubmission, acco
                     />
                 </div>
             </div>
-
+            <div className="flex flex-grow items-center justify-center my-4">
               <ReCAPTCHA sitekey={"6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI"}/>
+            </div>
 
           {connectWallet ? 
             <button 
-              className='mb-3 mt-3 bg-blue-700 hover:bg-blue-600 hover:border-white focus:outline-none' 
+              className='mb-3 mt-3 bg-blue-700 hover:bg-blue-600 hover:border-white focus:outline-none py-2 px-4 rounded-lg cursor-pointer' 
               onClick={handleUserSubmissionWrapped}
             >
               Submit
@@ -219,15 +217,24 @@ function Form({defiData, getUserData, updateProtocol, handleUserSubmission, acco
             <h5 style={ errorMessage == 'Successfully added!' ? { color: 'white' } : {color: 'red' }}>{errorMessage}</h5>
             </div>
         )}
+    </div>
 
-
-        <SubmissionTable 
-        headings={["Protocol Name", "Scores"]}
-        submissions={Object.keys(protocolRatings)}
-        RowGenerator={listUserRatings}
-        />
+      {connectWallet ? 
+      <>
+        <h3 className="unbounded text-2xl my-5 font-light">
+          Your ratings:
+        </h3>
+        <div className="mx-auto">
+          <SubmissionTable 
+          headings={["Protocol Name", "Contracts", "Treasury", "Roadmap", "Governance", "Team"]}
+          submissions={Object.keys(protocolRatings)}
+          RowGenerator={listUserRatings}
+          /> 
         </div>
-    )
+      </>
+      : null}
+  </div>
+  )
 }
 
 export default Form;
