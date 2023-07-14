@@ -1,9 +1,9 @@
-const request = require("supertest")
-const mockingoose = require('mockingoose');
-import DefiDataModel from '../../models/DefiData';
-import {describe, expect, test} from '@jest/globals';
-let defiDataRouter = require('../routes/defiData')
-jest.useFakeTimers();
+// const request = require("supertest")
+// const mockingoose = require('mockingoose');
+// import DefiDataModel from '../../models/DefiData';
+// import {describe, expect, test} from '@jest/globals';
+// let defiDataRouter = require('../routes/defiData')
+// jest.useFakeTimers();
 
 const API = "http://localhost:3001/"
 

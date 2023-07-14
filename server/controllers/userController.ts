@@ -1,7 +1,7 @@
-import UserModel, { RatingModel } from "../models/user/UserModel"
+import UserModel, { RatingModel, ReferralModel } from "../models/user/UserModel"
 import express, { Request, Response } from 'express';
 import mongoose from "mongoose"
-import User from "../models/user/User";
+import User, {NullUser, Rating, NullRating} from "../models/user/User";
 import { errors } from "ethers";
 
 export default class UserController{
@@ -102,26 +102,69 @@ export default class UserController{
     }
 
     /**
-     * Add referral to user's mapping. If user isn't found, return an error 
-     * message
-     * Should not add user to add themselves as a referrer
-     * @param user 
-     * @param referral 
+     * Adds referee to the referrer's map of referred user
+     * Should not allow users to add themselves as a referrer
+     * @param referee 
+     * @param referrerCode 
      */
-    async addReferral(user : User, referral : string){
+    async addReferral(referee : User, referrerCode : string){
         const referrer = await this.database.findOne({
-            referralCode : user.referralCode})
-        
+            referralCode : referrerCode})
+        let status = this.checkReferralConditions(referee, referrer)
+        if (status != "valid"){
+            return status
+        }
+
+        const referralModel = new ReferralModel({protocol : referrerCode})
+        referrer.referredUsers.set(referee.walletId, referralModel)
+        await referrer.save()
+        return "successfully added/updated referral code"
+    }
+
+    private checkReferralConditions(user : User, referrer : object){
         if (!referrer){
             return "user not found"
         }
-        console.log("referrer: ",referrer)
-        console.log("User:", user)
-        if (referrer == user){
+
+        if (referrer["walletId"] == user["walletId"] || 
+                referrer["cookieId"] == user["cookieId"]){
             return "user submitted own referral code"
         }
 
+        return "valid"
+    }
 
+
+
+    /**
+     * Gets a user based on userId. Returns user object and success message
+     * if found and returns only message otherwise
+     * @param cookieId 
+     */
+    async getUserInfo(cookieId : string) : Promise<User> {
+        let user = await UserModel.findOne({ cookieId: cookieId})
+        if (!user){
+            return new NullUser()
+        }
+        let ret = User.getUserFromDocument(user)
+        return ret
+    }
+    
+    /**
+     * Gets user rating from database. Returns 
+     * nullRating user or rating isn't found
+     */
+    async getUserRating(cookieId : string, 
+        walletId : string, protocolName : string) : Promise<Rating>{
+            const user = await UserModel.findOne(
+                { cookieId: cookieId, walletId: walletId });
+            if (!user){
+                return new NullRating()
+            }
+            const rating = user.protocolRatings.get(protocolName);
+            if (!rating) return  new NullRating()
+
+            return Rating.fromIRating(rating)
     }
 
     private async findUser(condition : object) : Promise<User>{

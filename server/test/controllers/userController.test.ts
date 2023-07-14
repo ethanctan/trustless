@@ -4,7 +4,8 @@ import { MongoMemoryServer } from 'mongodb-memory-server';
 import mongoose from 'mongoose';
 import UserModel from '../../models/user/UserModel';
 import UserController from '../../controllers/userController';
-import User from '../../models/user/User';
+import User, { Rating, NullRating } from '../../models/user/User';
+import { trace } from 'console';
 
   let con: MongoClient;
   let mongoServer: MongoMemoryServer;
@@ -82,20 +83,21 @@ describe('Single MongoMemoryServer', () => {
 
 
 describe("Test referral code ",  () => {
-  it("Should return false due to nonexistent referral code", async () => {
-    let userController = new UserController(UserModel)
-    let response = await userController.checkReferralCodeExists("null");
-    expect(response).toBe(false)
-  })
-
   it("Should return true after adding referral code", async () => {
     let userController = new UserController(UserModel)
     let user = new User("Sky", "does", "Minecraft")
     let userModel = new UserModel(user.getUserObject())
     await userModel.save()
-
+    trace()
     let response = await userController.checkReferralCodeExists("Minecraft");
     expect(response).toBe(true)
+  })
+
+  it("Should return false due to nonexistent referral code", async () => {
+    let userController = new UserController(UserModel)
+    trace()
+    let response = await userController.checkReferralCodeExists("null");
+    expect(response).toBe(false)
   })
 })
     
@@ -133,6 +135,8 @@ describe("Test upsert rating", () => {
     expect(response).toBe("rating added")
   })
 
+
+
 })
 
 describe("Test add referral", () => {
@@ -143,14 +147,59 @@ describe("Test add referral", () => {
     expect(response).toBe("user not found")
   })
 
-  // it("should return an error due to user adding themself", async () => {
-  //   let userController = new UserController(UserModel)
-  //   await addToDatabase(basicTestUser)
-  //   let response = await userController.addReferral(basicTestUser, basicTestUser.getReferralCode())
-  //   expect(response).toBe("user submitted own referral code")
-  // })
+  it("should return an error due to user adding themself", async () => {
+    let userController = new UserController(UserModel)
+    await addToDatabase(basicTestUser)
+    let response = await userController.addReferral(basicTestUser, basicTestUser.getReferralCode())
+    expect(response).toBe("user submitted own referral code")
+  })
+
+  it("Should return success message when user adds message", async () => {
+    let userController = new UserController(UserModel)
+    await addToDatabase(basicTestUser)
+    let testUser2 = new User("foo", "bar", "baz")
+    await addToDatabase(testUser2)
+    let response = await userController.addReferral(testUser2, basicTestUser.getReferralCode())
+    expect(response).toBe("successfully added/updated referral code")
+  })
 
 })
+
+describe("Test get user info", () => {
+  it("Should return an error message for unfound users", async () => {
+    let userController = new UserController(UserModel)
+    let response = await userController.getUserInfo("hello")
+    expect(response.isNull()).toBe(true)
+  })
+
+    // TODO: Install and use lodash for inequality
+  it("Should return a user for existing users", async () => {
+    let userController = new UserController(UserModel)
+    await addToDatabase(basicTestUser)
+    let response = await userController.getUserInfo(basicTestUser.cookieId)
+    expect(response["cookieId"] == basicTestUser.cookieId).toBe(true)
+  })
+})
+
+describe("Test getUserRating", () =>{
+    it("Should return a null rating", async () =>{
+      let userController = new UserController(UserModel)
+      await addToDatabase(basicTestUser)
+      let response = await userController.getUserRating("", "", "")
+      expect(response.isNull()).toBe(true)
+    })
+
+    it("Should return a rating", async () => {
+      let userController = new UserController(UserModel)
+      basicTestUser.protocolRatings.set("foo", new Rating([1,1,1,1,1], "bar"))
+      await addToDatabase(basicTestUser)
+      let response = await userController.getUserRating(
+        basicTestUser.cookieId, basicTestUser.walletId, "foo"
+      )
+      expect(response.code).toBe("bar")
+    })
+    
+  })
 
 
 function createRating(protocol : string, score : number[]){

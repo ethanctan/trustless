@@ -21,7 +21,16 @@ class Rating{
     getRatingObject(){
         return {scores: this.scores, code: this.code}
     }
+    isNull(): boolean {return false}
 }
+
+class NullRating extends Rating{
+    constructor(){
+        super([0,0,0,0,0], "")
+    }
+    isNull(): boolean {return true}
+}
+
 
 export default class User{
 
@@ -59,19 +68,31 @@ export default class User{
             }
     }
 
+    isNull() : boolean{ return false }
+
     static getUserFromRequest(){
 
     }
 
-    static getUserFromModel(model : mongoose.Document<User>){
-        
+    // TODO Figure out how to make type easier to read
+    static getUserFromDocument(document : 
+        (mongoose.Document<unknown, {}, IUser> & Omit<IUser & {
+        _id: mongoose.Types.ObjectId;
+    }, never>) ){
+        let a = document.walletId
+
+        let protocolRatings = new Map(Array.from(
+            document.protocolRatings,
+             ([k, v] : [string, IRating]) => [k, Rating.fromIRating(v)]
+        ))
+        return new this(
+            document.cookieId, document.walletId, document.referralCode, 
+            document.referredUsers, protocolRatings)
     }
 
     getReferralCode(){
         return this.referralCode
     }
-
-    
 
     
 
@@ -128,6 +149,9 @@ export default class User{
         return referredUsersObject
     }
 
+    
+
+
     static convertIRatingToRating(iRatings : Map<string, IRating>){
         let referredUsersObject  = new Map<string, Rating>()
         Array.from(iRatings).reduce((obj : any, [key, value] : [string, any])=>{
@@ -139,7 +163,7 @@ export default class User{
     }
 
     getUserObject() : object{
-        let referredUsersObject = this.getProtocolRatingObject()
+        let referredUsersObject = this.getReferredUsersObject()
         let getProtocolRatingObject = this.getProtocolRatingObject()
         let userObject = {
             "cookieId": this.cookieId, "walletId": this.walletId, 
@@ -150,9 +174,15 @@ export default class User{
         return userObject
     }
 
-
-
-
-    
-
 }
+
+class NullUser extends User{
+    
+    isNull() : boolean {return true}
+
+    constructor(){
+        super("", "", "")
+    }
+}
+
+export {NullUser, NullRating, Rating}

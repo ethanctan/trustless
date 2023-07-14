@@ -55,7 +55,6 @@ describe("Test user creations", () => {
         secondUser.setProtocolRatingString("a", [1,2,3,4,5], "c")
         expect(user).toEqual(secondUser)
     })
-
 })
 
 describe("Test user get methods", () => {
