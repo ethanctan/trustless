@@ -31,9 +31,12 @@ class NullRating extends Rating{
     isNull(): boolean {return true}
 }
 
+type UserDocument = (mongoose.Document<unknown, {}, IUser> & Omit<IUser & {
+    _id: mongoose.Types.ObjectId;
+}, never>)
 
 export default class User{
-
+    
     cookieId: string;
     walletId: string;
     referralCode: string;
@@ -75,10 +78,7 @@ export default class User{
     }
 
     // TODO Figure out how to make type easier to read
-    static getUserFromDocument(document : 
-        (mongoose.Document<unknown, {}, IUser> & Omit<IUser & {
-        _id: mongoose.Types.ObjectId;
-    }, never>) ){
+    static getUserFromDocument(document : UserDocument){
         let a = document.walletId
 
         let protocolRatings = new Map(Array.from(

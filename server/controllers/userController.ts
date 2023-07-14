@@ -1,5 +1,4 @@
 import UserModel, { RatingModel, ReferralModel } from "../models/user/UserModel"
-import express, { Request, Response } from 'express';
 import mongoose from "mongoose"
 import User, {NullUser, Rating, NullRating} from "../models/user/User";
 
@@ -26,27 +25,12 @@ export default class UserController{
             case (userCookieExists && userWalletExists):
                 return this.handleKnownUser(userCookie.id, userWallet.id)
             default:
-                await this.addUserToDatabase(user)
+                //await this.addUserToDatabase(user)
                 return "added user to database"
         }
     }
 
-    async addUserToDatabase(user : object){
-        let userModel;
-        if (user instanceof User){
-            userModel = new UserModel(user.getUserObject())
-        }else{
-            userModel = new UserModel({
-                cookieId: user["cookieId"],
-                walletId: user["walletId"],
-                referralCode: user["referralCode"],
-                referredUsers: new Map(),
-                protocolRatings: new Map()
-            });
-        }
-        
-        await userModel.save()
-    }
+    
 
     private async updateUserCookies(user : object, userWallet : any){
         userWallet.cookieId = user["cookieId"];
@@ -133,8 +117,6 @@ export default class UserController{
         return "valid"
     }
 
-
-
     /**
      * Gets a user based on userId. Returns user object and success message
      * if found and returns only message otherwise
@@ -166,29 +148,17 @@ export default class UserController{
             return Rating.fromIRating(rating)
     }
 
-    // private async findUser(condition : object) : Promise<User>{
-    //     const user = await UserModel.findOne(condition)
-    //     if (user == null){
-    //         throw new Error("user not found")
-    //     }
-        
-    //     let protocolRatings = User.convertIRatingToRating(user.protocolRatings)
-    //     let returnedUser = new User(
-    //         user.cookieId, user.walletId, user.referralCode, 
-    //         user.referredUsers, protocolRatings)
-
-    //     return returnedUser
-    // }
+    
 }
 
 /** @returns a random alphanumeric code with length codeLength */
-// function generateCode(codeLength = 8) : string {
-//     const str = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz'
-//     let code = ""
-//     for (let i=0; i < codeLength; i++){
-//         code += str.charAt(Math.floor(Math.random() * (str.length+1)));
-//     }
-//     return code
-// }
+function generateCode(codeLength = 8) : string {
+    const str = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz'
+    let code = ""
+    for (let i=0; i < codeLength; i++){
+        code += str.charAt(Math.floor(Math.random() * (str.length+1)));
+    }
+    return code
+}
 
 
