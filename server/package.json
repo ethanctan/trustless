@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.ts",
   "scripts": {
-    "test": "jest --maxWorkers 2 --detectOpenHandles",
+    "test": "jest --maxWorkers 2 --detectOpenHandles --coverage",
     "start": "nodemon --exec ts-node index.ts"
   },
   "keywords": [],

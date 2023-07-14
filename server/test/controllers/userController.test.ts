@@ -112,6 +112,7 @@ describe("Test upsert rating", () => {
     expect(response).toBe("user not found")
   })
 
+  
   it("should return rating added if user exists and new protocol is added", async () => {
     let userController = new UserController(UserModel)
     let userModel = new UserModel(basicTestUser.getUserObject())
