@@ -2,6 +2,7 @@ import UserModel, { RatingModel } from "../models/user/UserModel"
 import express, { Request, Response } from 'express';
 import mongoose from "mongoose"
 import User from "../models/user/User";
+import { errors } from "ethers";
 
 export default class UserController{
 
@@ -66,6 +67,7 @@ export default class UserController{
                 referralCode: referralCode });
             return Boolean(referralCodeExists)
         }catch(err){
+            console.log("Error", err)
             return false
         }
     }
@@ -102,17 +104,30 @@ export default class UserController{
     /**
      * Add referral to user's mapping. If user isn't found, return an error 
      * message
+     * Should not add user to add themselves as a referrer
      * @param user 
      * @param referral 
      */
     async addReferral(user : User, referral : string){
+        const referrer = await this.database.findOne({
+            referralCode : user.referralCode})
+        
+        if (!referrer){
+            return "user not found"
+        }
+        console.log("referrer: ",referrer)
+        console.log("User:", user)
+        if (referrer == user){
+            return "user submitted own referral code"
+        }
+
 
     }
 
     private async findUser(condition : object) : Promise<User>{
         const user = await UserModel.findOne(condition)
         if (user == null){
-            throw new Error("User not found")
+            throw new Error("user not found")
         }
         
         let protocolRatings = User.convertIRatingToRating(user.protocolRatings)

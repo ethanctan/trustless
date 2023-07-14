@@ -1,24 +1,17 @@
-import { IRating } from "./UserModel";
+import mongoose from "mongoose";
+import { IRating, IUser } from "./UserModel";
 
 class Rating{
 
-    protocol : string;
     scores : number[];
     code : string
-    constructor(scores : number[], code?: string, protocol ?: string){
+    constructor(scores : number[], code?: string){
         this.scores = scores
         if (code == null){
             this.code = ""
         }else{
             this.code = code
         }
-
-        if (protocol == null){
-            this.protocol = ""
-        }else{
-            this.protocol = protocol
-        }
-
     }
 
     static fromIRating(rating : IRating){
@@ -66,11 +59,21 @@ export default class User{
             }
     }
 
-    
-
-    static fromRequest(){
+    static getUserFromRequest(){
 
     }
+
+    static getUserFromModel(model : mongoose.Document<User>){
+        
+    }
+
+    getReferralCode(){
+        return this.referralCode
+    }
+
+    
+
+    
 
     getUid(){
         return {"cookieId": this.cookieId, "walletId": this.walletId}

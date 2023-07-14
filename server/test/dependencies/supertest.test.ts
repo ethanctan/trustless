@@ -10,10 +10,9 @@ app.get('/user', function(req : any, res : any) {
 
 
 
-// const API = "http://localhost:3001"
 
-describe("Temp test", () => {
-    it("Should work", () => {
+describe("Validate library features", () => {
+    it("Should make a get request", () => {
         request(app)
         .get('/user')
         .expect('Content-Type', /json/)

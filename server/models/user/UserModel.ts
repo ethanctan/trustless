@@ -43,4 +43,4 @@ const RatingModel = mongoose.model<IRating>('rating', RatingSchema);
 const ReferralModel = mongoose.model<UserReferral>('referral', ReferralSchema);
 
 export default UserModel;
-export { RatingModel, ReferralModel, IRating };
+export { RatingModel, ReferralModel, IRating, IUser };

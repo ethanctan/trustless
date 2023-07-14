@@ -39,14 +39,13 @@ function createUid(cookieId: string, walletId: string){
   return {cookieId: cookieId, walletId: walletId}
 }
 
-function createUser(cookieId: string, walletId: string, referralCode: string,
-  referrals ?: ([string, string])[]){
-  let user = {
-      cookieId: cookieId, walletId: walletId, referralCode: referralCode,
-      referredUsers: new Map(referrals), protocolRatings : new Map()
-  }
-  return user
-}
+
+const basicTestUser = new User("Sky", "does", "Minecraft")
+
+async function addToDatabase(user : User){
+ let userModel = new UserModel(user.getUserObject())
+ await userModel.save()
+} 
 
 describe('Single MongoMemoryServer', () => {
 
@@ -101,6 +100,8 @@ describe("Test referral code ",  () => {
 })
     
 describe("Test upsert rating", () => {
+
+  
   it("Should return should return failure message for nonexistent user", async () => {
     let userController = new UserController(UserModel)
     let uid = createUid("Hello", "world")
@@ -111,12 +112,11 @@ describe("Test upsert rating", () => {
 
   it("should return rating added if user exists and new protocol is added", async () => {
     let userController = new UserController(UserModel)
-    let user = new User("Sky", "does", "Minecraft")
-    let userModel = new UserModel(user.getUserObject())
+    let userModel = new UserModel(basicTestUser.getUserObject())
     await userModel.save()
 
     let protocolRating = createProtocolRating("MakerDao", "Your mom", [1,2,3,4,5])
-    let response = await userController.upsertRating(user, protocolRating)
+    let response = await userController.upsertRating(basicTestUser, protocolRating)
 
     expect(response).toBe("rating added")
   })
@@ -132,16 +132,26 @@ describe("Test upsert rating", () => {
 
     expect(response).toBe("rating added")
   })
+
 })
 
-async function createAndStoreUser(
-  cookieId: string, walletId: string, referralCode: string,
-  referrals ?: ([string, string])[]){
-    let user = createUser(cookieId, walletId, referralCode, referrals)
-    let userModel = new UserModel(user)
-    await userModel.save()
-    return user
-}
+describe("Test add referral", () => {
+  it("Should return an error", async () => {
+    let userController = new UserController(UserModel)
+    
+    let response = await userController.addReferral(basicTestUser, "")
+    expect(response).toBe("user not found")
+  })
+
+  // it("should return an error due to user adding themself", async () => {
+  //   let userController = new UserController(UserModel)
+  //   await addToDatabase(basicTestUser)
+  //   let response = await userController.addReferral(basicTestUser, basicTestUser.getReferralCode())
+  //   expect(response).toBe("user submitted own referral code")
+  // })
+
+})
+
 
 function createRating(protocol : string, score : number[]){
   return  {protocol: protocol, qScore: score} 
