@@ -1,5 +1,6 @@
 import mongoose from "mongoose";
 import { IRating, IUser } from "./UserModel";
+var _ = require('lodash');
 
 class Rating{
 
@@ -69,12 +70,23 @@ export default class User{
             }else{
                 this.protocolRatings = protocolRatings
             }
+
     }
 
     isNull() : boolean{ return false }
 
-    static getUserFromRequest(){
-
+    /**
+     * Instantiates user from object. Assumes that object is properly formatted
+     */
+    static getUserFromObject(obj : object) : User {
+        let user = new User(
+            obj["cookieId"], obj["walletId"], obj["referralCode"])
+        let referredUsers = _.keyBy(obj["referredUsers"])
+        let protocolRatings = _.keyBy(obj["protocolRatings"])
+        
+        user.referredUsers = referredUsers
+        user.protocolRatings = protocolRatings
+        return user
     }
 
     // TODO Figure out how to make type easier to read

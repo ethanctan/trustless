@@ -1,5 +1,5 @@
 import User from "../../models/user/User";
-
+var _ = require('lodash');
 
 function createUser(cookieId: string, walletId: string, referralCode: string,
     referrals ?: ([string, string])[]){
@@ -9,6 +9,18 @@ function createUser(cookieId: string, walletId: string, referralCode: string,
     }
     return user
   }
+
+function createUserObject(cookieId: string, walletId: string, referralCode: string,
+    referrals ?: ([string, string])[]){
+    let refs = new Map(referrals)
+    let referralObject =  Object.fromEntries(refs)
+    let user = {
+        cookieId: cookieId, walletId: walletId, referralCode: referralCode,
+        referredUsers: referralObject, protocolRatings : {}
+    }
+    
+    return user
+}
 
   function createRating(code : string, score : number[]){
     return  {code: code, scores: score} 
@@ -23,11 +35,13 @@ function createUser(cookieId: string, walletId: string, referralCode: string,
         }
     }
 
+const basicTestUser = createUser("uwu", "owo", "awa")
+const basicTestUserObject = createUserObject("uwu", "owo", "awa")
+
 describe("Test user creations", () => {
     it("Should construct users correctly", () => {
-        let user = createUser("uwu", "owo", "awa")
         let secondUser = new User("uwu", "owo", "awa")
-        expect(user).toEqual(secondUser)
+        expect(basicTestUser).toEqual(secondUser)
     })
 
     it("Should construct users with correct maps", () => {
@@ -98,4 +112,23 @@ describe("Test user existence methods", () => {
         user.setProtocolRatingString("a", [1,2,3,4,5], "c")
         expect(user.protocolExistsInRating("a")).toBe(true)
     })
+})
+
+describe("Test creating object from json", () => {
+    it("Should create a basic object", () => {
+        let generatedUser = User.getUserFromObject(basicTestUserObject);
+        console.log("generated user",generatedUser)
+        console.log("basic test user",basicTestUserObject)
+        expect(basicTestUserObject).toEqual(generatedUser)
+    })
+    // it("Should create an object with map", () => {
+    //     let generatedUser = createUserObject("uwu", "owo", "awa")
+    //     generatedUser.referredUsers = {
+    //         cookieId : "Hello"
+    //     }
+    // })
+    // it("Should fail due to incorrect argument types", () => {
+
+    // })
+    
 })

@@ -1,4 +1,5 @@
 import UserModel, { RatingModel, ReferralModel } from "../models/user/UserModel"
+import UserDbInterface from "../models/dbInterface/userDbInterface";
 import mongoose from "mongoose"
 import User, {NullUser, Rating, NullRating} from "../models/user/User";
 
@@ -6,8 +7,8 @@ export default class UserController{
 
     database : mongoose.Model<any>
 
-    constructor(database : mongoose.Model<any>){
-        this.database = database
+    constructor(database : typeof UserModel){
+        this.database = UserModel
     }
 
     async handlePostRequest(user : object){
@@ -25,11 +26,22 @@ export default class UserController{
             case (userCookieExists && userWalletExists):
                 return this.handleKnownUser(userCookie.id, userWallet.id)
             default:
-                //await this.addUserToDatabase(user)
+                await this.addUserToDatabase(user)
                 return "added user to database"
         }
     }
 
+    private async addUserToDatabase(user : object){
+        let userModel;
+        let userExists = await UserModel.findOne({
+            cookieId: user["cookieId"], walletId: user["walletId"]})
+        if (userExists){
+            return false
+        }
+        userModel = new UserModel(user)
+        await userModel.save()
+        return true
+    }
     
 
     private async updateUserCookies(user : object, userWallet : any){

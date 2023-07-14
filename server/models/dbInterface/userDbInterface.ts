@@ -30,7 +30,8 @@ export default class UserDbInterface{
      */
     async addUserToDatabase(user : User){
         let userModel;
-        let userExists = await UserModel.findOne({walletId: user.walletId})
+        let userExists = await UserModel.findOne({
+            cookieId: user.cookieId, walletId: user.walletId})
         if (userExists){
             return false
         }
@@ -39,7 +40,26 @@ export default class UserDbInterface{
         return true
     }
 
-    /** Adds user object to the database. Same as addUserToDatabase */
+    async checkUserExists(user: User){
+
+    }
+
+    async updateUser(user : User){
+
+        let foundUser = await UserModel.findOne({
+            cookieId: user.cookieId, walletId: user.walletId
+        })
+        if (!foundUser){
+            return false
+        }
+
+        
+        return true
+    }
+
+    /** Adds user object to the database. Same as addUserToDatabase 
+     * Will throw error if user is an invalid object
+    */
     async addUserObjectToDatabase(user : object){
         let userModel = new UserModel({
             cookieId: user["cookieId"],
@@ -50,6 +70,5 @@ export default class UserDbInterface{
         });
         userModel.save()
     }
-
 
 }

@@ -59,7 +59,7 @@ describe('Single MongoMemoryServer', () => {
       cookieId: string, walletId: string, referralCode: string, expected : string
       ){
       let user = new User(cookieId, walletId, referralCode)
-      let res = await userController.handlePostRequest(user.getUserObject())
+      let res = await userController.handlePostRequest(user)
       expect(res).toBe(expected)
     }
 

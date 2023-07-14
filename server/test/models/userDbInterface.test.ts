@@ -5,6 +5,7 @@ import mongoose from 'mongoose';
 import User from '../../models/user/User';
 import UserDbInterface from '../../models/dbInterface/userDbInterface';
 import UserModel from '../../models/user/UserModel';
+var _ = require('lodash');
 
 let con: MongoClient;
 let mongoServer: MongoMemoryServer;
@@ -72,6 +73,7 @@ describe("Test findUser", () => {
         let userDb = new UserDbInterface(UserModel)
         await addToDatabase(basicTestUser)
         let response = await userDb.findUser({cookieId: basicTestUser.cookieId})
-        expect(response.walletId).toBe(basicTestUser.walletId)
+        expect(_.isEqual(response, basicTestUser)).toBe(true)
     })
+    
 })
