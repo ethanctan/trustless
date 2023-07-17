@@ -63,7 +63,7 @@ export default class ProtocolController{
         return {message : "Success"}
     }
 
-    updateAvg (docScores : number[], protocolScores : number[], 
+    private updateAvg (docScores : number[], protocolScores : number[], 
         numDisputes : number) : [number[], number] {
         var newQScores = [0, 0, 0, 0, 0]
         // element-wise sum on old q scores and incoming scores
@@ -78,7 +78,7 @@ export default class ProtocolController{
         return [newQScores, newAvg]
     }
 
-    updateDoc (doc : any, protocol : object) {
+    private updateDoc (doc : any, protocol : object)  {
         let [newQScores, newAvg] = this.updateAvg(
             doc["qScores"], protocol["qScores"], doc["disputeCount"]
         )

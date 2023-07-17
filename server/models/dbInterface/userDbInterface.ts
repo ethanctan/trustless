@@ -20,7 +20,7 @@ export default class UserDbInterface{
         if (user == null){
             return new NullUser()
         }
-        let ret = User.getUserFromDocument(user)
+        let ret = User.createUserFromDocument(user)
         return ret
     }
 

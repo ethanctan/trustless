@@ -3,7 +3,6 @@ import ProtocolModel from '../models/Protocols';
 const router = express.Router()
 import ProtocolController from '../controllers/protocolController';
 import UserModel from '../models/user/UserModel';
-import mongoose from 'mongoose';
 
 
 /**

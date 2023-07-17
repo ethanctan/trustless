@@ -1,22 +1,19 @@
-import User from "../../models/user/User";
+import User, { NullUser } from "../../models/user/User";
 var _ = require('lodash');
 
-function createUser(cookieId: string, walletId: string, referralCode: string,
-    referrals ?: ([string, string])[]){
-    let user = {
-        cookieId: cookieId, walletId: walletId, referralCode: referralCode,
-        referredUsers: new Map(referrals), protocolRatings : new Map()
-    }
-    return user
-  }
+
+function checkNumberNull(number : number | undefined){
+    if (number == null)
+        return 0
+    return number
+}
 
 function createUserObject(cookieId: string, walletId: string, referralCode: string,
-    referrals ?: ([string, string])[]){
-    let refs = new Map(referrals)
-    let referralObject =  Object.fromEntries(refs)
+    numReferrals ?: number) : object{
+    numReferrals = checkNumberNull(numReferrals)
     let user = {
         cookieId: cookieId, walletId: walletId, referralCode: referralCode,
-        referredUsers: referralObject, protocolRatings : {}
+        referredUsers: numReferrals, protocolRatings : {}
     }
     
     return user
@@ -26,59 +23,108 @@ function createUserObject(cookieId: string, walletId: string, referralCode: stri
     return  {code: code, scores: score} 
   }
 
-  function createProtocolRating(protocol : string, score : number[], referral : string){
-    return {protocol: protocol,
-            rating: {
-              score : score,
-              referral : referral
-            }
-        }
-    }
 
-const basicTestUser = createUser("uwu", "owo", "awa")
-const basicTestUserObject = createUserObject("uwu", "owo", "awa")
+let basicTestUser : object;
+let protocolRating : object;
+let testUser : User;
 
-describe("Test user creations", () => {
-    it("Should construct users correctly", () => {
-        let secondUser = new User("uwu", "owo", "awa")
-        expect(basicTestUser).toEqual(secondUser)
+beforeAll(() => {
+    basicTestUser = createUserObject("uwu", "owo", "awa")
+    protocolRating =  createRating("c", [1,2,3,4,5]);
+    testUser = new User("uwu", "owo", "awa")
+})
+
+
+afterEach(() => {
+    basicTestUser = createUserObject("uwu", "owo", "awa")
+    protocolRating =  createRating("c", [1,2,3,4,5]);
+    testUser = new User("uwu", "owo", "awa")
+})
+
+
+
+describe("Test isNull", () => {
+    it("Should return isNull for objects", () =>{
+        expect(testUser.isNull()).toBe(false)
     })
-
-    it("Should construct users with correct maps", () => {
-        let user = createUser("uwu", "owo", "awa")
-        user.referredUsers.set("Hello", "World")
-        let secondUser = new User("uwu", "owo", "awa", new Map([["Hello", "World"]]))
-        expect(user).toEqual(secondUser)
-    })
-
-    it("Should construct users with correct referred users", () => {
-        let user = createUser("uwu", "owo", "awa")
-        user.referredUsers.set("Hello", "World")
-        let secondUser = new User("uwu", "owo", "awa", new Map([["Goodbyw", "World"]]))
-
-        expect(user).not.toEqual(secondUser)
-    })
-    
-    it("Should construct users with correct protocol ratings", () => {
-        let user = createUser("uwu", "owo", "awa")
-        user.referredUsers.set("Hello", "World")
-        let protocolRating = createRating("c", [1,2,3,4,5])
-        user.protocolRatings.set("a", protocolRating)
-
-        let secondUser = new User("uwu", "owo", "awa", new Map([["Hello", "World"]]))
-        secondUser.setProtocolRatingString("a", [1,2,3,4,5], "c")
-        expect(user).toEqual(secondUser)
+    it("Should return isNull for objects", () =>{
+        let nullUser = new NullUser
+        expect(nullUser.isNull()).toBe(true)
     })
 })
 
-describe("Test user get methods", () => {
-    it("Should correctly get referred users", () => {
-        let user = new User("uwu", "owo", "awa", new Map([
-            ["hello", "world"], ["Goodbye", "Charlie"]
-        ]))
-        let referral = {"hello": "world", "Goodbye": "Charlie"}
-        expect(user.getReferredUsersObject()).toEqual(referral)
+describe("Test constructor", () => {
+    it("Should correctly instantiate user", () => {
+        expect(testUser.cookieId).toBe("uwu")
     })
+    it("Should create user without referral and returns empty string", () => {
+        let testUserWithoutReferral = new User("uwu", "owo")
+        expect(testUserWithoutReferral.referralCode).toBe("")
+    })
+    it("Should create user without referredUsers and returns empty map", () => {
+        let testUserWithoutReferral = testUser
+        expect(testUserWithoutReferral.getNumReferrredUsers()).toBe(0)
+    })
+    it("Should create user without protocolRatings and returns empty map", () => {
+        let testUserWithoutProtocolRatings = testUser
+        expect(
+            testUserWithoutProtocolRatings.getProtocolRatingCopy().size).toBe(0)
+    })
+
+    it("Should create users with referredUsers and the referredUsers should exist ", () =>{
+        let usersWithReferrals = new User("uwu", "owo", "awa", 1)
+        expect(usersWithReferrals.getNumReferrredUsers()).toBe(1)
+    })
+
+    it("Should add 1 more user", () => {
+        testUser.addReferredUser();
+        expect(testUser.getNumReferrredUsers()).toEqual(1)
+    })
+
+    it("Should add 2 more users", () => {
+        testUser.addReferredUser();
+        testUser.addReferredUser();
+        expect(testUser.getNumReferrredUsers()).toEqual(2)
+    })
+
+    it("Should add n more users", () => {
+        for (let i = 0; i < 5; i++){
+            testUser.addReferredUser();
+        }
+        expect(testUser.getNumReferrredUsers()).toEqual(5)
+    })
+})
+
+describe("Test createUserFromObject", () => {
+    it("Should create a basic object from scratch", () => {
+        let testUserFromObject = User.createUserFromObject(basicTestUser)
+        expect(testUserFromObject.walletId).toBe(testUser.walletId)
+        expect(testUserFromObject.cookieId).toBe(testUser.cookieId)
+        expect(testUserFromObject.referralCode).toBe(testUser.referralCode)
+    })
+})
+
+
+
+describe("Test basic set methods", () => {
+    it("Should update protocol ratings via setProtocolRating", () => {
+        testUser.setProtocolRatingString("Hello", [0,0,0,0,0], "World");
+        let res = testUser.getProtocolRatingCopy().get("Hello")
+        if (res != null)
+            expect(res.code).toBe("World")
+    })
+    
+})
+
+
+describe("Test user get methods", () => {
+    // it("Should correctly get referred users", () => {
+    //     let user = new User("uwu", "owo", "awa", new Map([
+    //         ["hello", "world"], ["Goodbye", "Charlie"]
+    //     ]))
+    //     let referral = {"hello": "world", "Goodbye": "Charlie"}
+    //     expect(user.getReferredUsersObject()).toEqual(referral)
+    // })
 
     it("Should correctly get protocol ratings", () => {
         let rating = {
@@ -93,8 +139,7 @@ describe("Test user get methods", () => {
 
     it("Should get a basic user object", () => {
         let user = new User("a", "b")
-        let otherUser = {cookieId : "a", 
-        walletId : "b", referralCode: "", protocolRatings : {}, referredUsers: {}}
+        let otherUser = createUserObject("a", "b", "")
         expect(user.getUserObject()).toEqual(otherUser)
     })
 
@@ -116,10 +161,8 @@ describe("Test user existence methods", () => {
 
 describe("Test creating object from json", () => {
     it("Should create a basic object", () => {
-        let generatedUser = User.getUserFromObject(basicTestUserObject);
-        console.log("generated user",generatedUser)
-        console.log("basic test user",basicTestUserObject)
-        expect(basicTestUserObject).toEqual(generatedUser)
+        let generatedUser = User.createUserFromObject(basicTestUser);
+        expect(basicTestUser).toEqual(generatedUser.getUserObject())
     })
     // it("Should create an object with map", () => {
     //     let generatedUser = createUserObject("uwu", "owo", "awa")

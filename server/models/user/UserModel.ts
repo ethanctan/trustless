@@ -12,9 +12,9 @@ interface UserReferral extends Document {
 interface IUser extends Document {
     cookieId: string;
     walletId: string;
-    referralCode: string;
-    referredUsers: Map<string, string>;
-    protocolRatings: Map<string, IRating>;
+    referralCode: string; 
+    referredUsers: number;
+    protocolRatings: Map<string, IRating>;//map between protocol and rating
 }
 
 const RatingSchema = new mongoose.Schema({
@@ -30,7 +30,7 @@ const UserSchema = new mongoose.Schema({
     cookieId: {type: String, required: true},
     walletId: {type: String, required: true},
     referralCode: {type: String, required: false},
-    referredUsers: {type: Map, of: String, required: false},
+    referredUsers: {type: Number, required: true},
     protocolRatings: {type: Map, of: RatingSchema, required: false}
 });
 

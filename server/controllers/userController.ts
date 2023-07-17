@@ -1,52 +1,46 @@
 import UserModel, { RatingModel, ReferralModel } from "../models/user/UserModel"
 import UserDbInterface from "../models/dbInterface/userDbInterface";
-import mongoose from "mongoose"
 import User, {NullUser, Rating, NullRating} from "../models/user/User";
 
 export default class UserController{
 
-    database : mongoose.Model<any>
 
-    constructor(database : typeof UserModel){
-        this.database = UserModel
-    }
-
-    async handlePostRequest(user : object){
-        const userCookie = await this.database.findOne({ cookieId: user["cookieId"] });
-        const userWallet = await this.database.findOne({ walletId: user["walletId"] });
+    // need to make new function to take in a req and parse the req
+    async handlePostRequest(user : User){
+        const userCookie = await UserModel.findOne({ cookieId: user["cookieId"] });
+        const userWallet = await UserModel.findOne({ walletId: user["walletId"] });
 
         let userCookieExists = Boolean(userCookie)
         let userWalletExists = Boolean(userWallet)
         switch (true){
             case (!userCookieExists && userWalletExists):
-                this.updateUserCookies(user, userWallet)
+                await this.updateUserCookies(user, userWallet)
                 return "reassigned user"
             case (userCookieExists && !userWalletExists):
                 return "non existent wallet"
             case (userCookieExists && userWalletExists):
+                //@ts-ignore
                 return this.handleKnownUser(userCookie.id, userWallet.id)
             default:
-                await this.addUserToDatabase(user)
-                return "added user to database"
+                return await this.addUserToDatabase(user)
         }
     }
 
-    private async addUserToDatabase(user : object){
+    /** Assumes that user does not exist in the database */
+    private async addUserToDatabase(user : User){
         let userModel;
-        let userExists = await UserModel.findOne({
-            cookieId: user["cookieId"], walletId: user["walletId"]})
-        if (userExists){
-            return false
-        }
-        userModel = new UserModel(user)
+        user["referredUsers"] = user["numReferredUsers"]
+        userModel = await new UserModel(user)
         await userModel.save()
-        return true
+        return "added user to database"
     }
     
 
-    private async updateUserCookies(user : object, userWallet : any){
-        userWallet.cookieId = user["cookieId"];
-        await userWallet.save();
+    private async updateUserCookies(user : User, userWallet : any){
+        userWallet.cookieId = user.cookieId;
+        await UserModel.findOneAndUpdate({_id : userWallet.id}, 
+            userWallet, {upsert : true})
+
     }
 
     private handleKnownUser(userCookie : string, userWallet : string){
@@ -62,7 +56,6 @@ export default class UserController{
                 referralCode: referralCode });
             return Boolean(referralCodeExists)
         }catch(err){
-            console.log("Error", err)
             return false
         }
     }
@@ -70,11 +63,11 @@ export default class UserController{
     /**
      * Adds rating to the database for a user. If user already has rating, 
      * update it instead. Returns a success/failure message
-     * If user doesn't exist, then 
+     * If user doesn't exist, then return error
      * @param userIdentity 
      * @param rating 
      */
-    async upsertRating(userIdentity : object, rating : object){
+    async upsertRating(userIdentity : object, rating : Rating, protocol : string){
         
         const user = await UserModel.findOne({ 
             cookieId: userIdentity["cookieId"], 
@@ -83,16 +76,15 @@ export default class UserController{
         if (!user) 
             return 'user not found'
         
-        const newRating = new RatingModel({
-            code : rating["code"], scores : rating["scores"]
-        })
+        const newRating = new RatingModel(
+            {scores : rating.scores, code: rating.code})
 
-        let protocolName = rating["protocol"]
-        let ratingExists = Boolean(user.protocolRatings.get(protocolName))
-        user.protocolRatings.set(rating["protocol"], newRating);
+        let ratingExists = Boolean(user.protocolRatings.get(protocol))
         if (ratingExists){
-            return "rating updated successfully"
+            return "rating already submitted"
         }
+        user.protocolRatings.set(protocol, newRating);
+        await user.save()
         return "rating added"
     }
 
@@ -103,26 +95,27 @@ export default class UserController{
      * @param referrerCode 
      */
     async addReferral(referee : User, referrerCode : string){
-        const referrer = await this.database.findOne({
+        const referrer = await UserModel.findOne({
             referralCode : referrerCode})
-        let status = this.checkReferralConditions(referee, referrer)
-        if (status != "valid"){
+
+        let status = this.checkReferralConditions(referee,
+                                         User.createUserFromDocument(referrer))
+        if (status != "valid" || referrer == null){
             return status
         }
+        referrer.referredUsers += 1
+        referrer.save()
 
-        const referralModel = new ReferralModel({protocol : referrerCode})
-        referrer.referredUsers.set(referee.walletId, referralModel)
-        await referrer.save()
         return "successfully added/updated referral code"
     }
 
-    private checkReferralConditions(user : User, referrer : object){
-        if (!referrer){
+    private checkReferralConditions(user : User, referrer : User){
+        if (referrer.isNull()){
             return "user not found"
         }
 
-        if (referrer["walletId"] == user["walletId"] || 
-                referrer["cookieId"] == user["cookieId"]){
+        if (referrer.walletId == user.walletId || 
+                referrer.cookieId == user.cookieId){
             return "user submitted own referral code"
         }
 
@@ -139,7 +132,7 @@ export default class UserController{
         if (!user){
             return new NullUser()
         }
-        let ret = User.getUserFromDocument(user)
+        let ret = User.createUserFromDocument(user)
         return ret
     }
     
@@ -155,7 +148,7 @@ export default class UserController{
                 return new NullRating()
             }
             const rating = user.protocolRatings.get(protocolName);
-            if (!rating) return  new NullRating()
+            if (rating == null) return  new NullRating()
 
             return Rating.fromIRating(rating)
     }
