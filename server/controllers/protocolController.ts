@@ -10,7 +10,6 @@ enum Order{
 export default class ProtocolController{
     database: any;
 
-    
     constructor(database : mongoose.Model<any>) {
         this.database = database
     }
@@ -54,7 +53,7 @@ export default class ProtocolController{
 
         if (doc == null){
             const newProtocol = new ProtocolModel(protocol);
-            newProtocol.save();
+            await newProtocol.save();
             return {message : "Success"}
         }
         doc = this.updateDoc(doc, protocol)
@@ -78,7 +77,8 @@ export default class ProtocolController{
         return [newQScores, newAvg]
     }
 
-    private updateDoc (doc : any, protocol : object)  {
+    private updateDoc (doc : any, protocol : object) {
+        console.log("in updateDoc", doc, protocol)
         let [newQScores, newAvg] = this.updateAvg(
             doc["qScores"], protocol["qScores"], doc["disputeCount"]
         )
@@ -87,6 +87,7 @@ export default class ProtocolController{
         doc["protocolName"] = protocol["protocolName"]
         doc["averageScore"] = newAvg
         doc["qScores"] = newQScores
+        console.log("end of in updateDoc", doc, protocol)
         return doc
     }
 }

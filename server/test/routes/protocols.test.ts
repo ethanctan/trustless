@@ -1,104 +1,311 @@
-// const request = require("supertest")
-// const protocolExports = require("../routes/protocols")
-// const { updateAvg, updateDoc} = protocolExports.testFxns
-// const mockingoose = require('mockingoose');
-// import ProtocolModel from '../models/Protocols';
-// import {describe, expect, test} from '@jest/globals';
-// let protocolExport = require('../routes/protocols')
-// const protocolsRouter = protocolExport.router
-// jest.useFakeTimers();
+const express = require('express');
+const bodyParser = require('body-parser');
+const request = require('supertest');
+const mockingoose = require('mockingoose');
+import ProtocolModel from '../../models/Protocols';
+import {describe, expect, test} from '@jest/globals';
+let protocolRouter = require('../../routes/protocols').router;
+jest.useFakeTimers();
+
+const app = express();
+app.use(bodyParser.json()); // This line adds body parser middleware
+app.use('/', protocolRouter);
+
+beforeEach(() => {
+    mockingoose.resetAll();
+});
+
+
 
 describe("addRating tests", () => {
     it ("Should return false with empty referral code", () => {
         expect(1+1).toBe(2)
     })
+
+    it("should output in correct format", async function() {
+        const newProtocol = [
+            {
+                protocolName: 'Protocol1',
+                disputeCount: 10,
+                averageScore: 85,
+                qScores: [80, 85, 90, 80, 85],
+                _id: '60d2c26e292a821e8ed2b4ab',
+            },
+            {
+                protocolName: 'Protocol2',
+                disputeCount: 5,
+                averageScore: 95,
+                qScores: [90, 95, 100, 90, 95],
+                _id: '60d2c27e292b821e8ed2b4ad',
+            }
+        ]
+
+        mockingoose(ProtocolModel).toReturn( newProtocol, 'find');
+
+        let response = await request(app)
+            .get('/')
+            // console.log('Status:', response.status);
+            // console.log('Headers:', response.headers);
+            // console.log('Body:', response.body);
+        expect(response.headers['content-type']).toMatch(/application\/json/);
+
+    },10000)
+
+    it("should output in correct status", async function() {
+        const newProtocol = [
+            {
+                protocolName: 'Protocol1',
+                disputeCount: 10,
+                averageScore: 85,
+                qScores: [80, 85, 90, 80, 85],
+                _id: '60d2c26e292a821e8ed2b4ab',
+            },
+            {
+                protocolName: 'Protocol2',
+                disputeCount: 5,
+                averageScore: 95,
+                qScores: [90, 95, 100, 90, 95],
+                _id: '60d2c27e292b821e8ed2b4ad',
+            }
+        ]
+
+        mockingoose(ProtocolModel).toReturn( newProtocol, 'find');
+        let response = await request(app)
+            .get('/')
+            // console.log('Status:', response.status);
+            // console.log('Headers:', response.headers);
+            // console.log('Body:', response.body);
+        expect(response.status).toBe(200);
+
+    },10000)
+
+    it("should output with correct data", async function() {
+        const newProtocol = [
+            {
+                protocolName: 'Protocol1',
+                disputeCount: 10,
+                averageScore: 85,
+                qScores: [80, 85, 90, 80, 85],
+                _id: '60d2c26e292a821e8ed2b4ab',
+            },
+            {
+                protocolName: 'Protocol2',
+                disputeCount: 5,
+                averageScore: 95,
+                qScores: [90, 95, 100, 90, 95],
+                _id: '60d2c27e292b821e8ed2b4ad',
+            }
+        ]
+
+        mockingoose(ProtocolModel).toReturn( newProtocol, 'find');
+        let response = await request(app)
+            .get('/')
+            // console.log('Status:', response.status);
+            // console.log('Headers:', response.headers);
+            // console.log('Body:', response.body);
+            expect(response.body).toEqual([
+                {
+                    protocolName: 'Protocol1',
+                    disputeCount: 10,
+                    averageScore: 85,
+                },
+                {
+                    protocolName: 'Protocol2',
+                    disputeCount: 5,
+                    averageScore: 95,
+                }
+            ]);
+
+    },10000)
+
+    it("should successfully add a new protocol by status", async function() {
+        const newProtocol = {
+            protocolName: 'Protocol3',
+            disputeCount: 3,
+            averageScore: 70,
+            qScores: [70, 70, 70, 70, 70]
+        };
+    
+        // Mock ProtocolModel.findOne() to simulate that the protocol doesn't exist yet
+        mockingoose(ProtocolModel).toReturn(null, 'findOne');
+
+        // Mock ProtocolModel.save() to simulate a successful add
+        mockingoose(ProtocolModel).toReturn(newProtocol, 'save');
+    
+        // Make the request to the API
+        let response = await request(app).post('/').send(newProtocol);
+        console.log('end of test adding protocol')
+
+        // Check if the response has the correct status
+        expect(response.status).toBe(201);
+    
+    }, 10000);
+
+    it("should successfully add a new protocol by response", async function() {
+        const newProtocol = {
+            protocolName: 'Protocol3',
+            disputeCount: 3,
+            averageScore: 70,
+            qScores: [70, 70, 70, 70, 70]
+        };
+    
+        // Mock ProtocolModel.findOne() to simulate that the protocol doesn't exist yet
+        mockingoose(ProtocolModel).toReturn(null, 'findOne');
+
+        // Mock ProtocolModel.save() to simulate a successful add
+        mockingoose(ProtocolModel).toReturn(newProtocol, 'save');
+    
+        // Make the request to the API
+        let response = await request(app).post('/').send(newProtocol);
+        console.log('end of test adding protocol')
+
+        // Check if the response body is correct
+        expect(response.body).toEqual({
+            message: 'Success'
+        });
+    
+    }, 10000);
+    
+    it("should successfully update an existing protocol", async function() {
+        const existingProtocol = {
+            protocolName: 'Protocol1',
+            disputeCount: 11,
+            averageScore: 86,
+            qScores: [85, 85, 85, 85, 85]
+        };
+    
+        // Mock ProtocolModel.findOne() to simulate that the protocol exists
+        mockingoose(ProtocolModel).toReturn(existingProtocol, 'findOne');
+    
+        // Mock ProtocolModel.save() to simulate a successful update
+        mockingoose(ProtocolModel).toReturn(existingProtocol, 'save');
+    
+        // Make the request to the API
+        let response = await request(app).post('/').send(existingProtocol);
+        console.log('end of test updating protocol')
+    
+        // Check if the response has the correct status
+        expect(response.status).toBe(201);
+    
+    }, 10000);
+    
+
+    it("should handle missing protocolName", async function() {
+        const invalidProtocol = {
+            disputeCount: 11,
+            averageScore: 86,
+            qScores: [85, 85, 85, 85, 85]
+        }; // Missing 'protocolName'
+
+        // Make the request to the API
+        let response = await request(app).post('/').send(invalidProtocol);
+
+        // Check if the response has the error status
+        expect(response.status).toBe(500);
+
+    }, 10000);
+
+    it("should handle missing protocolName with proper message body", async function() {
+        const invalidProtocol = {
+            disputeCount: 11,
+            averageScore: 86,
+            qScores: [85, 85, 85, 85, 85]
+        }; // Missing 'protocolName'
+
+        // Make the request to the API
+        let response = await request(app).post('/').send(invalidProtocol);
+
+        // Check if the response body contains an error message
+        expect(response.body).toHaveProperty('message');
+    }, 10000);
+
+    it("should handle missing disputeCount", async function() {
+        const invalidProtocol = {
+            protocolName: 'Protocol1',
+            averageScore: 86,
+            qScores: [85, 85, 85, 85, 85]
+        }; // Missing 'protocolName'
+
+        // Make the request to the API
+        let response = await request(app).post('/').send(invalidProtocol);
+
+        // Check if the response has the error status
+        expect(response.status).toBe(500);
+
+    }, 10000);
+
+    it("should handle missing disputeCount with proper message body", async function() {
+        const invalidProtocol = {
+            protocolName: 'Protocol1',
+            averageScore: 86,
+            qScores: [85, 85, 85, 85, 85]
+        }; // Missing 'protocolName'
+
+        // Make the request to the API
+        let response = await request(app).post('/').send(invalidProtocol);
+
+        // Check if the response body contains an error message
+        expect(response.body).toHaveProperty('message');
+    }, 10000);
+
+    it("should handle missing averageScore", async function() {
+        const invalidProtocol = {
+            protocolName: 'Protocol1',
+            disputeCount: 11,
+            qScores: [85, 85, 85, 85, 85]
+        }; // Missing 'protocolName'
+
+        // Make the request to the API
+        let response = await request(app).post('/').send(invalidProtocol);
+
+        // Check if the response has the error status
+        expect(response.status).toBe(500);
+
+    }, 10000);
+
+    it("should handle missing averageScore with proper message body", async function() {
+        const invalidProtocol = {
+            protocolName: 'Protocol1',
+            disputeCount: 11,
+            qScores: [85, 85, 85, 85, 85]
+        }; // Missing 'protocolName'
+
+        // Make the request to the API
+        let response = await request(app).post('/').send(invalidProtocol);
+
+        // Check if the response body contains an error message
+        expect(response.body).toHaveProperty('message');
+    }, 10000);
+
+    // NOT SURE NEEDED SINCE QSCORES ARE INITIALIZED TO 1
+    // it("should handle missing qScores", async function() {
+    //     console.log('start of test missing qScores')
+    //     const invalidProtocol = {
+    //         protocolName: 'Protocol1',
+    //         disputeCount: 11,
+    //         averageScore: 86
+    //     }; // Missing 'protocolName'
+
+    //     // Make the request to the API
+    //     let response = await request(app).post('/').send(invalidProtocol);
+
+    //     // Check if the response has the error status
+    //     expect(response.status).toBe(500);
+
+    // }, 10000);
+
+    // it("should handle missing qScores with proper message body", async function() {
+    //     const invalidProtocol = {
+    //         protocolName: 'Protocol1',
+    //         disputeCount: 11,
+    //         averageScore: 86
+    //     }; // Missing 'protocolName'
+
+    //     // Make the request to the API
+    //     let response = await request(app).post('/').send(invalidProtocol);
+
+    //     // Check if the response body contains an error message
+    //     expect(response.body).toHaveProperty('message');
+    // }, 10000);
+     
 })
-
-
-// describe('updating averages', () =>{
-//     test("Basic update", ()=>{
-//         let val = updateAvg([0,0,0,0,0], [1,1,1,1,1], 1)
-//         expect(val).toStrictEqual([[1,1,1,1,1], 0.5])
-//     })
-//     test("Adding 0s", ()=>{
-//         let val = updateAvg([0,0,0,0,0], [0,0,0,0,0], 100)
-//         expect(val).toStrictEqual([[0,0,0,0,0], 0])
-//     })
-//     test("Adding 5s", ()=>{
-//         let val = updateAvg([55,55,55,55,55], [5,5,5,5,5], 11)
-//         expect(val).toStrictEqual([[60,60,60,60,60], 5])
-//     })
-//     test("All 0s", ()=>{
-//         let val = updateAvg([0,0,0,0,0], [0,0,0,0,0], 0)
-//         expect(val).toStrictEqual([[0,0,0,0,0], 0])
-//     })
-//     test("Initialization", ()=>{
-//         let val = updateAvg([0,0,0,0,0], [1,1,1,1,1], 0)
-//         expect(val).toStrictEqual([[1,1,1,1,1], 1])
-//     })
-//     test ("Random testing", ()=>{
-//         let average = 0;
-//         let cumScore = [0,0,0,0,0]
-//         let randVec = [0,0,0,0,0]
-//         let test_val = [0,0,0,0,0]
-//         for (let i=0; i < 10000; i++){
-//             [cumScore, randVec] = addRandomScore(cumScore);
-//             average = getAvg(cumScore, i+1)
-//             let values =  updateAvg(test_val, randVec, i)
-//             test_val = values[0]
-//             expect(values[0]).toStrictEqual(cumScore)
-//             expect(values[1]).toBe(average)
-//         }
-
-//     })
-// })
-
-
-// function addRandomScore(cumScore : number[]){
-//     let randVec = [0,0,0,0,0]
-//     for (let i = 0; i < cumScore.length; i++){
-//         let val = Math.floor(Math.random()*11)
-//         randVec[i] += val;
-//         cumScore[i] += val
-//     }
-//     return [cumScore, randVec]
-// } 
-
-// function getAvg(times : number[], num : number){
-//     const sum = times.reduce((a, b) => a + b, 0);
-//     const avg = (sum / (times.length * (num))) || 0;
-//     return avg
-// }
-
-// describe("Testing updateDoc", () => {
-//     test("Empty person", ()=>{
-//         let doc = {
-//             "qScores": [0,0,0,0,0], 
-//             "disputeCount": 0,
-//             "protocolName": "aegis",
-//             "averageScore": 0
-//         }
-//         let protocol = {
-//             "qScores": [1,1,1,1,1],
-//             "protocolName": "aegis"
-//         }
-//         doc = updateDoc(doc, protocol)
-//         expect(doc["qScores"]).toStrictEqual([1,1,1,1,1])
-//         expect(doc["averageScore"]).toBe(1)
-//     })
-//     test("Empty person", ()=>{
-//         let doc = {
-//             "qScores": [55,55,55,55,55], 
-//             "disputeCount": 11,
-//             "protocolName": "aegis",
-//             "averageScore": 5
-//         }
-//         let protocol = {
-//             "qScores": [5,5,5,5,5],
-//             "protocolName": "aegis"
-//         }
-//         doc = updateDoc(doc, protocol)
-//         expect(doc["qScores"]).toStrictEqual([60,60,60,60,60])
-//         expect(doc["averageScore"]).toBe(5)
-//     })
-// })

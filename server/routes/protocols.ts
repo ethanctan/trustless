@@ -2,7 +2,7 @@ import express, { Request, Response, response } from 'express';
 import ProtocolModel from '../models/Protocols';
 const router = express.Router()
 import ProtocolController from '../controllers/protocolController';
-import UserModel from '../models/user/UserModel';
+import mongoose from 'mongoose';
 
 
 /**
@@ -12,7 +12,7 @@ import UserModel from '../models/user/UserModel';
  * If db is empty then return an empty list
  */
 router.get("/", async (req: Request, res: Response) => {
-    let protocolController = new ProtocolController(UserModel)
+    let protocolController = new ProtocolController(ProtocolModel)
     try{
         let jsonResponse = await protocolController.getProtocolJson(req)
         res.status(200).json(jsonResponse)
@@ -29,12 +29,11 @@ router.get("/", async (req: Request, res: Response) => {
  * @Returns an error if the request is null
  */
 router.post("/", async (req: Request, res: Response) => {
-    let protocolController = new ProtocolController(UserModel)
+    let protocolController = new ProtocolController(ProtocolModel)
     try {
-        let successStatus = await protocolController.getProtocolJson(req)
+        let successStatus = await protocolController.addProtocolJson(req.body)
         res.status(201).json(successStatus);
     } catch (error) {
-         // should handle this error
         res.status(500).json({ message: error });
     }
 });
