@@ -10,3 +10,7 @@ node_modules/
 # Build output
 build
 dist
+
+#Test output
+coverage/
+reports/

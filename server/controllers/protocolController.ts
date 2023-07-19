@@ -54,15 +54,16 @@ export default class ProtocolController{
         if (doc == null){
             const newProtocol = new ProtocolModel(protocol);
             await newProtocol.save();
-            return {message : "Success"}
+            return {message : "Success in adding new protocol"}
         }
         doc = this.updateDoc(doc, protocol)
         //@ts-ignore
         doc.save()
-        return {message : "Success"}
+        return {message : "Success in updating protocol"}
     }
 
-    private updateAvg (docScores : number[], protocolScores : number[], 
+    // making public for testing
+    public updateAvg (docScores : number[], protocolScores : number[], 
         numDisputes : number) : [number[], number] {
         var newQScores = [0, 0, 0, 0, 0]
         // element-wise sum on old q scores and incoming scores
@@ -73,11 +74,16 @@ export default class ProtocolController{
         let newAvg = (newQScores.reduce(
             (partialSum : number, a: number) => 
             partialSum + a, 0))/((numDisputes+1)*5)
-    
         return [newQScores, newAvg]
     }
 
-    private updateDoc (doc : any, protocol : object) {
+    // making public for testing
+    public updateDoc (doc : any, protocol : object) {
+        
+        if (doc["protocolName"] !== protocol["protocolName"]) {
+            throw new Error("Protocol names don't match");
+        }
+
         let [newQScores, newAvg] = this.updateAvg(
             doc["qScores"], protocol["qScores"], doc["disputeCount"]
         )
