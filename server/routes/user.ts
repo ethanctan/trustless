@@ -139,31 +139,20 @@ router.post("/addReferral/:referralCode", async (req: Request, res: Response) =>
     res.json({ message: 'Referral added successfully' });
 });
 
-// Use cookieId and load user referralCode, ratings, wallet address
-// Works
+
 router.get("/getUserInfo/:cookieId", async (req: Request, res: Response) => {
     const { cookieId } = req.params;
-    const user = await UserModel.findOne({ cookieId: cookieId });
-    if (!user) return res.status(404).json({ message: 'User not found' });
-
-    // Create an object with the properties you want to return
-    const userInfo = {
-        walletId: user.walletId,
-        referralCode: user.referralCode,
-        protocolRatings: user.protocolRatings
-    };
-
-    res.json(userInfo);
+    let response = await userController.handleGetUserInfo(cookieId)
+    res.status(response.status).json(response.message)
 });
 
 // Use cookieId, walletId to get latest rating for a specific protocol
 // Works
-router.get("/getRating/:protocolName/:cookieId/:walletId", async (req: Request, res: Response) => {
-    const { cookieId, walletId, protocolName } = req.params;
+router.get("/getRating/:cookieId/:walletId/:protocolName", async (req: Request, res: Response) => {
+    const { protocolName, cookieId, walletId } = req.params;
     const user = await UserModel.findOne({ cookieId: cookieId, walletId: walletId });
     if (!user) 
         return res.status(404).json({ message: 'User not found' });
-
     const rating = user.protocolRatings.get(protocolName);
     if (!rating) return res.status(404).json({ message: 'Rating not found' });
     res.json(rating.scores);
@@ -176,19 +165,16 @@ router.get("/getRating/:protocolName/:cookieId/:walletId", async (req: Request, 
  */
 router.get("/check/:cookieId", async (req, res) => {
     const { cookieId } = req.params;
-    const user = await UserModel.findOne({ cookieId: cookieId });
-    if (!user) {
-      return res.json(false);
-    }
-    res.json(true);
+    let response = await userController.handleCheckUserExists(cookieId)
+    res.json(response)
   });
 
 /**
  * GET request to fetch all the protocol ratings for a given user
  * @returns 404 if user not found. Returns the rating otherwise
  */
-router.get('/ratings', async (req, res) => {
-    const { cookieId, walletId } = req.query;
+router.get('/ratings/:cookieId/:walletId', async (req, res) => {
+    const { cookieId, walletId } = req.params;
     const user = await UserModel.findOne({ cookieId: cookieId, walletId: walletId });
     if (!user) return res.status(404).json({ message: 'User not found' });
 

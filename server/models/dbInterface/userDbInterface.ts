@@ -40,7 +40,7 @@ export default class UserDbInterface{
         return true
     }
 
-    async checkUserExists(user: User){
+    async checkExists(user: User){
 
     }
 

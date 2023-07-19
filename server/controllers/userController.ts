@@ -124,8 +124,8 @@ export default class UserController{
 
     async handleGetUserInfo(cookieId : string) {
         let user = await this.getUserInfo(cookieId)
-        if (user.isNull()) return {status: 404, user: user.getUserObject()}
-        return {status: 200, user: user.getUserObject()}
+        if (user.isNull()) return {status: 404, message: { message: 'User not found' }}
+        return {status: 200, message: user.getUserObject()}
     }
 
     /**
@@ -159,6 +159,12 @@ export default class UserController{
             if (rating == null) return  new NullRating()
 
             return Rating.fromIRating(rating)
+    }
+
+    async handleCheckUserExists(cookieId : string){
+        const user = await UserModel.findOne({ cookieId: cookieId });
+        if (!user) return false
+        return true
     }
 
     
