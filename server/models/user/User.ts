@@ -6,6 +6,7 @@ class Rating{
 
     scores : number[];
     code : string
+    
     constructor(scores : number[], code?: string){
         this.scores = scores
         if (code == null){
@@ -23,13 +24,19 @@ class Rating{
         return {scores: this.scores, code: this.code}
     }
     isNull(): boolean {return false}
+
+    getErrorMessage() {return "Rating object has no error message"}
 }
 
 class NullRating extends Rating{
-    constructor(){
+    errorMessage : string;
+    constructor(errorMessage ?: string){
         super([0,0,0,0,0], "")
+        if (errorMessage == null) {this.errorMessage = ""}
+        else{ this.errorMessage = errorMessage}
     }
     isNull(): boolean {return true}
+    getErrorMessage() {return this.errorMessage}
 }
 
 type UserDocument = (mongoose.Document<unknown, {}, IUser> & Omit<IUser & {
@@ -74,6 +81,7 @@ export default class User{
     }
 
     isNull() : boolean{ return false }
+    getErrorMessage() {return "User object has no error message"}
 
     /**
      * Instantiates user from object. Assumes that object is properly formatted
@@ -124,7 +132,7 @@ export default class User{
     }
 
     /** returns a deep copy of protocol ratings */
-    getProtocolRatingCopy(){
+    getProtocolRating(){
         return structuredClone(this.protocolRatings)
     }
 
@@ -169,11 +177,15 @@ export default class User{
 
 class NullUser extends User{
     
-    isNull() : boolean {return true}
+    errorMessage : string
 
-    constructor(){
+    constructor(errorMessage ?: string){
         super("", "")
+        this.errorMessage = errorMessage || ""
     }
+
+    isNull() : boolean {return true}
+    getErrorMessage(): string {return this.errorMessage}
 }
 
 export {NullUser, NullRating, Rating}

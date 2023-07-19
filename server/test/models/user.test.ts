@@ -47,7 +47,7 @@ describe("Test constructor", () => {
     it("Should create user without protocolRatings and returns empty map", () => {
         let testUserWithoutProtocolRatings = testUser
         expect(
-            testUserWithoutProtocolRatings.getProtocolRatingCopy().size).toBe(0)
+            testUserWithoutProtocolRatings.getProtocolRating().size).toBe(0)
     })
 
     it("Should create users with referredUsers and the referredUsers should exist ", () =>{
@@ -88,7 +88,7 @@ describe("Test createUserFromObject", () => {
 describe("Test basic set methods", () => {
     it("Should update protocol ratings via setProtocolRating", () => {
         testUser.setProtocolRatingString("Hello", [0,0,0,0,0], "World");
-        let res = testUser.getProtocolRatingCopy().get("Hello")
+        let res = testUser.getProtocolRating().get("Hello")
         if (res != null)
             expect(res.code).toBe("World")
     })

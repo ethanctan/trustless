@@ -34,9 +34,14 @@ describe("Get user tests", ()=> {
 })
 
 
-xdescribe("Add user tests", () => {
+describe("Add user tests", () => {
     it("Should add user to database", async () => {
-        let response = await request(app).post('/').send(basicTestUser)
+        const test = {
+            cookieId : "hello",
+            walletId : "world"
+        }
+        mockingoose(UserModel).toReturn(null, 'findOne')
+        let response = await request(app).post('/').send(test)
         expect(response.body.message).toBe("added user to database")
     })
 })

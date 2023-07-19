@@ -7,7 +7,7 @@ export default class UserController{
 
 
     // need to make new function to take in a req and parse the req
-    async handlePostRequest(user : User){
+    async handlePostRequest(user : User) : Promise<string> {
         const userCookie = await UserModel.findOne({ cookieId: user["cookieId"] });
         const userWallet = await UserModel.findOne({ walletId: user["walletId"] });
 
@@ -124,7 +124,8 @@ export default class UserController{
 
     async handleGetUserInfo(cookieId : string) {
         let user = await this.getUserInfo(cookieId)
-        if (user.isNull()) return {status: 404, message: { message: 'User not found' }}
+        if (user.isNull()) return {status: 404, 
+                                message: { message: user.getErrorMessage() }}
         return {status: 200, message: user.getUserObject()}
     }
 
@@ -136,14 +137,20 @@ export default class UserController{
     async getUserInfo(cookieId : string) : Promise<User> {
         let user = await UserModel.findOne({ cookieId: cookieId})
         if (!user){
-            return new NullUser()
+            return new NullUser("User not found")
         }
         let ret = User.createUserFromDocument(user)
         return ret
     }
 
     
-    
+    async handleGetRating(cookieId : string, walletId : string, protocolName : string) {
+        let rating = await this.getUserRating(cookieId, walletId, protocolName)
+        if (rating.isNull()) return { status: 404, 
+                                message: {message : rating.getErrorMessage()}}
+        return {status : 200, message: rating}
+   }
+
     /**
      * Gets user rating from database. Returns 
      * nullRating user or rating isn't found
@@ -153,13 +160,15 @@ export default class UserController{
             const user = await UserModel.findOne(
                 { cookieId: cookieId, walletId: walletId });
             if (!user){
-                return new NullRating()
+                return new NullRating("User not found")
             }
             const rating = user.protocolRatings.get(protocolName);
-            if (rating == null) return  new NullRating()
+            if (rating == null) return  new NullRating("Rating not found")
 
             return Rating.fromIRating(rating)
     }
+
+    
 
     async handleCheckUserExists(cookieId : string){
         const user = await UserModel.findOne({ cookieId: cookieId });
@@ -167,6 +176,13 @@ export default class UserController{
         return true
     }
 
+    async handleGetAllRatings(cookieId : string, walletId : string){
+       let user = await UserModel.findOne(
+        { cookieId: cookieId, walletId: walletId });
+        if (!user ) return {status: 404, message: 
+                        {message : 'User not found'}}
+        return {status : 200, message : user.protocolRatings}
+    }
     
 }
 

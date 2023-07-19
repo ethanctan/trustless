@@ -2,6 +2,7 @@ import express, { Request, Response } from 'express';
 import UserModel from '../models/user/UserModel';
 import UserController from '../controllers/userController';
 import {RatingModel, ReferralModel} from '../models/user/UserModel';
+import User from '../models/user/User';
 
 const router = express.Router()
 const userController = new UserController()
@@ -26,45 +27,8 @@ router.get("/", async(req: Request, res: Response) => {
  */
 router.post("/", async (req: Request, res: Response) => {
     const user = req.body;
-  
-    // Find existing user by cookieId or walletId
-    const userCookie = await UserModel.findOne({ cookieId: user.cookieId });
-    const userWallet = await UserModel.findOne({ walletId: user.walletId });
-
-    // Case: Nonexistent cookie, identifiable wallet
-    if (!userCookie && userWallet) {
-        userWallet.cookieId = user.cookieId;
-        await userWallet.save();
-        return res.json({ message: 'Cookie reassigned successfully', user: userWallet });
-    }
-
-    // Case: Existent cookie, non identifiable wallet
-    if (userCookie && !userWallet) {
-        return res.status(400).json({ message: 'Please switch to your previous wallet' });
-    }
-
-    // Case: Wrong cookie-wallet pair
-    if ((userCookie && userWallet) && (userCookie.id !== userWallet.id)) {
-        return res.status(400).json({ message: 'Wrong cookie-wallet pair. Please use another wallet or clear cookies.' });
-    }
-
-    // Case: Existent cookie, identifiable wallet - right cookie-wallet pair
-    if (userCookie && userWallet && userCookie.id === userWallet.id) {
-        return res.json({ message: 'User already created', user: userCookie});
-    }
-    // Case:  Nonexistent cookie, nonexistent wallet
-    if (!userCookie && !userWallet) {
-        
-        const newUser = new UserModel({
-            cookieId: user.cookieId,
-            walletId: user.walletId,
-            referralCode: user.referralCode,
-            referredUsers: new Map(),
-            protocolRatings: new Map()
-        });
-        await newUser.save();
-        return res.json({ message: 'User added successfully', user: newUser });
-    }
+    let message = await userController.handlePostRequest(User.createUserFromObject(user))
+    res.json({message : message})
 });
 
 
@@ -146,16 +110,10 @@ router.get("/getUserInfo/:cookieId", async (req: Request, res: Response) => {
     res.status(response.status).json(response.message)
 });
 
-// Use cookieId, walletId to get latest rating for a specific protocol
-// Works
 router.get("/getRating/:cookieId/:walletId/:protocolName", async (req: Request, res: Response) => {
     const { protocolName, cookieId, walletId } = req.params;
-    const user = await UserModel.findOne({ cookieId: cookieId, walletId: walletId });
-    if (!user) 
-        return res.status(404).json({ message: 'User not found' });
-    const rating = user.protocolRatings.get(protocolName);
-    if (!rating) return res.status(404).json({ message: 'Rating not found' });
-    res.json(rating.scores);
+    let response = await userController.handleGetRating(cookieId, walletId, protocolName)
+    res.status(response.status).json(response.message)
 });
 
 
@@ -171,15 +129,12 @@ router.get("/check/:cookieId", async (req, res) => {
 
 /**
  * GET request to fetch all the protocol ratings for a given user
- * @returns 404 if user not found. Returns the rating otherwise
+ * @returns 404 if user not found
  */
 router.get('/ratings/:cookieId/:walletId', async (req, res) => {
     const { cookieId, walletId } = req.params;
-    const user = await UserModel.findOne({ cookieId: cookieId, walletId: walletId });
-    if (!user) return res.status(404).json({ message: 'User not found' });
-
-    const ratings = user.protocolRatings;
-    res.json(ratings);
+    let response = await userController.handleGetAllRatings(cookieId, walletId)
+    res.status(response.status).json(response.message)
 });
 
 export default router;
