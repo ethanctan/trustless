@@ -1,42 +1,21 @@
 import User, { NullUser } from "../../models/user/User";
+import { createUserObject, createRating, testUserObject } from "../testUtils"
 var _ = require('lodash');
 
 
-function checkNumberNull(number : number | undefined){
-    if (number == null)
-        return 0
-    return number
-}
-
-function createUserObject(cookieId: string, walletId: string, referralCode: string,
-    numReferrals ?: number) : object{
-    numReferrals = checkNumberNull(numReferrals)
-    let user = {
-        cookieId: cookieId, walletId: walletId, referralCode: referralCode,
-        referredUsers: numReferrals, protocolRatings : {}
-    }
-    
-    return user
-}
-
-  function createRating(code : string, score : number[]){
-    return  {code: code, scores: score} 
-  }
-
-
-let basicTestUser : object;
+let basicTestUser = testUserObject
 let protocolRating : object;
 let testUser : User;
 
 beforeAll(() => {
-    basicTestUser = createUserObject("uwu", "owo", "awa")
+    basicTestUser = testUserObject
     protocolRating =  createRating("c", [1,2,3,4,5]);
     testUser = new User("uwu", "owo", "awa")
 })
 
 
 afterEach(() => {
-    basicTestUser = createUserObject("uwu", "owo", "awa")
+    basicTestUser = testUserObject
     protocolRating =  createRating("c", [1,2,3,4,5]);
     testUser = new User("uwu", "owo", "awa")
 })
@@ -118,13 +97,6 @@ describe("Test basic set methods", () => {
 
 
 describe("Test user get methods", () => {
-    // it("Should correctly get referred users", () => {
-    //     let user = new User("uwu", "owo", "awa", new Map([
-    //         ["hello", "world"], ["Goodbye", "Charlie"]
-    //     ]))
-    //     let referral = {"hello": "world", "Goodbye": "Charlie"}
-    //     expect(user.getReferredUsersObject()).toEqual(referral)
-    // })
 
     it("Should correctly get protocol ratings", () => {
         let rating = {
@@ -164,14 +136,6 @@ describe("Test creating object from json", () => {
         let generatedUser = User.createUserFromObject(basicTestUser);
         expect(basicTestUser).toEqual(generatedUser.getUserObject())
     })
-    // it("Should create an object with map", () => {
-    //     let generatedUser = createUserObject("uwu", "owo", "awa")
-    //     generatedUser.referredUsers = {
-    //         cookieId : "Hello"
-    //     }
-    // })
-    // it("Should fail due to incorrect argument types", () => {
 
-    // })
     
 })

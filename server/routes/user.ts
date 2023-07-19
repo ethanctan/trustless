@@ -1,9 +1,10 @@
 import express, { Request, Response } from 'express';
 import UserModel from '../models/user/UserModel';
-
+import UserController from '../controllers/userController';
 import {RatingModel, ReferralModel} from '../models/user/UserModel';
 
 const router = express.Router()
+const userController = new UserController()
 
 /**
  * Get a list of users
@@ -67,26 +68,15 @@ router.post("/", async (req: Request, res: Response) => {
 });
 
 
-// works
 /**
  * GET request to check if a user with a specific referralCode exists
  * Returns true if there is a user with a valid code, false otherwise
  * @requires req.query to have {referralCode} in the json body
  */
-router.get("/checkReferralCode", async (req: Request, res: Response) => {
-    const { referralCode } = req.query;
-    
-    // If referralCode is null or undefined, return true immediately
-    // Why return true for referral code?
-    if (referralCode === null || referralCode === undefined) {
-        return res.json(true);
-    }
-
-    const user = await UserModel.findOne({ referralCode: referralCode });
-    if (!user) {
-        return res.json(false);
-    }
-    res.json(true);
+router.get("/checkReferralCode/:referralCode", async (req: Request, res: Response) => {
+    const { referralCode } = req.params;
+    let response = await userController.checkReferralCodeExists(referralCode)
+    res.json({referralCodeExists: response})
 });
 
 // Works
@@ -95,7 +85,7 @@ router.get("/checkReferralCode", async (req: Request, res: Response) => {
  * Client-side interface: protocolName, rating -> splice to form kv pair
  * Why do we have two post requests for doing basically the exact same thing?
  */
-router.post("/:cookieId/:walletId/addRating", async (req: Request, res: Response) => {
+router.post("/addRating/:cookieId/:walletId", async (req: Request, res: Response) => {
     const { cookieId, walletId} = req.params;
     const { protocolName, rating } = req.body;
     const user = await UserModel.findOne({ cookieId: cookieId, walletId: walletId });
@@ -115,7 +105,7 @@ router.post("/:cookieId/:walletId/addRating", async (req: Request, res: Response
 // POST request to update a rating that already exists in a user's rating mapping
 // Client-side interface: protocolName, rating -> splice to form kv pair
 // Works
-router.post("/:cookieId/:walletId/updateRating", async (req: Request, res: Response) => {
+router.post("/updateRating/:cookieId/:walletId", async (req: Request, res: Response) => {
     const { cookieId, walletId} = req.params;
     const { protocolName, rating } = req.body;
     const user = await UserModel.findOne({ cookieId: cookieId, walletId: walletId });
@@ -135,7 +125,7 @@ router.post("/:cookieId/:walletId/updateRating", async (req: Request, res: Respo
  * Returns 404 error if a referral code does not exist
  * Returns 404 error if a user uses its own referral code
  */
-router.post("/:referralCode/addReferral", async (req: Request, res: Response) => {
+router.post("/addReferral/:referralCode", async (req: Request, res: Response) => {
     const { referralCode } = req.params;
     const user = await UserModel.findOne({ referralCode: referralCode });
     if (!user) 
@@ -151,7 +141,7 @@ router.post("/:referralCode/addReferral", async (req: Request, res: Response) =>
 
 // Use cookieId and load user referralCode, ratings, wallet address
 // Works
-router.get("/:cookieId/getUserInfo", async (req: Request, res: Response) => {
+router.get("/getUserInfo/:cookieId", async (req: Request, res: Response) => {
     const { cookieId } = req.params;
     const user = await UserModel.findOne({ cookieId: cookieId });
     if (!user) return res.status(404).json({ message: 'User not found' });
@@ -168,7 +158,7 @@ router.get("/:cookieId/getUserInfo", async (req: Request, res: Response) => {
 
 // Use cookieId, walletId to get latest rating for a specific protocol
 // Works
-router.get("/:cookieId/:walletId/getRating/:protocolName", async (req: Request, res: Response) => {
+router.get("/getRating/:protocolName/:cookieId/:walletId", async (req: Request, res: Response) => {
     const { cookieId, walletId, protocolName } = req.params;
     const user = await UserModel.findOne({ cookieId: cookieId, walletId: walletId });
     if (!user) 

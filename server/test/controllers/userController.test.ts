@@ -4,7 +4,7 @@ import { MongoMemoryServer } from 'mongodb-memory-server';
 import mongoose from 'mongoose';
 import UserModel from '../../models/user/UserModel';
 import UserController from '../../controllers/userController';
-import User, { Rating, NullRating } from '../../models/user/User';
+import User, { Rating } from '../../models/user/User';
 
 let con: MongoClient;
 let mongoServer: MongoMemoryServer;
@@ -223,8 +223,6 @@ describe("Test get user info", () => {
 
 describe("Test getUserRating", () =>{
     it("Should return a null rating", async () =>{
-      
-      
       let response = await userController.getUserRating("", "", "")
       expect(response.isNull()).toBe(true)
     })

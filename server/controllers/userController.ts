@@ -2,6 +2,7 @@ import UserModel, { RatingModel, ReferralModel } from "../models/user/UserModel"
 import UserDbInterface from "../models/dbInterface/userDbInterface";
 import User, {NullUser, Rating, NullRating} from "../models/user/User";
 
+
 export default class UserController{
 
 
@@ -110,9 +111,8 @@ export default class UserController{
     }
 
     private checkReferralConditions(user : User, referrer : User){
-        if (referrer.isNull()){
-            return "user not found"
-        }
+        
+        if (referrer.isNull()) return "user not found"
 
         if (referrer.walletId == user.walletId || 
                 referrer.cookieId == user.cookieId){
@@ -120,6 +120,12 @@ export default class UserController{
         }
 
         return "valid"
+    }
+
+    async handleGetUserInfo(cookieId : string) {
+        let user = await this.getUserInfo(cookieId)
+        if (user.isNull()) return {status: 404, user: user.getUserObject()}
+        return {status: 200, user: user.getUserObject()}
     }
 
     /**
@@ -135,6 +141,8 @@ export default class UserController{
         let ret = User.createUserFromDocument(user)
         return ret
     }
+
+    
     
     /**
      * Gets user rating from database. Returns 

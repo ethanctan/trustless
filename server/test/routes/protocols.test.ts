@@ -11,6 +11,7 @@ const app = express();
 app.use(bodyParser.json()); // This line adds body parser middleware
 app.use('/', protocolRouter);
 
+
 beforeEach(() => {
     mockingoose.resetAll();
 });
@@ -18,10 +19,6 @@ beforeEach(() => {
 
 
 describe("addRating tests", () => {
-    it ("Should return false with empty referral code", () => {
-        expect(1+1).toBe(2)
-    })
-
     it("should output in correct format", async function() {
         const newProtocol = [
             {
@@ -134,7 +131,6 @@ describe("addRating tests", () => {
     
         // Make the request to the API
         let response = await request(app).post('/').send(newProtocol);
-        console.log('end of test adding protocol')
 
         // Check if the response has the correct status
         expect(response.status).toBe(201);
@@ -157,7 +153,6 @@ describe("addRating tests", () => {
     
         // Make the request to the API
         let response = await request(app).post('/').send(newProtocol);
-        console.log('end of test adding protocol')
 
         // Check if the response body is correct
         expect(response.body).toEqual({
@@ -182,7 +177,6 @@ describe("addRating tests", () => {
     
         // Make the request to the API
         let response = await request(app).post('/').send(existingProtocol);
-        console.log('end of test updating protocol')
     
         // Check if the response has the correct status
         expect(response.status).toBe(201);

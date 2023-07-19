@@ -78,7 +78,6 @@ export default class ProtocolController{
     }
 
     private updateDoc (doc : any, protocol : object) {
-        console.log("in updateDoc", doc, protocol)
         let [newQScores, newAvg] = this.updateAvg(
             doc["qScores"], protocol["qScores"], doc["disputeCount"]
         )
@@ -87,7 +86,6 @@ export default class ProtocolController{
         doc["protocolName"] = protocol["protocolName"]
         doc["averageScore"] = newAvg
         doc["qScores"] = newQScores
-        console.log("end of in updateDoc", doc, protocol)
         return doc
     }
 }

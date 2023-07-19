@@ -36,9 +36,6 @@ describe("defiData tests", () => {
     it("should output", async function() {
         let response = await request(app)
             .get('/')
-            // console.log('Status:', response.status);
-            // console.log('Headers:', response.headers);
-            // console.log('Body:', response.body);
         expect(response.headers['content-type']).toMatch(/application\/json/);
 
     },10000)

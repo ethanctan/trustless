@@ -9,7 +9,6 @@ const router = express.Router()
  * TODO Improve efficiency
  */
 router.get("/", async (req: Request, res: Response) => {
-    console.log(typeof res.json);
     try{
         const defiData = await DefiDataModel.find({})
         res.json(defiData)
