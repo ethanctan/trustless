@@ -156,7 +156,7 @@ describe("addRating tests", () => {
 
         // Check if the response body is correct
         expect(response.body).toEqual({
-            message: 'Success'
+            message: 'Success in adding new protocol'
         });
     
     }, 10000);
@@ -271,35 +271,28 @@ describe("addRating tests", () => {
         expect(response.body).toHaveProperty('message');
     }, 10000);
 
-    // NOT SURE NEEDED SINCE QSCORES ARE INITIALIZED TO 1
-    // it("should handle missing qScores", async function() {
-    //     console.log('start of test missing qScores')
-    //     const invalidProtocol = {
-    //         protocolName: 'Protocol1',
-    //         disputeCount: 11,
-    //         averageScore: 86
-    //     }; // Missing 'protocolName'
+    it("should successfully update an existing protocol and not create a new one", async function() {
+        const existingProtocol = {
+            protocolName: 'Protocol1',
+            disputeCount: 11,
+            averageScore: 86,
+            qScores: [85, 85, 85, 85, 85]
+        };
+    
+        // Mock ProtocolModel.findOne() to simulate that the protocol exists
+        mockingoose(ProtocolModel).toReturn(existingProtocol, 'findOne');
+    
+        // Mock ProtocolModel.save() to simulate a successful update
+        mockingoose(ProtocolModel).toReturn(existingProtocol, 'save');
+    
+        // Make the request to the API
+        let response = await request(app).post('/').send(existingProtocol);
+    
+        // Check if the correct message is returned
+        expect(response.body.message).toBe("Success in updating protocol");
+    
+    }, 10000);
 
-    //     // Make the request to the API
-    //     let response = await request(app).post('/').send(invalidProtocol);
-
-    //     // Check if the response has the error status
-    //     expect(response.status).toBe(500);
-
-    // }, 10000);
-
-    // it("should handle missing qScores with proper message body", async function() {
-    //     const invalidProtocol = {
-    //         protocolName: 'Protocol1',
-    //         disputeCount: 11,
-    //         averageScore: 86
-    //     }; // Missing 'protocolName'
-
-    //     // Make the request to the API
-    //     let response = await request(app).post('/').send(invalidProtocol);
-
-    //     // Check if the response body contains an error message
-    //     expect(response.body).toHaveProperty('message');
-    // }, 10000);
+     
      
 })
