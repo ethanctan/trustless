@@ -16,6 +16,12 @@ class Rating{
         }
     }
 
+    static fromObject(rating : object){
+        let code : string = rating["code"] || ""
+        let scores = rating["scores"]
+        return new Rating(scores, code)
+    }
+
     static fromIRating(rating : IRating){
         return new this(rating.scores, rating.code)
     }

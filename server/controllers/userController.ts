@@ -69,7 +69,6 @@ export default class UserController{
      * @param rating 
      */
     async upsertRating(userIdentity : object, rating : Rating, protocol : string){
-        
         const user = await UserModel.findOne({ 
             cookieId: userIdentity["cookieId"], 
             walletId: userIdentity["walletId"] 

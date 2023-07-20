@@ -3,6 +3,7 @@ import UserModel from '../models/user/UserModel';
 import UserController from '../controllers/userController';
 import {RatingModel, ReferralModel} from '../models/user/UserModel';
 import User from '../models/user/User';
+import { Rating } from '../models/user/User';
 
 const router = express.Router()
 const userController = new UserController()
@@ -32,16 +33,29 @@ router.post("/", async (req: Request, res: Response) => {
 });
 
 
-/**
- * GET request to check if a user with a specific referralCode exists
- * Returns true if there is a user with a valid code, false otherwise
- * @requires req.query to have {referralCode} in the json body
- */
-router.get("/checkReferralCode/:referralCode", async (req: Request, res: Response) => {
-    const { referralCode } = req.params;
-    let response = await userController.checkReferralCodeExists(referralCode)
-    res.json({referralCodeExists: response})
+
+
+router.get("/getUserInfo/:cookieId", async (req: Request, res: Response) => {
+    const { cookieId } = req.params;
+    let response = await userController.handleGetUserInfo(cookieId)
+    res.status(response.status).json(response.message)
 });
+
+
+/**
+ * GET request to check if a user with a specific cookieId exists
+ * @returns false if user does not exist and true otherwise
+ */
+router.get("/check/:cookieId", async (req, res) => {
+    const { cookieId } = req.params;
+    let response = await userController.handleCheckUserExists(cookieId)
+    res.json(response)
+  });
+
+
+
+
+
 
 // Works
 /**
@@ -52,18 +66,27 @@ router.get("/checkReferralCode/:referralCode", async (req: Request, res: Respons
 router.post("/addRating/:cookieId/:walletId", async (req: Request, res: Response) => {
     const { cookieId, walletId} = req.params;
     const { protocolName, rating } = req.body;
-    const user = await UserModel.findOne({ cookieId: cookieId, walletId: walletId });
-    if (!user) 
-        return res.status(404).json({ message: 'User not found' });
+    let ratingObject = Rating.fromObject(rating)
+    let userIdentity = {"cookieId" : cookieId, "walletId" : walletId}
+    let response = await userController.upsertRating(userIdentity, ratingObject, protocolName)
+    res.json({message : response})
+});
 
-    const newRating = new RatingModel(rating);
-    if (user.protocolRatings.get(protocolName)) 
-        return res.status(400).json(
-            { message: 'You have already rated this protocol.' });
-    user.protocolRatings.set(protocolName, newRating);
-    await user.save();
 
-    res.json({ message: 'Rating added successfully' });
+router.get("/getRating/:cookieId/:walletId/:protocolName", async (req: Request, res: Response) => {
+    const { protocolName, cookieId, walletId } = req.params;
+    let response = await userController.handleGetRating(cookieId, walletId, protocolName)
+    res.status(response.status).json(response.message)
+});
+
+/**
+ * GET request to fetch all the protocol ratings for a given user
+ * @returns 404 if user not found
+ */
+router.get('/ratings/:cookieId/:walletId', async (req, res) => {
+    const { cookieId, walletId } = req.params;
+    let response = await userController.handleGetAllRatings(cookieId, walletId)
+    res.status(response.status).json(response.message)
 });
 
 // POST request to update a rating that already exists in a user's rating mapping
@@ -82,6 +105,10 @@ router.post("/updateRating/:cookieId/:walletId", async (req: Request, res: Respo
     await user.save();
     res.json({ message: 'Rating updated successfully' });
 });
+
+
+
+
 
 
 /**
@@ -103,38 +130,15 @@ router.post("/addReferral/:referralCode", async (req: Request, res: Response) =>
     res.json({ message: 'Referral added successfully' });
 });
 
-
-router.get("/getUserInfo/:cookieId", async (req: Request, res: Response) => {
-    const { cookieId } = req.params;
-    let response = await userController.handleGetUserInfo(cookieId)
-    res.status(response.status).json(response.message)
-});
-
-router.get("/getRating/:cookieId/:walletId/:protocolName", async (req: Request, res: Response) => {
-    const { protocolName, cookieId, walletId } = req.params;
-    let response = await userController.handleGetRating(cookieId, walletId, protocolName)
-    res.status(response.status).json(response.message)
-});
-
-
 /**
- * GET request to check if a user with a specific cookieId exists
- * @returns false if user does not exist and true otherwise
+ * GET request to check if a user with a specific referralCode exists
+ * Returns true if there is a user with a valid code, false otherwise
+ * @requires req.query to have {referralCode} in the json body
  */
-router.get("/check/:cookieId", async (req, res) => {
-    const { cookieId } = req.params;
-    let response = await userController.handleCheckUserExists(cookieId)
-    res.json(response)
-  });
-
-/**
- * GET request to fetch all the protocol ratings for a given user
- * @returns 404 if user not found
- */
-router.get('/ratings/:cookieId/:walletId', async (req, res) => {
-    const { cookieId, walletId } = req.params;
-    let response = await userController.handleGetAllRatings(cookieId, walletId)
-    res.status(response.status).json(response.message)
+router.get("/checkReferralCode/:referralCode", async (req: Request, res: Response) => {
+    const { referralCode } = req.params;
+    let response = await userController.checkReferralCodeExists(referralCode)
+    res.json({referralCodeExists: response})
 });
 
 export default router;

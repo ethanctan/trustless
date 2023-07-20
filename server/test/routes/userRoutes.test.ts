@@ -9,6 +9,7 @@ let userRouter = require('../../routes/user');
 import { MongoClient } from 'mongodb';
 import { MongoMemoryServer } from 'mongodb-memory-server';
 import mongoose from 'mongoose';
+import { Rating } from '../../models/user/User';
 jest.useFakeTimers();
 
 const app = express();
@@ -24,6 +25,8 @@ beforeEach(() => {
     basicTestUser = testUserObject
 });
 
+let basicProtocolRating = {protocol : "ant", rating : 
+                {scores : [1,2,3,4,5], referral : "venom"}}
 
 describe("Get user tests", ()=> {
     it("Should get all users", async () => {
@@ -36,12 +39,8 @@ describe("Get user tests", ()=> {
 
 describe("Add user tests", () => {
     it("Should add user to database", async () => {
-        const test = {
-            cookieId : "hello",
-            walletId : "world"
-        }
         mockingoose(UserModel).toReturn(null, 'findOne')
-        let response = await request(app).post('/').send(test)
+        let response = await request(app).post('/').send(basicTestUser)
         expect(response.body.message).toBe("added user to database")
     })
 })
