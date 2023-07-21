@@ -44,7 +44,7 @@ describe("Test checkReferralCodeExists ",  () => {
   describe("Test add referral", () => {
     it("Should return an error", async () => {
       let response = await referralController.addReferral(basicTestUser, "")
-      expect(response).toBe("user not found")
+      expect(response).toBe("referrer not found")
     })
   
     it("should return an error due to user adding themself", async () => {

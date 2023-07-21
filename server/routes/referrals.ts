@@ -1,10 +1,7 @@
 import express, { Request, Response } from 'express';
-import UserModel from '../models/user/UserModel';
-import { ReferralModel } from '../models/user/UserModel';
-import User from '../models/user/User';
 import ReferralController from '../controllers/referralController';
 const router = express.Router()
-const userController = new ReferralController()
+const referralController = new ReferralController()
 
 
 
@@ -15,16 +12,9 @@ const userController = new ReferralController()
  */
 router.post("/:referralCode", async (req: Request, res: Response) => {
     const { referralCode } = req.params;
-    const user = await UserModel.findOne({ referralCode: referralCode });
-    if (!user) 
-        return res.status(404).json({ message: 'No matching referral code found' });
-    userController.addReferral(User.createUserFromDocument(user), referralCode)
-    // const { walletAddress, referralprotocol } = req.body; 
-    // const referralProtocolModel = new ReferralModel(referralprotocol);
-    // // user.referredUsers.set(walletAddress, referralProtocolModel);
-    // // await user.save();
-
-    // res.json({ message: 'Referral added successfully' });
+    const { walletId } = req.body
+    let response = await referralController.handleAddReferral(referralCode, walletId)
+    res.json({message: response})
 });
 
 /**
@@ -34,7 +24,7 @@ router.post("/:referralCode", async (req: Request, res: Response) => {
  */
 router.get("/:referralCode", async (req: Request, res: Response) => {
     const { referralCode } = req.params;
-    let response = await userController.checkReferralCodeExists(referralCode)
+    let response = await referralController.checkReferralCodeExists(referralCode)
     res.json({referralCodeExists: response})
 });
 

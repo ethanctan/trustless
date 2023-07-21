@@ -9,9 +9,9 @@ const app = express();
 const userRoute = require('./routes/user')
 let protocolExport = require('./routes/protocols')
 const protocolsRouter = protocolExport.router
-const ipRouter = require('./routes/ip')
 const defiDataRouter = require('./routes/defiData')
 const ratingRouter = require('./routes/ratings')
+const referralRouter = require('./routes/referrals')
 
 app.use(express.json());
 app.use(cors());
@@ -19,11 +19,10 @@ app.use(cors());
 mongoose.connect("mongodb+srv://dyang:RrrwmSWGDb1vqNZy@cluster0.vtkcvkm.mongodb.net/disputeboard?retryWrites=true&w=majority");
 
 app.use("/user", userRoute)
-
-app.use("/ip", ipRouter)
 app.use("/defiData", defiDataRouter)
 app.use("/protocols", protocolsRouter)
 app.use("/ratings", ratingRouter)
+app.use("/referrals", referralRouter)
 
 app.listen(3001, () => {
     console.log('server running on port 3001');

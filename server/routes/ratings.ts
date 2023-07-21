@@ -1,7 +1,6 @@
 import express, { Request, Response } from 'express';
 import RatingController from '../controllers/ratingController';
 import { Rating } from '../models/user/User';
-import UserModel from '../models/user/UserModel';
 
 const router = express.Router()
 const ratingController = new RatingController()
@@ -28,7 +27,6 @@ router.get("/:cookieId/:walletId/:protocolName", async (req: Request, res: Respo
     
     const { protocolName, cookieId, walletId } = req.params;
     let response = await ratingController.handleGetRating(cookieId, walletId, protocolName)
-    // console.log("Response: ", response)
     res.status(response.status).json(response.message)
 });
 

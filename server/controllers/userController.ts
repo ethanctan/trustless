@@ -1,5 +1,4 @@
 import UserModel from "../models/user/UserModel"
-import UserDbInterface from "../models/dbInterface/userDbInterface";
 import User, { NullUser } from "../models/user/User";
 
 

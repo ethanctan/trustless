@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import UserModel from '../../models/user/UserModel';
 import UserController from '../../controllers/userController';
-import User, { Rating } from '../../models/user/User';
+import User from '../../models/user/User';
 import  {setup, teardown, close} from '../setupMongoDb'
 import { addUserToDatabase } from '../testUtils';
 
@@ -28,9 +28,6 @@ afterEach(async () => {
 afterAll(async () => {
   await close()
 });
-
-
-
 
 async function testHandlePostRequest(
   cookieId: string, walletId: string, referralCode: string, expected : string

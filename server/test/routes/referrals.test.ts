@@ -31,6 +31,33 @@ afterAll(async () => {
 });
 
 
+
+
+describe("Test add referral code", () => {
+    it("Should return unfound referee for no matching referee", async () => {
+        let url = "/hello"
+        let response = await request(app).post(url).send({walletId : "world"})
+        expect(response.body.message).toBe("referee not found")
+    })
+    it("Should return unfound referrer for no matching referral code", async () => {
+        let url = "/hello"
+        let response = await request(app).post(url).send({walletId : "owo"})
+        expect(response.body.message).toBe("referrer not found")
+    })
+    it("Should catch case where user submits own referral code", async () => {
+        let url = "/awa"
+        let response = await request(app).post(url).send({walletId : "owo"})
+        expect(response.body.message).toBe("user submitted own referral code")
+    })
+    it("Should update referral code", async () => {
+        addUserToDatabase(new User("sky", "does", "minecraft"))
+        let url = "/awa"
+        let response = await request(app).post(url).send({walletId : "does"})
+        expect(response.body.message).toBe("successfully added/updated referral code")
+    })
+})
+
+
 describe("Test get referral code", () => {
     it("Should return true for existent referral codes", async () => {
         let url = "/awa"
@@ -41,13 +68,5 @@ describe("Test get referral code", () => {
         let url = "/Minecraft"
         let response = await request(app).get(url)
         expect(response.body.referralCodeExists).toBe(false)
-    })
-})
-
-describe("Test add referral code", () => {
-    it("Should return false for no matching referral code", async () => {
-        let url = "/hello"
-        let response = await request(app).post(url).send("world")
-        expect(response.body.message).toBe("No matching referral code found")
     })
 })

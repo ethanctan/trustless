@@ -14,11 +14,12 @@ export default class ReferralController{
     }
 
 
-    async handleAddReferral(referralCode : string){
-        const user = await UserModel.findOne({ referralCode: referralCode });
-        if (!user) 
-            return "nonexistent referral code"
-        
+    async handleAddReferral(referralCode : string, refereeWalletId : string){
+        const referee = await UserModel.findOne({walletId: refereeWalletId})
+
+        let response = await this.addReferral(
+                User.createUserFromDocument(referee), referralCode)
+        return response
     }
 
     /**
@@ -42,12 +43,14 @@ export default class ReferralController{
         return "successfully added/updated referral code"
     }
 
-    private checkReferralConditions(user : User, referrer : User){
+    private checkReferralConditions(referee : User, referrer : User){
         
-        if (referrer.isNull()) return "user not found"
+        if (referee.isNull()) return "referee not found"
+        if (referrer.isNull()) return "referrer not found"
+        
 
-        if (referrer.walletId == user.walletId || 
-                referrer.cookieId == user.cookieId){
+        if (referrer.walletId == referee.walletId || 
+                referrer.cookieId == referee.cookieId){
             return "user submitted own referral code"
         }
 
