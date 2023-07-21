@@ -147,6 +147,7 @@ export default class UserController{
         let rating = await this.getUserRating(cookieId, walletId, protocolName)
         if (rating.isNull()) return { status: 404, 
                                 message: {message : rating.getErrorMessage()}}
+
         return {status : 200, message: rating}
    }
 

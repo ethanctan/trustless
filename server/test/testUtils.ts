@@ -1,5 +1,8 @@
 var _ = require('lodash');
 import mongoose from "mongoose";
+import MongoMemoryServer from "mongodb-memory-server-core";
+import { MongoClient } from "mongodb";
+
 
 function createUserObject(cookieId: string, walletId: string, referralCode: string,
     numReferrals ?: number) : object{
@@ -27,5 +30,8 @@ function isEqualWithDocAndObject(document : mongoose.Document, object : object) 
 }
 
 let testUserObject = createUserObject("uwu", "owo", "awa")
+
+
+
 
 export {createUserObject, createRating, isEqualWithDocAndObject, testUserObject}

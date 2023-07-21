@@ -1,24 +1,16 @@
-const express = require('express');
-const bodyParser = require('body-parser');
 const request = require('supertest');
 const mockingoose = require('mockingoose');
 import UserModel from '../../models/user/UserModel';
 import {describe, expect, test} from '@jest/globals';
 import { testUserObject, createUserObject, isEqualWithDocAndObject } from '../testUtils';
 let userRouter = require('../../routes/user');
-import { MongoClient } from 'mongodb';
-import { MongoMemoryServer } from 'mongodb-memory-server';
-import mongoose from 'mongoose';
-import { Rating } from '../../models/user/User';
 jest.useFakeTimers();
+import setupSupertest from './setupSupertest';
 
-const app = express();
-app.use(bodyParser.json()); // This line adds body parser middleware
-app.use('/', userRouter);
+
+const app = setupSupertest(userRouter)
+
 let basicTestUser = testUserObject
-const timeoutLimit = 10000
-jest.setTimeout(timeoutLimit)
-
 
 beforeEach(() => {
     mockingoose.resetAll();
@@ -78,27 +70,7 @@ describe("Test get user info", () => {
     })
 })
 
-describe("Test get rating", () => {
-    const baseUrl = "/getRating/"
-    it("Should return User not found if user cannot be found", async () => {
-        let url = baseUrl + "one/two/three"
-        mockingoose(UserModel).toReturn(null, 'findOne')
-        let response = await request(app).get(url)
-        expect(response.body.message).toBe("User not found")
-    })
-    it("Should return rating not found if rating cannot be found", async () => {
-        let url = baseUrl + "uwu/owo/three"
-        mockingoose(UserModel).toReturn(basicTestUser, 'findOne')
-        let response = await request(app).get(url)
-        expect(response.body.message).toBe("Rating not found")
-    })
-    // it("Should return rating if it exists", async () => {
-    //     let url = baseUrl +  "uwu/owo/Hello"
-    //     mockingoose(UserModel).toReturn(basicTestUser, 'findOne')
-    //     let response = await request(app).get(url)
-    //     expect(response.body.message).toBe("World")
-    // })
-})
+
 
 describe("Check cookie id exists", () => {
     const baseUrl = "/check/"
@@ -116,21 +88,3 @@ describe("Check cookie id exists", () => {
     })
 })
 
-describe("Check ratings exist",  () => {
-    const baseUrl = "/ratings/"
-    it("Should return user not found if user does not exist", async () => {
-        let url = baseUrl + "hello/world"
-        mockingoose(UserModel).toReturn(null, 'findOne')
-        let response = await request(app).get(url)
-        expect(response.body.message).toBe("User not found")
-    })
-    // Cannot test protocol ratings
-    // it("Should return user not found if user does not exist", async () => {
-    //     let url = baseUrl + basicTestUser["cookieId"] + "/" + 
-    //             basicTestUser["walletId"]
-
-    //     mockingoose(UserModel).toReturn(basicTestUser, 'findOne')
-    //     let response = await request(app).get(url)
-    //     expect(response.body).toBe("User not found")
-    // })
-})

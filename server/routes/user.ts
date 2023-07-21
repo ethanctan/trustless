@@ -54,61 +54,7 @@ router.get("/check/:cookieId", async (req, res) => {
 
 
 
-
-
-
-// Works
-/**
- * POST request to add a rating to a user's rating mapping
- * Client-side interface: protocolName, rating -> splice to form kv pair
- * Why do we have two post requests for doing basically the exact same thing?
- */
-router.post("/addRating/:cookieId/:walletId", async (req: Request, res: Response) => {
-    const { cookieId, walletId} = req.params;
-    const { protocolName, rating } = req.body;
-    let ratingObject = Rating.fromObject(rating)
-    let userIdentity = {"cookieId" : cookieId, "walletId" : walletId}
-    let response = await userController.upsertRating(userIdentity, ratingObject, protocolName)
-    res.json({message : response})
-});
-
-
-router.get("/getRating/:cookieId/:walletId/:protocolName", async (req: Request, res: Response) => {
-    const { protocolName, cookieId, walletId } = req.params;
-    let response = await userController.handleGetRating(cookieId, walletId, protocolName)
-    res.status(response.status).json(response.message)
-});
-
-/**
- * GET request to fetch all the protocol ratings for a given user
- * @returns 404 if user not found
- */
-router.get('/ratings/:cookieId/:walletId', async (req, res) => {
-    const { cookieId, walletId } = req.params;
-    let response = await userController.handleGetAllRatings(cookieId, walletId)
-    res.status(response.status).json(response.message)
-});
-
-// POST request to update a rating that already exists in a user's rating mapping
-// Client-side interface: protocolName, rating -> splice to form kv pair
-// Works
-router.post("/updateRating/:cookieId/:walletId", async (req: Request, res: Response) => {
-    const { cookieId, walletId} = req.params;
-    const { protocolName, rating } = req.body;
-    const user = await UserModel.findOne({ cookieId: cookieId, walletId: walletId });
-    if (!user) return 
-        res.status(404).json({ message: 'User not found' });
-
-    const updatedRating = new RatingModel(rating);
-    if (!user.protocolRatings.get(protocolName)) return res.status(404).json({ message: 'Rating not found' });
-    user.protocolRatings.set(protocolName, updatedRating);
-    await user.save();
-    res.json({ message: 'Rating updated successfully' });
-});
-
-
-
-
+  
 
 
 /**
