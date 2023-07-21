@@ -10,5 +10,5 @@
   "testRunner": "jest",
   "testRunner_comment": "Take a look at (missing 'homepage' URL in package.json) for information about the jest plugin.",
   "coverageAnalysis": "perTest",
-  "mutate": [ "**/*/{*.ts,!(test)/**/*.ts}" ]
+  "mutate": [ "**/*/*.ts", "!**/*.test.ts", "!**/models/*.ts", "!**/test/*.ts" ]
 }

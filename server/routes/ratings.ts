@@ -6,8 +6,6 @@ const router = express.Router()
 const ratingController = new RatingController()
 
 
-
-// Works
 /**
  * POST request to add a rating to a user's rating mapping
  * Client-side interface: protocolName, rating -> splice to form kv pair
@@ -24,7 +22,6 @@ router.post("/:cookieId/:walletId", async (req: Request, res: Response) => {
 
 
 router.get("/:cookieId/:walletId/:protocolName", async (req: Request, res: Response) => {
-    
     const { protocolName, cookieId, walletId } = req.params;
     let response = await ratingController.handleGetRating(cookieId, walletId, protocolName)
     res.status(response.status).json(response.message)

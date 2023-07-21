@@ -6,6 +6,7 @@ let ratingRouter = require('../../routes/ratings');
 import setupSupertest from './setupSupertest';
 import  {setup, teardown, close} from '../setupMongoDb'
 import { addUserToDatabase } from '../testUtils';
+import UserModel from '../../models/user/UserModel';
 
 const app = setupSupertest(ratingRouter)
 
@@ -80,5 +81,27 @@ describe("Check ratings exist",  () => {
                 basicTestUser["walletId"]
         let response = await request(app).get(url)
         expect(response.body.message).toBe("User not found")
+    })
+})
+
+
+describe("Test getting all ratings", () => {
+    it("Should get all ratings", async () => {
+        let url = "/hello/world"
+        let response = await request(app).get(url)
+        expect(response.body.message).toBe("User not found")
+    })
+    it("Should get empty object", async () => {
+        let url = "/uwu/owo"
+        let response = await request(app).get(url)
+        expect(response.body).toStrictEqual({})
+    })
+    it("Should get ratings", async () => {
+        let rating = new Rating([1,2,3,4,5], "hello")
+        let testUser2 = new User("hello", "world", "", 0, new Map([["minecraft", rating]]))
+        await addUserToDatabase(testUser2)
+        let url = "/hello/world"
+        let response = await request(app).get(url)
+        expect(response.body["minecraft"]["code"]).toBe("hello")
     })
 })

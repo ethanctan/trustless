@@ -57,12 +57,12 @@ export default class RatingController{
     }
 
     async handleGetAllRatings(cookieId : string, walletId : string){
-        let user = await UserModel.findOne(
-         { cookieId: cookieId, walletId: walletId });
-         if (!user ) return {status: 404, message: 
-                         {message : 'User not found'}}
-         return {status : 200, message : user.protocolRatings}
-     }
+       let user = await UserModel.findOne(
+        { cookieId: cookieId, walletId: walletId });
+        if (!user ) return {status: 404, message: 
+                        {message : 'User not found'}}
+        return {status : 200, message : user.protocolRatings}
+    }
 
 
 }

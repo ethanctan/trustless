@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<coverage generated="1689943649138" clover="3.2.0">
-  <project timestamp="1689943649138" name="All files">
-    <metrics statements="358" coveredstatements="327" conditionals="59" coveredconditionals="53" methods="96" coveredmethods="84" elements="513" coveredelements="464" complexity="0" loc="358" ncloc="358" packages="8" files="18" classes="18"/>
+<coverage generated="1689974667695" clover="3.2.0">
+  <project timestamp="1689974667695" name="All files">
+    <metrics statements="353" coveredstatements="333" conditionals="58" coveredconditionals="54" methods="95" coveredmethods="87" elements="506" coveredelements="474" complexity="0" loc="353" ncloc="353" packages="8" files="18" classes="18"/>
     <package name="controllers">
-      <metrics statements="125" coveredstatements="116" conditionals="36" coveredconditionals="34" methods="28" coveredmethods="26"/>
+      <metrics statements="120" coveredstatements="119" conditionals="35" coveredconditionals="35" methods="27" coveredmethods="27"/>
       <file name="protocolController.ts" path="/Users/brandonman/Documents/Github/aegis_mvp_board/server/controllers/protocolController.ts">
         <metrics statements="40" coveredstatements="40" conditionals="7" coveredconditionals="7" methods="12" coveredmethods="12"/>
         <line num="1" count="2" type="stmt"/>
@@ -48,7 +48,7 @@
         <line num="95" count="6" type="stmt"/>
       </file>
       <file name="ratingController.ts" path="/Users/brandonman/Documents/Github/aegis_mvp_board/server/controllers/ratingController.ts">
-        <metrics statements="25" coveredstatements="22" conditionals="6" coveredconditionals="5" methods="4" coveredmethods="3"/>
+        <metrics statements="25" coveredstatements="25" conditionals="6" coveredconditionals="6" methods="4" coveredmethods="4"/>
         <line num="1" count="2" type="stmt"/>
         <line num="2" count="2" type="stmt"/>
         <line num="4" count="2" type="stmt"/>
@@ -71,9 +71,9 @@
         <line num="53" count="3" type="stmt"/>
         <line num="54" count="3" type="cond" truecount="1" falsecount="0"/>
         <line num="56" count="2" type="stmt"/>
-        <line num="60" count="0" type="stmt"/>
-        <line num="62" count="0" type="cond" truecount="0" falsecount="1"/>
-        <line num="64" count="0" type="stmt"/>
+        <line num="60" count="3" type="stmt"/>
+        <line num="62" count="3" type="cond" truecount="1" falsecount="0"/>
+        <line num="64" count="2" type="stmt"/>
       </file>
       <file name="referralController.ts" path="/Users/brandonman/Documents/Github/aegis_mvp_board/server/controllers/referralController.ts">
         <metrics statements="22" coveredstatements="21" conditionals="8" coveredconditionals="8" methods="4" coveredmethods="4"/>
@@ -101,7 +101,7 @@
         <line num="57" count="5" type="stmt"/>
       </file>
       <file name="userController.ts" path="/Users/brandonman/Documents/Github/aegis_mvp_board/server/controllers/userController.ts">
-        <metrics statements="38" coveredstatements="33" conditionals="15" coveredconditionals="14" methods="8" coveredmethods="7"/>
+        <metrics statements="33" coveredstatements="33" conditionals="14" coveredconditionals="14" methods="7" coveredmethods="7"/>
         <line num="1" count="2" type="stmt"/>
         <line num="2" count="2" type="stmt"/>
         <line num="5" count="2" type="stmt"/>
@@ -135,11 +135,6 @@
         <line num="76" count="2" type="stmt"/>
         <line num="77" count="2" type="cond" truecount="1" falsecount="0"/>
         <line num="78" count="1" type="stmt"/>
-        <line num="85" count="0" type="stmt"/>
-        <line num="86" count="0" type="stmt"/>
-        <line num="87" count="0" type="stmt"/>
-        <line num="88" count="0" type="stmt"/>
-        <line num="90" count="0" type="stmt"/>
       </file>
     </package>
     <package name="models">
@@ -191,15 +186,15 @@
       <file name="User.ts" path="/Users/brandonman/Documents/Github/aegis_mvp_board/server/models/user/User.ts">
         <metrics statements="64" coveredstatements="55" conditionals="16" coveredconditionals="13" methods="29" coveredmethods="24"/>
         <line num="3" count="8" type="stmt"/>
-        <line num="11" count="21" type="stmt"/>
-        <line num="12" count="21" type="cond" truecount="1" falsecount="1"/>
+        <line num="11" count="22" type="stmt"/>
+        <line num="12" count="22" type="cond" truecount="1" falsecount="1"/>
         <line num="13" count="0" type="stmt"/>
-        <line num="15" count="21" type="stmt"/>
+        <line num="15" count="22" type="stmt"/>
         <line num="20" count="2" type="cond" truecount="2" falsecount="0"/>
         <line num="21" count="2" type="stmt"/>
         <line num="22" count="2" type="stmt"/>
         <line num="26" count="2" type="stmt"/>
-        <line num="30" count="4" type="stmt"/>
+        <line num="30" count="5" type="stmt"/>
         <line num="32" count="1" type="stmt"/>
         <line num="34" count="0" type="stmt"/>
         <line num="40" count="5" type="stmt"/>
@@ -208,17 +203,17 @@
         <line num="44" count="5" type="stmt"/>
         <line num="45" count="4" type="stmt"/>
         <line num="52" count="8" type="stmt"/>
-        <line num="66" count="100" type="stmt"/>
-        <line num="67" count="100" type="stmt"/>
-        <line num="69" count="100" type="cond" truecount="2" falsecount="0"/>
+        <line num="66" count="101" type="stmt"/>
+        <line num="67" count="101" type="stmt"/>
+        <line num="69" count="101" type="cond" truecount="2" falsecount="0"/>
         <line num="70" count="16" type="stmt"/>
-        <line num="72" count="84" type="stmt"/>
-        <line num="75" count="100" type="cond" truecount="2" falsecount="0"/>
-        <line num="76" count="98" type="stmt"/>
+        <line num="72" count="85" type="stmt"/>
+        <line num="75" count="101" type="cond" truecount="2" falsecount="0"/>
+        <line num="76" count="99" type="stmt"/>
         <line num="78" count="2" type="stmt"/>
-        <line num="81" count="100" type="cond" truecount="2" falsecount="0"/>
+        <line num="81" count="101" type="cond" truecount="2" falsecount="0"/>
         <line num="82" count="81" type="stmt"/>
-        <line num="84" count="19" type="stmt"/>
+        <line num="84" count="20" type="stmt"/>
         <line num="89" count="18" type="stmt"/>
         <line num="90" count="0" type="stmt"/>
         <line num="96" count="5" type="stmt"/>
@@ -238,17 +233,17 @@
         <line num="137" count="5" type="stmt"/>
         <line num="142" count="2" type="stmt"/>
         <line num="146" count="2" type="stmt"/>
-        <line num="151" count="61" type="stmt"/>
-        <line num="154" count="4" type="stmt"/>
-        <line num="155" count="4" type="stmt"/>
-        <line num="158" count="61" type="stmt"/>
+        <line num="151" count="65" type="stmt"/>
+        <line num="154" count="5" type="stmt"/>
+        <line num="155" count="5" type="stmt"/>
+        <line num="158" count="65" type="stmt"/>
         <line num="162" count="0" type="stmt"/>
         <line num="163" count="0" type="stmt"/>
         <line num="165" count="0" type="stmt"/>
         <line num="168" count="0" type="stmt"/>
-        <line num="172" count="60" type="stmt"/>
-        <line num="173" count="60" type="stmt"/>
-        <line num="179" count="60" type="stmt"/>
+        <line num="172" count="64" type="stmt"/>
+        <line num="173" count="64" type="stmt"/>
+        <line num="179" count="64" type="stmt"/>
         <line num="189" count="8" type="stmt"/>
         <line num="190" count="8" type="cond" truecount="2" falsecount="0"/>
         <line num="193" count="7" type="stmt"/>
@@ -269,7 +264,7 @@
       </file>
     </package>
     <package name="routes">
-      <metrics statements="88" coveredstatements="82" conditionals="0" coveredconditionals="0" methods="24" coveredmethods="22"/>
+      <metrics statements="88" coveredstatements="85" conditionals="0" coveredconditionals="0" methods="24" coveredmethods="24"/>
       <file name="defiData.ts" path="/Users/brandonman/Documents/Github/aegis_mvp_board/server/routes/defiData.ts">
         <metrics statements="9" coveredstatements="8" conditionals="0" coveredconditionals="0" methods="2" coveredmethods="2"/>
         <line num="1" count="1" type="stmt"/>
@@ -303,29 +298,29 @@
         <line num="41" count="1" type="stmt"/>
       </file>
       <file name="ratings.ts" path="/Users/brandonman/Documents/Github/aegis_mvp_board/server/routes/ratings.ts">
-        <metrics statements="22" coveredstatements="19" conditionals="0" coveredconditionals="0" methods="6" coveredmethods="4"/>
+        <metrics statements="22" coveredstatements="22" conditionals="0" coveredconditionals="0" methods="6" coveredmethods="6"/>
         <line num="1" count="1" type="stmt"/>
         <line num="2" count="1" type="stmt"/>
         <line num="3" count="1" type="stmt"/>
         <line num="5" count="1" type="stmt"/>
         <line num="6" count="1" type="stmt"/>
+        <line num="14" count="2" type="stmt"/>
+        <line num="15" count="2" type="stmt"/>
         <line num="16" count="2" type="stmt"/>
         <line num="17" count="2" type="stmt"/>
         <line num="18" count="2" type="stmt"/>
         <line num="19" count="2" type="stmt"/>
         <line num="20" count="2" type="stmt"/>
-        <line num="21" count="2" type="stmt"/>
-        <line num="22" count="2" type="stmt"/>
+        <line num="24" count="5" type="stmt"/>
+        <line num="25" count="5" type="stmt"/>
         <line num="26" count="5" type="stmt"/>
-        <line num="28" count="5" type="stmt"/>
-        <line num="29" count="5" type="stmt"/>
-        <line num="30" count="5" type="stmt"/>
-        <line num="37" count="1" type="stmt"/>
-        <line num="38" count="0" type="stmt"/>
-        <line num="39" count="0" type="stmt"/>
-        <line num="40" count="0" type="stmt"/>
-        <line num="45" count="1" type="stmt"/>
-        <line num="47" count="1" type="stmt"/>
+        <line num="27" count="5" type="stmt"/>
+        <line num="34" count="3" type="stmt"/>
+        <line num="35" count="3" type="stmt"/>
+        <line num="36" count="3" type="stmt"/>
+        <line num="37" count="3" type="stmt"/>
+        <line num="42" count="1" type="stmt"/>
+        <line num="44" count="1" type="stmt"/>
       </file>
       <file name="referrals.ts" path="/Users/brandonman/Documents/Github/aegis_mvp_board/server/routes/referrals.ts">
         <metrics statements="15" coveredstatements="15" conditionals="0" coveredconditionals="0" methods="4" coveredmethods="4"/>
@@ -384,10 +379,10 @@
         <line num="10" count="5" type="stmt"/>
         <line num="11" count="5" type="stmt"/>
         <line num="12" count="5" type="stmt"/>
-        <line num="16" count="36" type="cond" truecount="1" falsecount="0"/>
-        <line num="17" count="36" type="stmt"/>
-        <line num="18" count="36" type="stmt"/>
-        <line num="19" count="46" type="stmt"/>
+        <line num="16" count="39" type="cond" truecount="1" falsecount="0"/>
+        <line num="17" count="39" type="stmt"/>
+        <line num="18" count="39" type="stmt"/>
+        <line num="19" count="49" type="stmt"/>
         <line num="25" count="5" type="cond" truecount="1" falsecount="0"/>
         <line num="26" count="5" type="stmt"/>
         <line num="28" count="5" type="cond" truecount="1" falsecount="0"/>
@@ -408,8 +403,8 @@
         <line num="26" count="18" type="stmt"/>
         <line num="30" count="1" type="stmt"/>
         <line num="33" count="7" type="stmt"/>
-        <line num="37" count="52" type="stmt"/>
-        <line num="38" count="52" type="stmt"/>
+        <line num="37" count="56" type="stmt"/>
+        <line num="38" count="56" type="stmt"/>
         <line num="42" count="7" type="stmt"/>
         <line num="43" count="7" type="stmt"/>
       </file>
