@@ -1,14 +1,11 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
-import { MongoClient } from 'mongodb';
-import { MongoMemoryServer } from 'mongodb-memory-server';
-import mongoose from 'mongoose';
-import UserModel from '../../models/user/UserModel';
 import User, { Rating } from '../../models/user/User';
 const request = require('supertest');
 import { testUserObject } from '../testUtils';
 let ratingRouter = require('../../routes/ratings');
 import setupSupertest from './setupSupertest';
 import  {setup, teardown, close} from '../setupMongoDb'
+import { addUserToDatabase } from '../testUtils';
 
 const app = setupSupertest(ratingRouter)
 
@@ -19,30 +16,14 @@ let basicTestUser = User.createUserFromObject(basicTestUserObject)
 let basicProtocolRating = {protocolName : "ant", rating : 
                 {scores : [1,2,3,4,5], referral : "venom"}}
 
-let con: MongoClient;
-let mongoServer: MongoMemoryServer;
-
-async function initializeDatabase(){
-  basicTestUser = User.createUserFromObject(basicTestUserObject)
-  await addUserToDatabase(basicTestUser)
-}
-
-async function addUserToDatabase(user : User){
-  let userModel = new UserModel(user.getUserObject())
-  await userModel.save()
- } 
-
-
 beforeAll(async () => {
     await setup()
-  await initializeDatabase()
-    let response = await UserModel.find({})
-    console.log(response)
+    await addUserToDatabase(basicTestUser)
 });
 
 afterEach(async () => {
     await teardown()
-    await initializeDatabase()
+    await addUserToDatabase(basicTestUser)
 })
 
 afterAll(async () => {
@@ -94,12 +75,10 @@ describe("Check ratings exist",  () => {
         expect(response.body.message).toBe("User not found")
     })
     // Cannot test protocol ratings
-    // it("Should return user not found if user does not exist", async () => {
-    //     let url = baseUrl + basicTestUser["cookieId"] + "/" + 
-    //             basicTestUser["walletId"]
-
-    //     mockingoose(UserModel).toReturn(basicTestUser, 'findOne')
-    //     let response = await request(app).get(url)
-    //     expect(response.body).toBe("User not found")
-    // })
+    it("Should return user not found if user does not exist", async () => {
+        let url = baseUrl + basicTestUser["cookieId"] + "/" + 
+                basicTestUser["walletId"]
+        let response = await request(app).get(url)
+        expect(response.body.message).toBe("User not found")
+    })
 })

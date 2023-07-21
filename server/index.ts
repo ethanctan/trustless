@@ -11,6 +11,7 @@ let protocolExport = require('./routes/protocols')
 const protocolsRouter = protocolExport.router
 const ipRouter = require('./routes/ip')
 const defiDataRouter = require('./routes/defiData')
+const ratingRouter = require('./routes/ratings')
 
 app.use(express.json());
 app.use(cors());
@@ -22,6 +23,7 @@ app.use("/user", userRoute)
 app.use("/ip", ipRouter)
 app.use("/defiData", defiDataRouter)
 app.use("/protocols", protocolsRouter)
+app.use("/ratings", ratingRouter)
 
 app.listen(3001, () => {
     console.log('server running on port 3001');

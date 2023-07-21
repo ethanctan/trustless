@@ -3,7 +3,6 @@ import UserModel from '../models/user/UserModel';
 import UserController from '../controllers/userController';
 import {RatingModel, ReferralModel} from '../models/user/UserModel';
 import User from '../models/user/User';
-import { Rating } from '../models/user/User';
 
 const router = express.Router()
 const userController = new UserController()
@@ -33,8 +32,6 @@ router.post("/", async (req: Request, res: Response) => {
 });
 
 
-
-
 router.get("/getUserInfo/:cookieId", async (req: Request, res: Response) => {
     const { cookieId } = req.params;
     let response = await userController.handleGetUserInfo(cookieId)
@@ -52,40 +49,6 @@ router.get("/check/:cookieId", async (req, res) => {
     res.json(response)
   });
 
-
-
-  
-
-
-/**
- * POST request to add a walletaddress:protocol pair to the user's referredUser mapping
- * Returns 404 error if a referral code does not exist
- * Returns 404 error if a user uses its own referral code
- */
-router.post("/addReferral/:referralCode", async (req: Request, res: Response) => {
-    const { referralCode } = req.params;
-    const user = await UserModel.findOne({ referralCode: referralCode });
-    if (!user) 
-        return res.status(404).json({ message: 'No matching referral code found' });
-    
-    const { walletAddress, referralprotocol } = req.body; 
-    const referralProtocolModel = new ReferralModel(referralprotocol);
-    // user.referredUsers.set(walletAddress, referralProtocolModel);
-    // await user.save();
-
-    res.json({ message: 'Referral added successfully' });
-});
-
-/**
- * GET request to check if a user with a specific referralCode exists
- * Returns true if there is a user with a valid code, false otherwise
- * @requires req.query to have {referralCode} in the json body
- */
-router.get("/checkReferralCode/:referralCode", async (req: Request, res: Response) => {
-    const { referralCode } = req.params;
-    let response = await userController.checkReferralCodeExists(referralCode)
-    res.json({referralCodeExists: response})
-});
 
 export default router;
 

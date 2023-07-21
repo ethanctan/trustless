@@ -1,6 +1,6 @@
-import UserModel, { RatingModel, ReferralModel } from "../models/user/UserModel"
+import UserModel from "../models/user/UserModel"
 import UserDbInterface from "../models/dbInterface/userDbInterface";
-import User, {NullUser, Rating, NullRating} from "../models/user/User";
+import User, { NullUser } from "../models/user/User";
 
 
 export default class UserController{
@@ -51,76 +51,6 @@ export default class UserController{
         return "correct user-wallet pair"
     }
 
-    async checkReferralCodeExists(referralCode : string){
-        try{
-            const referralCodeExists = await UserModel.findOne({ 
-                referralCode: referralCode });
-            return Boolean(referralCodeExists)
-        }catch(err){
-            return false
-        }
-    }
-
-    /**
-     * Adds rating to the database for a user. If user already has rating, 
-     * update it instead. Returns a success/failure message
-     * If user doesn't exist, then return error
-     * @param userIdentity 
-     * @param rating 
-     */
-    async upsertRating(userIdentity : object, rating : Rating, protocol : string){
-        const user = await UserModel.findOne({ 
-            cookieId: userIdentity["cookieId"], 
-            walletId: userIdentity["walletId"] 
-        });
-        if (!user) 
-            return 'user not found'
-        
-        const newRating = new RatingModel(
-            {scores : rating.scores, code: rating.code})
-
-        let ratingExists = Boolean(user.protocolRatings.get(protocol))
-        if (ratingExists){
-            return "rating already submitted"
-        }
-        user.protocolRatings.set(protocol, newRating);
-        await user.save()
-        return "rating added"
-    }
-
-    /**
-     * Adds referee to the referrer's map of referred user
-     * Should not allow users to add themselves as a referrer
-     * @param referee 
-     * @param referrerCode 
-     */
-    async addReferral(referee : User, referrerCode : string){
-        const referrer = await UserModel.findOne({
-            referralCode : referrerCode})
-
-        let status = this.checkReferralConditions(referee,
-                                         User.createUserFromDocument(referrer))
-        if (status != "valid" || referrer == null){
-            return status
-        }
-        referrer.referredUsers += 1
-        referrer.save()
-
-        return "successfully added/updated referral code"
-    }
-
-    private checkReferralConditions(user : User, referrer : User){
-        
-        if (referrer.isNull()) return "user not found"
-
-        if (referrer.walletId == user.walletId || 
-                referrer.cookieId == user.cookieId){
-            return "user submitted own referral code"
-        }
-
-        return "valid"
-    }
-
     async handleGetUserInfo(cookieId : string) {
         let user = await this.getUserInfo(cookieId)
         if (user.isNull()) return {status: 404, 
@@ -142,46 +72,11 @@ export default class UserController{
         return ret
     }
 
-    
-    async handleGetRating(cookieId : string, walletId : string, protocolName : string) {
-        let rating = await this.getUserRating(cookieId, walletId, protocolName)
-        if (rating.isNull()) return { status: 404, 
-                                message: {message : rating.getErrorMessage()}}
-
-        return {status : 200, message: rating}
-   }
-
-    /**
-     * Gets user rating from database. Returns 
-     * nullRating user or rating isn't found
-     */
-    async getUserRating(cookieId : string, 
-        walletId : string, protocolName : string) : Promise<Rating>{
-            const user = await UserModel.findOne(
-                { cookieId: cookieId, walletId: walletId });
-            if (!user){
-                return new NullRating("User not found")
-            }
-            const rating = user.protocolRatings.get(protocolName);
-            if (rating == null) return  new NullRating("Rating not found")
-
-            return Rating.fromIRating(rating)
-    }
-
-    
 
     async handleCheckUserExists(cookieId : string){
         const user = await UserModel.findOne({ cookieId: cookieId });
         if (!user) return false
         return true
-    }
-
-    async handleGetAllRatings(cookieId : string, walletId : string){
-       let user = await UserModel.findOne(
-        { cookieId: cookieId, walletId: walletId });
-        if (!user ) return {status: 404, message: 
-                        {message : 'User not found'}}
-        return {status : 200, message : user.protocolRatings}
     }
     
 }

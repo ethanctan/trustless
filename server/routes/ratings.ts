@@ -1,10 +1,10 @@
 import express, { Request, Response } from 'express';
-import UserController from '../controllers/userController';
+import RatingController from '../controllers/ratingController';
 import { Rating } from '../models/user/User';
 import UserModel from '../models/user/UserModel';
 
 const router = express.Router()
-const userController = new UserController()
+const ratingController = new RatingController()
 
 
 
@@ -19,7 +19,7 @@ router.post("/:cookieId/:walletId", async (req: Request, res: Response) => {
     const { protocolName, rating } = req.body;
     let ratingObject = Rating.fromObject(rating)
     let userIdentity = {"cookieId" : cookieId, "walletId" : walletId}
-    let response = await userController.upsertRating(userIdentity, ratingObject, protocolName)
+    let response = await ratingController.upsertRating(userIdentity, ratingObject, protocolName)
     res.json({message : response})
 });
 
@@ -27,7 +27,7 @@ router.post("/:cookieId/:walletId", async (req: Request, res: Response) => {
 router.get("/:cookieId/:walletId/:protocolName", async (req: Request, res: Response) => {
     
     const { protocolName, cookieId, walletId } = req.params;
-    let response = await userController.handleGetRating(cookieId, walletId, protocolName)
+    let response = await ratingController.handleGetRating(cookieId, walletId, protocolName)
     // console.log("Response: ", response)
     res.status(response.status).json(response.message)
 });
@@ -38,7 +38,7 @@ router.get("/:cookieId/:walletId/:protocolName", async (req: Request, res: Respo
  */
 router.get('/:cookieId/:walletId', async (req, res) => {
     const { cookieId, walletId } = req.params;
-    let response = await userController.handleGetAllRatings(cookieId, walletId)
+    let response = await ratingController.handleGetAllRatings(cookieId, walletId)
     res.status(response.status).json(response.message)
 });
 

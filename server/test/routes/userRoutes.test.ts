@@ -37,24 +37,6 @@ describe("Add user tests", () => {
     })
 })
 
-// Timing out on null referral codes(empty get string)
-describe("Test get referral code", () => {
-    const baseUrl = '/checkReferralCode/'
-    it("Should return true for existent referral codes", async () => {
-        let url = baseUrl+"Minecraft"
-        mockingoose(UserModel).toReturn(basicTestUser, 'findOne')
-        let response = await request(app).get(url)
-        expect(response.body.referralCodeExists).toBe(true)
-    })
-    it("Should return false for non-existent referral codes", async () => {
-        let url = baseUrl+"Minecraft"
-        mockingoose(UserModel).toReturn(null, 'findOne')
-        let response = await request(app).get(url)
-        expect(response.body.referralCodeExists).toBe(false)
-    })
-})
-
-
 describe("Test get user info", () => {
     const baseUrl = '/getUserInfo/'
     it("Should return null user if user does not exist", async () => {
