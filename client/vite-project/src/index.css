@@ -7,9 +7,8 @@
   line-height: 1.5;
   font-weight: 400;
 
-  color: rgba(255, 255, 255, 0.87);
-  background-color: #0f172a;
-
+  background-color: #000000;
+  color: #e8ebef;
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
@@ -34,7 +33,6 @@ body {
   place-items: center;
   min-width: 320px;
   min-height: 100vh;
-  background-color: #0f172a;
   background-image: url('./assets/background_dark.jpg');
   background-repeat: no-repeat;
   background-size: cover;

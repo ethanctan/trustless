@@ -10,7 +10,7 @@ function SearchBar({protocol, defiData, handleSetProtocol}){
     return (
         <>
         <Select
-        className="mt-4 mb-4 poppins mx-5"
+        className="mt-4 mb-4 poppins w-1/3 mx-auto"
         options={defiData.map((protocol : any) => ({
             value: protocol.name,
             label: protocol.name,

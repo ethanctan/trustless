@@ -6,11 +6,11 @@ import Slider from '@mui/material/Slider';
 function QuestionPrompt({text, title}){
     return (
     <div className="md:col-span-3 flex items-center justify-left pl-6">
-        <p className="text-white text-left">
+        <p className="text-left">
             <span className="mr-2">{title}</span>
         </p>
         <Tooltip title={text} placement="top" arrow>
-            <svg fill="#FFFFFF" version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg"
+            <svg fill="#3874cb" version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg"
                 viewBox="0 0 416.979 416.979" width="14" height="14">
             <g>
                 <path d="M356.004,61.156c-81.37-81.47-213.377-81.551-294.848-0.182c-81.47,81.371-81.552,213.379-0.181,294.85
