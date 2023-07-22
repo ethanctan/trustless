@@ -2,14 +2,11 @@ import express, { Request, Response, response } from 'express';
 import ProtocolModel from '../models/Protocols';
 const router = express.Router()
 import ProtocolController from '../controllers/protocolController';
-import mongoose from 'mongoose';
 
 
 /**
  * Retrieves protocol data from the database. 
- * Returns list in ascending order if req.query = ascending, 
- * in descending otherwise
- * If db is empty then return an empty list
+ * @param {string} order - either {ascending, descending}. Specifies order to return data
  */
 router.get("/", async (req: Request, res: Response) => {
     let protocolController = new ProtocolController(ProtocolModel)
@@ -26,7 +23,6 @@ router.get("/", async (req: Request, res: Response) => {
  * @Requires frontend to handle valid averages 
  * @Returns a success message if the db successfully updates 
  * @Returns 500 status if request is null
- * @Returns an error if the request is null
  */
 router.post("/", async (req: Request, res: Response) => {
     let protocolController = new ProtocolController(ProtocolModel)

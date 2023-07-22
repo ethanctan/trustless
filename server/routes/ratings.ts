@@ -8,8 +8,14 @@ const ratingController = new RatingController()
 
 /**
  * POST request to add a rating to a user's rating mapping
- * Client-side interface: protocolName, rating -> splice to form kv pair
- * Why do we have two post requests for doing basically the exact same thing?
+ * @function
+ * @param {string} cookieId - cookieId of user
+ * @param {string} walletId - walletId of user
+ * @param {string} protocolName - protocol being added
+ * @param {string} rating - user's rating of the protocol
+ * @returns a message either indicating success or failure. 
+ * Note that cookieId and walletId are url parameters and 
+ * protocolName and rating are in the request body
  */
 router.post("/:cookieId/:walletId", async (req: Request, res: Response) => {
     const { cookieId, walletId} = req.params;
@@ -20,7 +26,14 @@ router.post("/:cookieId/:walletId", async (req: Request, res: Response) => {
     res.json({message : response})
 });
 
-
+/**
+ * Get request getting a user's specific rating
+ * @function
+ * @param {string} cookieId - cookieId of user
+ * @param {string} walletId - walletId of user
+ * @param {string} protocolName - protocol being requested
+ * @returns Either a failure message of type string or a rating of form {scores, referral}
+ */
 router.get("/:cookieId/:walletId/:protocolName", async (req: Request, res: Response) => {
     const { protocolName, cookieId, walletId } = req.params;
     let response = await ratingController.handleGetRating(cookieId, walletId, protocolName)
@@ -29,7 +42,10 @@ router.get("/:cookieId/:walletId/:protocolName", async (req: Request, res: Respo
 
 /**
  * GET request to fetch all the protocol ratings for a given user
- * @returns 404 if user not found
+ * @function
+ * @param {string} cookieId - cookieId of user
+ * @param {string} walletId - walletId of user
+ * @returns A map mapping strings to Ratings or an error message
  */
 router.get('/:cookieId/:walletId', async (req, res) => {
     const { cookieId, walletId } = req.params;

@@ -1,6 +1,7 @@
 import UserModel, { RatingModel, ReferralModel } from "../models/user/UserModel"
 import User, {NullUser, Rating, NullRating} from "../models/user/User";
 
+/** Controller that handles all data processing logic for /rating routes */
 export default class RatingController{
 
 
@@ -8,8 +9,9 @@ export default class RatingController{
      * Adds rating to the database for a user. If user already has rating, 
      * update it instead. Returns a success/failure message
      * If user doesn't exist, then return error
-     * @param userIdentity 
-     * @param rating 
+     * @param userIdentity Object with fields {cookieId, walletId } both of @type string
+     * @param rating Rating object
+     * @param protocol Protocol
      */
     async upsertRating(userIdentity : object, rating : Rating, protocol : string){
         const user = await UserModel.findOne({ 

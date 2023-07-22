@@ -6,9 +6,10 @@ const referralController = new ReferralController()
 
 
 /**
- * POST request to add a walletaddress:protocol pair to the user's referredUser mapping
- * Returns 404 error if a referral code does not exist
- * Returns 404 error if a user uses its own referral code
+ * POST request to increase number of referred users. Users cannot refer themselves
+ * @param {string} referralCode - referral code used to identify referrer
+ * @param {string} walletId - wallet id of the referee
+ * @returns {string} success or error message. See referralController for exact messages
  */
 router.post("/:referralCode", async (req: Request, res: Response) => {
     const { referralCode } = req.params;
@@ -19,8 +20,8 @@ router.post("/:referralCode", async (req: Request, res: Response) => {
 
 /**
  * GET request to check if a user with a specific referralCode exists
- * Returns true if there is a user with a valid code, false otherwise
- * @requires req.query to have {referralCode} in the json body
+ * @param referralCode referral code in question
+ * @returns true or false depending if referral code exists or not
  */
 router.get("/:referralCode", async (req: Request, res: Response) => {
     const { referralCode } = req.params;

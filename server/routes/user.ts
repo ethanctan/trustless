@@ -1,10 +1,25 @@
+/** Express router providing user related routes
+ * @module routers/users
+ * @requires express
+ */
+
+/**
+ * express module
+ * @const
+ */
 import express, { Request, Response } from 'express';
 import UserModel from '../models/user/UserModel';
 import UserController from '../controllers/userController';
-import {RatingModel, ReferralModel} from '../models/user/UserModel';
 import User from '../models/user/User';
 
+/**
+ * Express router to mount user related functions on.
+ * @type {object}
+ * @const
+ * @namespace usersRouter
+ */
 const router = express.Router()
+
 const userController = new UserController()
 
 /**
@@ -21,9 +36,13 @@ router.get("/", async(req: Request, res: Response) => {
 
 
 /**
- * Add user to database
- * Client-side interface: cookieId, walletId, 
- * randomly-generated referralCode (run get request below first)
+ * Post request to add user to the database
+ * @param {string} cookieId - cookieId of user
+ * @param {string} walletId - cookieId of user
+ * @param {string} referralCode - cookieId of user
+ * @param {string} numReferredUsers - number of referred users
+ * @param {object} protocolRatings - protocolRatings that map strings to {scores, referral}
+ * @returns message indicating success or failure, see userController for more details
  */
 router.post("/", async (req: Request, res: Response) => {
     const user = req.body;
