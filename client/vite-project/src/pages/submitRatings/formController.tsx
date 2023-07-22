@@ -1,14 +1,15 @@
 import { v1 as generateUuidv1 } from 'uuid';
 import Cookies from 'js-cookie';
-import { addUser, addRating, checkUser, updateRating, getUserInfo, checkCookie, getProtocolRatings, addReferral} from '../../utils/utils.ts';
+import { addRating, checkUser, updateRating, getUserInfo, checkCookie, getProtocolRatings, addReferral} from '../../utils/utils.ts';
 import {useState, useEffect} from 'react';
 import { ethers } from 'ethers';
 import Form from './form.tsx';
 import { Rating, UserReferral, UserIdentity} from '../../utils/interfaces.ts'
-import {  DefiData} from '../../utils/interfaces.ts'
+import { DefiData } from '../../utils/interfaces.ts'
 import Axios from 'axios';
 
-function FormController(){
+//@ts-ignore
+function FormController({account}){
 
     const [defiData, setDefiData] = useState<DefiData[]>([]);
 
@@ -84,26 +85,6 @@ function FormController(){
         
       }; 
 
-    // function to connect to metamask and create new user
-  async function connectMetamask(user_id : string) {
-    if (typeof window.ethereum === 'undefined') {
-      throw new Error('No Ethereum interface injected into browser. Read-only access');
-    }
-    // Ethereum user detected. You can now use the provider.
-    const provider = new ethers.providers.Web3Provider(window.ethereum);
-    // Request the user to grant access to their MetaMask
-    await window.ethereum.enable(); 
-    const signer = provider.getSigner();
-    const account = await signer.getAddress();
-    if (account == null) {
-        console.log("Address is null")
-        return
-    }
-    addUser(user_id, account);
-    return account
-
-  }
-
   async function updateProtocol(rating : Rating, user : UserIdentity) {
 
     //check if influencer exists
@@ -123,9 +104,10 @@ function FormController(){
     <Form 
         defiData={defiData}
         getUserData={getUserData}
-        connectMetamask={connectMetamask}
+        // connectMetamask={connectMetamask}
         updateProtocol={updateProtocol}
         handleUserSubmission={handleUserSubmission}
+        account={account}
     />
   )
 }

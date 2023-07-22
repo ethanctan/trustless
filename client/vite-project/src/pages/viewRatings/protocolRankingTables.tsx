@@ -71,12 +71,19 @@ export default function ProtocolRankingTables(){
 
     return (
         <div>
-            <h4 className="mt-4 mb-4 poppins"> View the community's trust ratings below. </h4>
-            <div className="poppins space-x-2 flex max-w-lg mx-auto items-center">
-                <button className={`toggle-button flex-1 bg-blue-700 hover:bg-blue-600 hover:border-white focus:outline-none ${activeButton === ActiveButton.MostTrusted ? 'active' : ''}`} onClick={() => handleButtonClick(ActiveButton.MostTrusted)}>
+            <h3 className="unbounded text-3xl my-5">
+                TRUST ratings:
+            </h3>
+            <div className="poppins text-lg pb-1 rounded-b-lg duration-300 px-10">
+                View the community's trust ratings below. 
+            </div>
+            <div className="poppins flex max-w-lg mx-auto items-center space-x-6">
+                <button className={`toggle-button flex-1 bg-blue-700 hover:bg-blue-600 hover:border-white focus:outline-none mb-3 mt-3 px-4 py-2 hover:border-white focus:outline-none rounded-lg cursor-pointer ${activeButton === ActiveButton.MostTrusted ? 'active ring ring-slate-400' : ''}`} 
+                onClick={() => handleButtonClick(ActiveButton.MostTrusted)}>
                 Most Trusted
                 </button>
-                <button className={`toggle-button flex-1 bg-blue-700 hover:bg-blue-600 hover:border-white focus:outline-none ${activeButton === ActiveButton.LeastTrusted ? 'active' : ''}`} onClick={() => handleButtonClick(ActiveButton.LeastTrusted)}>
+                <button className={`toggle-button flex-1 bg-blue-700 hover:bg-blue-600 hover:border-white focus:outline-none mb-3 mt-3 px-4 py-2 hover:border-white focus:outline-none rounded-lg cursor-pointer ${activeButton === ActiveButton.LeastTrusted ? 'active ring ring-slate-400' : ''}`} 
+                onClick={() => handleButtonClick(ActiveButton.LeastTrusted)}>
                 Least Trusted
                 </button>
             </div>
@@ -95,12 +102,12 @@ export default function ProtocolRankingTables(){
 
             {activeButton === ActiveButton.MostTrusted && (
                 <SubmissionTable headings={protocolTableHeadings} 
-                submissions={descendingSortedProtocol.slice(0, 10)}
+                submissions={ascendingSortedProtocol.slice(0, 10)}
                 RowGenerator={listProtocols}/>
             )}
             {activeButton === ActiveButton.LeastTrusted && (
                 <SubmissionTable headings={protocolTableHeadings} 
-                submissions={ascendingSortedProtocol.slice(0, 10)}
+                submissions={descendingSortedProtocol.slice(0, 10)}
                 RowGenerator={listProtocols}/>
             )}
             </div>

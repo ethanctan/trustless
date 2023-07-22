@@ -4,8 +4,9 @@ import '@fontsource/poppins';
 
 import { TextField } from '@mui/material';
 import { Rating, ProtocolRatings, UserIdentity} from '../../utils/interfaces.ts'
+import { addUser } from '../../utils/utils.ts'
 
-import {Question} from '../../components/question.tsx'
+import { Question } from '../../components/question.tsx'
 import SearchBar from '../../components/searchBar.tsx';
 import { textFieldDesc } from './formConsts.ts';
 import { SubmissionTable } from '../../components/submissionTable.tsx';
@@ -15,7 +16,7 @@ import ReCAPTCHA from 'react-google-recaptcha';
 
 
 //@ts-ignore
-function Form({defiData, getUserData, connectMetamask, updateProtocol, handleUserSubmission}){
+function Form({defiData, getUserData, updateProtocol, handleUserSubmission, account}){
     
     const [q1Score, setQ1Score] = useState<number>(1);
     const [q2Score, setQ2Score] = useState<number>(1);
@@ -63,6 +64,14 @@ function Form({defiData, getUserData, connectMetamask, updateProtocol, handleUse
     }
   }
 
+  useEffect(() => {
+    if (account){
+      setAddress(account);
+      addUser(user_id, account);
+      setConnectWallet(true);
+    }
+  }, [account]);
+
   // sets cookieid for user, and sets referral code, wallet address and protocolratings if user exists
   useEffect(() =>{
     getUserDataWrapped();
@@ -92,18 +101,18 @@ function Form({defiData, getUserData, connectMetamask, updateProtocol, handleUse
     }
   }
   
-  async function connectWrapped(){
-    try{
-      let walletAccount = await connectMetamask(user_id) // better return value
-      setConnectWallet(true)
-      if (walletAccount){
-        console.log("WalletAccount", walletAccount)
-        setAddress(walletAccount)
-      }
-    }catch(error){
-      console.log("erorr")
-    }
-  }
+  // async function connectWrapped(){ // TODO: EDIT THIS
+  //   try{
+  //     let walletAccount = await connectMetamask(user_id) // this will be the passed variable instead
+  //     setConnectWallet(true)
+  //     if (walletAccount){
+  //       console.log("WalletAccount", walletAccount)
+  //       setAddress(walletAccount)
+  //     }
+  //   }catch(error){
+  //     console.log("erorr")
+  //   }
+  // }
 
   async function updateProtocolWrapped(){
     try{
@@ -125,37 +134,34 @@ function Form({defiData, getUserData, connectMetamask, updateProtocol, handleUse
   function listUserRatings(key : any){
     const {scores} = protocolRatings[key];
     return (
-        <tr key={key}>
+        <tr key={key} className="py-2">
             <td>{key}</td>
-            <td>{scores.join(', ')}</td>
+            <td>{scores[0]}</td>
+            <td>{scores[1]}</td>
+            <td>{scores[2]}</td>
+            <td>{scores[3]}</td>
+            <td>{scores[4]}</td>
         </tr>
     );
   }
 
     return (
-        <div className="flex flex-col justify-items-stretch poppins mx-auto max-w-lg">
-              {/* edit this ugly ass button */}
-              <button style={{
-                padding: "10px",
-                width:'80%',
-                alignSelf:'center',
-                backgroundColor: "#1a202c",
-            }}
-                onClick={connectWrapped}
-            >
-                {connectWallet ? "Success!" : "Connect your wallet to submit a rating 👀"}
-            </button>
-            {connectWallet ? <SearchBar protocol={protocol} defiData={defiData} handleSetProtocol={handleSetProtocol} /> : null}
-            {protocol && (
-            <div className="mb-4"> 
-                <p className="mb-2"> Our framework for trust consists of 5 factors, rated on a scale of 1-10, with 1 being the least trustworthy and 10 being the most. </p>
-                <p className="mb-2"> Rate {protocol}'s trustworthiness in these 5 areas. </p>
+      <div className="flex flex-col justify-center"> 
+        <div className="flex flex-col justify-items-stretch poppins">
+          {!connectWallet ?  
+            <div className="bg-red-500/50 rounded-2xl backdrop-filter backdrop-blur-md p-7 poppins mx-auto text-xl mt-6">
+              Connect your wallet first!
             </div>
-            )}
+          : null}
+            {connectWallet ? <SearchBar protocol={protocol} defiData={defiData} handleSetProtocol={handleSetProtocol} /> : null}
 
             { protocol && (
 
-            <div className="bg-gray-900 backdrop-blur-md bg-opacity-50 p-4 rounded-lg mb-4">
+            <div className="bg-gray-900 backdrop-blur-md bg-opacity-50 p-4 rounded-lg mb-4 mx-auto max-w-xl">
+            <div className="m-4"> 
+                <p className="mb-2"> Our framework for trust consists of 5 factors, rated on a scale of 1-10, with 1 being the least trustworthy and 10 being the most. </p>
+                <p className="mb-2"> Rate {protocol}'s trustworthiness in these 5 areas. </p>
+            </div>
             <div className="grid grid-cols-1 md:grid-cols-8 gap-4 py-4">
                 <Question questionScore={q1Score} setScore={setQ1Score} 
                 text={text1} title="Contracts"/>
@@ -184,12 +190,13 @@ function Form({defiData, getUserData, connectMetamask, updateProtocol, handleUse
                     />
                 </div>
             </div>
-
-              <ReCAPTCHA sitekey={"6LfkugcnAAAAAJ3nBJl9dJYpW0YskzAq1o0zWzs4"}/>
+            <div className="flex flex-grow items-center justify-center my-4">
+              <ReCAPTCHA sitekey={"6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI"}/>
+            </div>
 
           {connectWallet ? 
             <button 
-              className='mb-3 mt-3 bg-blue-700 hover:bg-blue-600 hover:border-white focus:outline-none' 
+              className='mb-3 mt-3 bg-blue-700 hover:bg-blue-600 hover:border-white focus:outline-none py-2 px-4 rounded-lg cursor-pointer' 
               onClick={handleUserSubmissionWrapped}
             >
               Submit
@@ -197,28 +204,38 @@ function Form({defiData, getUserData, connectMetamask, updateProtocol, handleUse
           : null}
           {/* to be updated */}
           {errorMessage == 'Successfully added!'? 
-            <div 
-              className='mb-3 mt-3 bg-blue-500 hover:bg-blue-400 hover:border-white focus:outline-none cursor-pointer'
-              onClick={() => {
-                window.open(`https://twitter.com/intent/tweet?text=I%20just%20rated%20${protocol}%20with%20scores%20of%20${[q1Score, q2Score, q3Score, q4Score, q5Score].join(', ')}%20on%20TRUST%20and%20earned%20a%20$TRUST%20airdrop.%20Check%20it%20out%20at%20http://localhost:5173&via=YourTwitterHandle`);
-              }}
-            >
-              Share on Twitter
-            </div>
+            <button type="button" className="mx-auto text-white bg-[#1da1f2] hover:bg-[#1da1f2]/90 focus:ring-4 focus:outline-none focus:ring-[#1da1f2]/50 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center dark:focus:ring-[#1da1f2]/55 mr-2 mb-2"
+            onClick={() => {
+              window.open(`https://twitter.com/intent/tweet?text=I%20just%20rated%20${protocol}%20with%20scores%20of%20${[q1Score, q2Score, q3Score, q4Score, q5Score].join(', ')}%20on%20TRUST%20and%20earned%20a%20$TRUST%20airdrop.%20Check%20it%20out%20at%20http://localhost:5173&via=YourTwitterHandle`);
+            }}>
+            <svg className="w-4 h-4 mr-2" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 17">
+              <path fill-rule="evenodd" d="M20 1.892a8.178 8.178 0 0 1-2.355.635 4.074 4.074 0 0 0 1.8-2.235 8.344 8.344 0 0 1-2.605.98A4.13 4.13 0 0 0 13.85 0a4.068 4.068 0 0 0-4.1 4.038 4 4 0 0 0 .105.919A11.705 11.705 0 0 1 1.4.734a4.006 4.006 0 0 0 1.268 5.392 4.165 4.165 0 0 1-1.859-.5v.05A4.057 4.057 0 0 0 4.1 9.635a4.19 4.19 0 0 1-1.856.07 4.108 4.108 0 0 0 3.831 2.807A8.36 8.36 0 0 1 0 14.184 11.732 11.732 0 0 0 6.291 16 11.502 11.502 0 0 0 17.964 4.5c0-.177 0-.35-.012-.523A8.143 8.143 0 0 0 20 1.892Z" clip-rule="evenodd"/>
+            </svg>
+            Share on Twitter
+          </button>
           : null}
 
             <h5 style={ errorMessage == 'Successfully added!' ? { color: 'white' } : {color: 'red' }}>{errorMessage}</h5>
             </div>
         )}
+    </div>
 
-
-        <SubmissionTable 
-        headings={["Protocol Name", "Scores"]}
-        submissions={Object.keys(protocolRatings)}
-        RowGenerator={listUserRatings}
-        />
+      {connectWallet ? 
+      <>
+        <h3 className="unbounded text-2xl my-5 font-light">
+          Your ratings:
+        </h3>
+        <div className="mx-auto">
+          <SubmissionTable 
+          headings={["Protocol Name", "Contracts", "Treasury", "Roadmap", "Governance", "Team"]}
+          submissions={Object.keys(protocolRatings)}
+          RowGenerator={listUserRatings}
+          /> 
         </div>
-    )
+      </>
+      : null}
+  </div>
+  )
 }
 
 export default Form;
