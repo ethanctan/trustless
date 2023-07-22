@@ -44,7 +44,7 @@ export default function Mechanics(){
                 Total Supply: 1,000,000,000 $TRUST 
                 </p>
                 <p className="mb-4">
-                Inital LP: 2.5%
+                Initial LP: 2.5%
                 </p>
                 <p className="mb-4">
                 Initial Epoch Airdrop: 2.5%             
