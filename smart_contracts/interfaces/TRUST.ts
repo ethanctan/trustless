@@ -1,5 +1,4 @@
 // SPDX-License-Identifier: MIT
-import { Address } from "@thirdweb-dev/sdk";
 import { ethers } from "ethers";
 
 export interface ITRUST  {
