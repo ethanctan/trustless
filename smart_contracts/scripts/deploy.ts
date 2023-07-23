@@ -25,6 +25,7 @@ async function main() {
         let trustAddress = await trust.getAddress()
         console.log('TRUST contract deployed at', trustAddress);
         console.log('Airdrop Reserve:', (await trust.airdropReserve()).toString());
+        console.log('Owner address:', owner.address);
         console.log('Initial TRUST Balance of admin account:', await trust.balanceOf(owner.address));
 
         let minStakeIncrement = 10000; 
@@ -48,6 +49,17 @@ async function main() {
         console.log('Staking address:', (await trust.stakingAddress()).toString());
         console.log('TRUST token balance of staking contract test:', await trust.balanceOf(trustStakingAddress));
         console.log('TRUST Balance of admin account after setStakingAddress:', await trust.balanceOf(owner.address));
+
+        // Confirm deposit
+        try {
+            ((await trustStaking.connect(owner)) as unknown as (Contract & ITRUSTStaking)).confirmDeposit();
+            console.log('Deposit confirmed')
+        }catch (error) {
+            console.log('Deposit not confirmed');
+        }
+
+        console.log("Epoch Count", await trustStaking.epochCount());
+        console.log("Total Reward for Epoch", await trustStaking.getTotalTrustReward(0));
 
     } catch (error) {
         console.error(error);
