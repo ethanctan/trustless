@@ -9,15 +9,15 @@ import {getProvider, getWallet, getContract} from '../utils/ethers';
 // import {ITRUSTStaking} from '../../../../smart_contracts/interfaces/TRUSTStaking';
 
 //@ts-ignore
-export default function Navbar({ passAccount }) {
+export default function Navbar({ passAccount, passContracts }) {
   
   const [provider, setProvider] = useState<ethers.providers.JsonRpcProvider | null>(null);
   const [signer, setSigner] = useState<{signer: ethers.Signer, account: string} | null>(null);
-  const [contracts, setContracts] = useState<{trust: ethers.Contract, trustStaking: ethers.Contract} | null>(null);
+  const [setup, setSetup] = useState(false);
   
-  // const setupContracts = useCallback(async () => {
-    useEffect(() => {
-      async function setupContracts() {
+  const setupContracts = useCallback(async () => {
+    // useEffect(() => {
+    //   async function setupContracts() {
       // Get provider
       const providerTemp = await getProvider();
       setProvider(providerTemp);
@@ -31,18 +31,19 @@ export default function Navbar({ passAccount }) {
       // Get contracts
       const contractsTemp = await getContract(signerTemp.signer);
       passAccount(signerTemp.account);
-      setContracts(contractsTemp);
+
       console.log("Getting Contracts Successful", contractsTemp);
+      passContracts(contractsTemp);
+      setSetup(true);
       try {
-        // console.log("Getting admin TRUST balance:", await contractsTemp.trust.balanceOf(signerTemp.account));
-        console.log("trust contract instance:", contractsTemp.trust);
-        console.log("Getting admin TRUST total Supply:", (await contractsTemp.trust.balanceOf(signerTemp.account)).toString());
+        console.log("Getting admin TRUST account balance:", (await contractsTemp.trust.balanceOf(signerTemp.account)).toString());
       } catch (error) {
         console.log(error);
       }
-    }
-    setupContracts();
-  }, []); 
+      
+  //   }
+  //   setupContracts();
+    }, []); 
   
   // var thirdwebAddress = useAddress();
 
@@ -53,7 +54,6 @@ export default function Navbar({ passAccount }) {
   // }, [thirdwebAddress]);
 
   // const location = useLocation();
-
   return (
     <nav className="fixed top-0 left-0 right-0 w-full py-2 z-50 bg-slate-800/60 backdrop-blur-lg poppins flex flex-row ">
       <ul className="flex items-center justify-start space-x-8 px-8 py-2">
@@ -68,7 +68,15 @@ export default function Navbar({ passAccount }) {
           </NavLink>
         </li>
         <li>
-          <Tooltip title={"Available after the rating phase is complete."} placement="top" arrow>
+        {setup ? (<NavLink
+            to="/airdrop"
+            className={`${
+              location.pathname === "/airdrop" ? "text-purple-400 text-glow" : "text-gray-400 hover:text-gray-100"
+            }`}
+          >
+            Claim Airdrop
+          </NavLink>) :
+          (<Tooltip title={"Available after the rating phase is complete and connect your account."} placement="top" arrow>
             <span
               className={`${
                 location.pathname === "/airdrop" ? "text-purple-400 text-glow " : "text-gray-400 "
@@ -76,10 +84,19 @@ export default function Navbar({ passAccount }) {
             >
               Claim Airdrop
             </span>
-          </Tooltip>
+          </Tooltip> )} 
         </li>
         <li>
-          <Tooltip title={"Available after the rating phase is complete."} placement="top" arrow>
+          {setup ? 
+          (<NavLink
+            to="/stake"
+            className={`${
+              location.pathname === "/stake" ? "text-purple-400 text-glow" : "text-gray-400 hover:text-gray-100"
+            }`}
+          >
+            Stake
+          </NavLink>) :
+          (<Tooltip title={"Available after the rating phase is complete and connect your account."} placement="top" arrow>
             <span
               className={`${
                 location.pathname === "/stake" ? "text-purple-400 text-glow " : "text-gray-400 "
@@ -87,7 +104,7 @@ export default function Navbar({ passAccount }) {
             >
               Stake
             </span>
-          </Tooltip>
+          </Tooltip>)}
         </li>
         <li>
           <NavLink
@@ -124,9 +141,9 @@ export default function Navbar({ passAccount }) {
       {/* <ConnectWallet
         className="connect-wallet"
       /> */}
-      {/* <button onClick={setupContracts}>
+      <button onClick={setupContracts}>
         {signer == null ? 'Connect to Metamask' : signer.account}
-      </button> */}
+      </button>
       </div>
     </nav>
   );

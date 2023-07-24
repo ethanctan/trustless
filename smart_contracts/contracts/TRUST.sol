@@ -22,4 +22,9 @@ contract TRUST is ERC20 {
         stakingAddress = _stakingAddress;
         _transfer(admin, stakingAddress, airdropReserve);
     }
+
+    // for testing purposes
+    function getStakingAddress() public view returns (address) {
+        return stakingAddress;
+    }
 }
