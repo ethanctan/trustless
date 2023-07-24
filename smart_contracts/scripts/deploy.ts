@@ -41,12 +41,14 @@ async function main() {
         let trustStakingAddress = await trustStaking.getAddress()
         console.log('TRUSTStaking contract deployed at', trustStakingAddress);
 
-        // Set the staking address in TRUST contract
-        ((await trust.connect(owner)) as unknown as (Contract & ITRUST)).setStakingAddress(trustStakingAddress);
-        console.log('Staking address set for TRUST contract');
+        // Adding delay
+        console.log('Waiting for 10 seconds before proceeding...');
+        await new Promise(resolve => setTimeout(resolve, 10000));
 
-        console.log('Staking address, giving time:', (await trust.stakingAddress()).toString());
-        console.log('Staking address:', (await trust.stakingAddress()).toString());
+        // Set the staking address in TRUST contract
+        await ((await trust.connect(owner)) as unknown as (Contract & ITRUST)).setStakingAddress(trustStakingAddress);
+        // Add this line:
+        console.log('Current staking address in TRUST contract:', await trust.getStakingAddress());
         console.log('TRUST token balance of staking contract test:', await trust.balanceOf(trustStakingAddress));
         console.log('TRUST Balance of admin account after setStakingAddress:', await trust.balanceOf(owner.address));
 

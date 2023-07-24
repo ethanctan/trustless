@@ -8,13 +8,13 @@ const stakingAddress = "0xe7f1725e7734ce288f8367e1bb143e90bb3f0512";
 
 export const getProvider = async () => {
     // For hardhat testnet
-    return new ethers.providers.JsonRpcProvider("http://localhost:8545");
-    // if (!window.ethereum) {
-    //   throw new Error("Please install Metamask");
-    // }
+    // return new ethers.providers.JsonRpcProvider("http://127.0.0.1:8545/");
+    if (!window.ethereum) {
+      throw new Error("Please install Metamask");
+    }
 
-    // await window.ethereum.enable();  
-    // return new ethers.providers.Web3Provider(window.ethereum);
+    await window.ethereum.enable();  
+    return new ethers.providers.Web3Provider(window.ethereum);
 }
 
 
