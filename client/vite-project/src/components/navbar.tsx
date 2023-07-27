@@ -3,7 +3,7 @@ import { NavLink, useLocation } from "react-router-dom";
 import { Tooltip } from '@mui/material';
 import { ethers } from 'ethers';
 import { useState, useEffect, useCallback } from 'react';
-// import { ConnectWallet, useAddress } from "@thirdweb-dev/react";
+import { ConnectWallet, useAddress } from "@thirdweb-dev/react";
 import {getProvider, getWallet, getContract} from '../utils/ethers';
 // import {ITRUST} from '../../../../smart_contracts/interfaces/TRUST';
 // import {ITRUSTStaking} from '../../../../smart_contracts/interfaces/TRUSTStaking';
@@ -138,9 +138,9 @@ export default function Navbar({ passAccount, passContracts }) {
         </li>
       </ul>
       <div className="ml-auto flex items-center justify-end px-8 py-2">
-      {/* <ConnectWallet
+      <ConnectWallet
         className="connect-wallet"
-      /> */}
+      />
       <button onClick={setupContracts}>
         {signer == null ? 'Connect to Metamask' : signer.account}
       </button>

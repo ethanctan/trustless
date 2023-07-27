@@ -9,6 +9,8 @@ function Introduction(){
   //   setExpanded(!expanded);
   // };
 
+  const targetDate = new Date("2023-08-01")
+
   return (
     
     <div className="flex flex-col items-center mt-10">
@@ -20,7 +22,7 @@ function Introduction(){
           Rate protocols, earn $TRUST.
         </h2>
 
-        <CountdownDisplay targetDate={"2023-07-17"}/>
+        <CountdownDisplay targetDate={targetDate}/>
 
 
         <div className="flex flex-col mt-5 w-3/4">

@@ -1,8 +1,19 @@
 import {useEffect, useState} from 'react';
 import { ethers } from 'ethers';
+import { useContractRead, useContract, useBalance} from "@thirdweb-dev/react";
 
 //@ts-ignore
 export default function Airdrop({account , contracts}){
+    
+    // Thirdweb implementation
+    const trustAddress = "0x904c14757639B3dbB5FBA10725C43c5ff68cc35e"; 
+    const stakingAddress = "0xEE47416acec662BB90762c38699607e6f4cC18d7"; 
+    const { contract } = useContract(trustAddress); 
+    const { data, isLoading } = useBalance(trustAddress);
+    console.log(data, isLoading);
+
+
+    // contracts.trust.balanceOf(account)
 
     const [stakeAccount, setStakeAccount] = useState(""); // retrieve global address variable
     const [globalContracts, setGlobalContracts] = useState<{trust: ethers.Contract, trustStaking: ethers.Contract} | null>(null); // retrieve global contracts variable

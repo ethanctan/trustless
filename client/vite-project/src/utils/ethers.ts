@@ -1,10 +1,10 @@
 import { ethers } from "ethers";
-import Trust from '../../../../smart_contracts/artifacts/contracts/TRUST.sol/TRUST.json';
-import TrustStaking from '../../../../smart_contracts/artifacts/contracts/TRUSTStaking.sol/TRUSTStaking.json';
+import Trust from '../../../../out/TRUST.sol/TRUST.json';
+import TrustStaking from '../../../../out/TrustStaking.sol/TrustStaking.json';
 
 //Replace these addresses with those deployed on goerli testnet
-const tokenAddress = "0x5fbdb2315678afecb367f032d93f642f64180aa3";
-const stakingAddress = "0xe7f1725e7734ce288f8367e1bb143e90bb3f0512";
+const tokenAddress = "0x904c14757639B3dbB5FBA10725C43c5ff68cc35e";
+const stakingAddress = "0xEE47416acec662BB90762c38699607e6f4cC18d7";
 
 export const getProvider = async () => {
     // For hardhat testnet
