@@ -1,3 +1,7 @@
+/**
+ * All routes under /referrals
+ * @module Referrals
+ */
 import express, { Request, Response } from 'express';
 import ReferralController from '../controllers/referralController';
 const router = express.Router()
@@ -26,7 +30,7 @@ router.post("/:referralCode", async (req: Request, res: Response) => {
 router.get("/:referralCode", async (req: Request, res: Response) => {
     const { referralCode } = req.params;
     let response = await referralController.checkReferralCodeExists(referralCode)
-    res.json({referralCodeExists: response})
+    res.json(response)
 });
 
 export default router;

@@ -1,3 +1,7 @@
+/**
+ * All routes under /protocols
+ * @module Protocols
+ */
 import express, { Request, Response, response } from 'express';
 import ProtocolModel from '../models/Protocols';
 const router = express.Router()

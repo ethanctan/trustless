@@ -1,3 +1,7 @@
+/**
+ * All routes under /ratings
+ * @module Ratings
+ */
 import express, { Request, Response } from 'express';
 import RatingController from '../controllers/ratingController';
 import { Rating } from '../models/user/User';
@@ -7,23 +11,31 @@ const ratingController = new RatingController()
 
 
 /**
+ * TODO: type checking for input queries
  * POST request to add a rating to a user's rating mapping
  * @function
  * @param {string} cookieId - cookieId of user
  * @param {string} walletId - walletId of user
  * @param {string} protocolName - protocol being added
  * @param {string} rating - user's rating of the protocol
- * @returns a message either indicating success or failure. 
- * Note that cookieId and walletId are url parameters and 
- * protocolName and rating are in the request body
+ * @returns a message either indicating success or failure, including:
+ * user not found - nonexistent user
+ * rating already submitted - rating submitted
+ * rating added - successful addition 
  */
 router.post("/:cookieId/:walletId", async (req: Request, res: Response) => {
+    
     const { cookieId, walletId} = req.params;
     const { protocolName, rating } = req.body;
     let ratingObject = Rating.fromObject(rating)
     let userIdentity = {"cookieId" : cookieId, "walletId" : walletId}
-    let response = await ratingController.upsertRating(userIdentity, ratingObject, protocolName)
-    res.json({message : response})
+    try{
+        let response = await ratingController.upsertRating(userIdentity, ratingObject, protocolName)
+        res.json({message : response})
+    }catch{
+        res.json({message : "invalid request"})
+    }
+    
 });
 
 /**

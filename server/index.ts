@@ -1,5 +1,5 @@
-import express, { Request, Response } from 'express';
-import mongoose, { NumberSchemaDefinition } from 'mongoose';
+import express from 'express';
+import mongoose from 'mongoose';
 
 
 import cors from 'cors';

@@ -62,11 +62,11 @@ describe("Test get referral code", () => {
     it("Should return true for existent referral codes", async () => {
         let url = "/awa"
         let response = await request(app).get(url)
-        expect(response.body.referralCodeExists).toBe(true)
+        expect(response.body).toBe(true)
     })
     it("Should return false for non-existent referral codes", async () => {
         let url = "/Minecraft"
         let response = await request(app).get(url)
-        expect(response.body.referralCodeExists).toBe(false)
+        expect(response.body).toBe(false)
     })
 })
