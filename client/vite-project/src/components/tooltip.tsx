@@ -1,7 +1,7 @@
 import { Tooltip } from '@mui/material';
+import { ITooltipComponent } from '../utils/components';
 
-//@ts-ignore
-export default function TooltipComponent({toolTipTitle, classNamePath, title}){
+export default function TooltipComponent({toolTipTitle, classNamePath, title} : ITooltipComponent){
     return(
         <li>
         <Tooltip title={toolTipTitle} placement="top" arrow>

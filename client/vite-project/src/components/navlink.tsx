@@ -1,7 +1,7 @@
 import { NavLink } from "react-router-dom";
+import { INavlinkComponent } from "../utils/components";
 
-//@ts-ignore
-export default function NavlinkComponent({to , classNamePath, title}){
+export default function NavlinkComponent({to , classNamePath, title} : INavlinkComponent){
         return(
             <li>
                 <NavLink

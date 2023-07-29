@@ -26,10 +26,4 @@ export interface DefiData {
     _id: string;
 }
 
-declare global {
-    interface Window {
-        ethereum: any;
-    }
-}
-
 

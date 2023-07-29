@@ -2,12 +2,12 @@ import { ethers } from 'ethers';
 import { useState} from 'react';
 // import { ConnectWallet, useAddress } from "@thirdweb-dev/react";
 import {getProvider, getWallet, getContract} from '../utils/ethers';
+import { INavbar } from '../utils/components';
 import NavlinkComponent from "./navlink";
 import TooltipComponent from "./tooltip";
 
 
-//@ts-ignore
-export default function Navbar({ passAccount, passContracts}) {
+export default function Navbar({ passAccount, passContracts} : INavbar) {
   
   const [provider, setProvider] = useState<ethers.providers.JsonRpcProvider | null>(null);
   const [signer, setSigner] = useState<{signer: ethers.Signer, account: string} | null>(null);
