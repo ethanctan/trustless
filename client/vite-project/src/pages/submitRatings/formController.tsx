@@ -1,15 +1,23 @@
 import { v1 as generateUuidv1 } from 'uuid';
 import Cookies from 'js-cookie';
-import { addRating, checkUser, updateRating, getUserInfo, checkCookie, getProtocolRatings, addReferral} from '../../utils/utils.ts';
+import { addRating, updateRating} from '../../utils/utils.ts';
+import { getProtocolRatings } from '../../api/ratingApi.ts';
+import { getUserInfo, checkCookie } from '../../api/userApi.ts';
+import { checkReferralCodeExists } from '../../api/referralApi.ts';
+import { addReferral } from '../../api/referralApi.ts';
 import {useState, useEffect} from 'react';
-import { ethers } from 'ethers';
 import Form from './form.tsx';
-import { Rating, UserReferral, UserIdentity} from '../../utils/interfaces.ts'
+import { UserReferral, UserIdentity} from '../../interfaces/user.ts';
+import { Rating } from "../../interfaces/rating"
 import { DefiData } from '../../utils/interfaces.ts'
 import Axios from 'axios';
 
-//@ts-ignore
-function FormController({account}){
+interface UserWalletAccount {
+    account : string | undefined
+}
+
+
+function FormController({account} : UserWalletAccount){
 
     const [defiData, setDefiData] = useState<DefiData[]>([]);
 
@@ -45,12 +53,12 @@ function FormController({account}){
     }
 
     async function addUserRating(user : UserIdentity, newRating : Rating){
-            try{
-                await addRating(user, newRating);
-                return "Successfully added!"
-            }catch(error:any) {
-                if (error.response && error.response.status === 400){
-                return "You have already rated this protocol."
+        try{
+            await addRating(user, newRating);
+            return "Successfully added!"
+        }catch(error:any) {
+            if (error.response && error.response.status === 400){
+            return "You have already rated this protocol."
         }}
     }
 
@@ -62,9 +70,9 @@ function FormController({account}){
         throw new Error("No response")
     }
 
-    async function handleUserSubmission(user : UserIdentity, rating : Rating, ){ 
+    async function handleUserSubmission(user : UserIdentity, rating : Rating){ 
       
-          const influencerExists = await checkUser(rating["code"]); //check if influencer exists
+          const influencerExists = await checkReferralCodeExists(rating["code"]); //check if influencer exists
           if (!influencerExists){
             throw new Error("Influencer does not exist. Try again or leave blank!")
           }
@@ -83,12 +91,12 @@ function FormController({account}){
         let response1 = await getRatings(user)
         return [rating_msg, response1]
         
-      }; 
+    }; 
 
   async function updateProtocol(rating : Rating, user : UserIdentity) {
 
     //check if influencer exists
-    const exists = await checkUser(rating["code"]) 
+    const exists = await checkReferralCodeExists(rating["code"]) 
     await updateRating(user, rating)
     if (!exists){
         throw new Error("Influencer code does not exist. Try again!")

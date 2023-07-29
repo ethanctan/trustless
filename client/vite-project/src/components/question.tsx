@@ -2,8 +2,12 @@
 import { Tooltip } from '@mui/material';
 import Slider from '@mui/material/Slider';
 
-//@ts-ignore
-function QuestionPrompt({text, title}){
+interface QuestionDetails {
+    text : string,
+    title: string
+}
+
+function QuestionPrompt({text, title} : QuestionDetails){
     return (
     <div className="md:col-span-3 flex items-center justify-left pl-6">
         <p className="text-left">
@@ -24,6 +28,12 @@ function QuestionPrompt({text, title}){
     </div>
     )
 }
+
+interface SliderContent {
+    questionScore: Number[],
+    setScore: React.Dispatch<React.SetStateAction<number>>
+}
+
 
 //@ts-ignore
 function ModifiedSlider({questionScore, setScore}){
@@ -46,9 +56,10 @@ function ModifiedSlider({questionScore, setScore}){
     )
 }
 
+
+
 //@ts-ignore
 function Question({questionScore, setScore, text, title}){
-    // const [questionScore, setQuestionScore] = useState<number>(1);
 
     return (
         <>

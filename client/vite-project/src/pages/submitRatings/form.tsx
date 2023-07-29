@@ -3,8 +3,9 @@ import '@fontsource-variable/unbounded';
 import '@fontsource/poppins';
 
 import { TextField } from '@mui/material';
-import { Rating, ProtocolRatings, UserIdentity} from '../../utils/interfaces.ts'
-import { addUser } from '../../utils/utils.ts'
+import { UserIdentity } from '../../interfaces/user.ts';
+import { Rating, ProtocolRatings } from '../../interfaces/rating.ts';
+import { addUser } from '../../api/userApi.ts';
 
 import { Question } from '../../components/question.tsx'
 import SearchBar from '../../components/searchBar.tsx';
@@ -86,12 +87,9 @@ function Form({defiData, getUserData, updateProtocol, handleUserSubmission, acco
   async function handleUserSubmissionWrapped(){
     try{
       let scores = [q1Score, q2Score, q3Score, q4Score, q5Score];
-      let newRating: Rating = {
-        protocol: protocol,
-        scores: scores,
-        code: influencer,
-      };
+      let newRating: Rating = {protocol: protocol, scores: scores, code: influencer};
       let user: UserIdentity = {cookieId: user_id, walletId: String(address) }
+
       let [rating_msg, ratings] = await handleUserSubmission(user, newRating)
       console.log("Ratings: ", ratings)
       setProtocolRatings(ratings);
@@ -101,35 +99,6 @@ function Form({defiData, getUserData, updateProtocol, handleUserSubmission, acco
     }
   }
   
-  // async function connectWrapped(){ // TODO: EDIT THIS
-  //   try{
-  //     let walletAccount = await connectMetamask(user_id) // this will be the passed variable instead
-  //     setConnectWallet(true)
-  //     if (walletAccount){
-  //       console.log("WalletAccount", walletAccount)
-  //       setAddress(walletAccount)
-  //     }
-  //   }catch(error){
-  //     console.log("erorr")
-  //   }
-  // }
-
-  async function updateProtocolWrapped(){
-    try{
-      let scores = [q1Score, q2Score, q3Score, q4Score, q5Score]
-      let newRating: Rating = {
-        protocol: protocol,
-        scores: scores,
-        code: influencer,
-      }
-      let user: UserIdentity = {cookieId: user_id, walletId: String(address) }
-      let response = updateProtocol(user, newRating)
-      setProtocolRatings(response)
-    }catch(error : any){
-      // set error message here. Make sure you're only doing it for a specific subset in formController
-      setErrorMessage(error["message"])
-    }
-  }
 
   function listUserRatings(key : any){
     const {scores} = protocolRatings[key];
