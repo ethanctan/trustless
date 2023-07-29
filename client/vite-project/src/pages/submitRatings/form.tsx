@@ -90,10 +90,15 @@ function Form({defiData, getUserData, updateProtocol, handleUserSubmission, acco
       let newRating: Rating = {protocol: protocol, scores: scores, code: influencer};
       let user: UserIdentity = {cookieId: user_id, walletId: String(address) }
 
-      let [rating_msg, ratings] = await handleUserSubmission(user, newRating)
-      console.log("Ratings: ", ratings)
-      setProtocolRatings(ratings);
-      setErrorMessage(rating_msg)
+      let submissionResponse = await handleUserSubmission(user, newRating)
+      console.log("Ratings: ", submissionResponse)
+      if (submissionResponse.status == "success"){
+        setProtocolRatings(submissionResponse.protocolRatings);
+      }
+      else{
+        setErrorMessage(submissionResponse.error)
+      }  
+      
     }catch(err : any){
       setErrorMessage(err["message"])
     }
