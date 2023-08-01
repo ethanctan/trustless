@@ -1,20 +1,19 @@
 import {ethers} from 'hardhat';
+import { ITRUSTStakingHelper } from '../interfaces/TRUSTStakingHelper';
 import { ITRUSTStaking } from '../interfaces/TRUSTStaking';
 import { ITRUST } from '../interfaces/TRUST';
 import { Contract } from 'ethers';
-import { encodeConstructorParamsForImplementation } from '@thirdweb-dev/sdk';
 
 async function main() {
 
     console.log('Running deployment script...');
     try{
         let trust: Contract;
-        let owner;
-        let addr1;
-        let addrs;
         let trustStaking: Contract;
+        let trustStakingHelper: Contract;
+        let signer;
 
-        [owner, addr1, ...addrs] = await ethers.getSigners();
+        [signer] = await ethers.getSigners();
         console.log('Signers obtained');
 
         await ethers.getContractFactory("TRUST");
@@ -24,19 +23,14 @@ async function main() {
         await trust.waitForDeployment();
         let trustAddress = await trust.getAddress()
         console.log('TRUST contract deployed at', trustAddress);
-        console.log('Airdrop Reserve:', (await trust.airdropReserve()).toString());
-        console.log('Owner address:', owner.address);
-        console.log('Initial TRUST Balance of admin account:', await trust.balanceOf(owner.address));
-
-        let minStakeIncrement = 10000; 
-        let rewardMultiplier = 10; 
-        let trustDAO = addr1.address; 
+        console.log('Owner address:', signer.address);
+        console.log('Initial TRUST Balance of admin account:', await trust.balanceOf(signer.address));
 
         // Deploy TRUSTStaking contract -- default contract call is owner
         await ethers.getContractFactory("TRUSTStaking");
         console.log('Contract factory for TRUSTStaking obtained');
 
-        trustStaking = await ethers.deployContract('TRUSTStaking', [trust, minStakeIncrement, rewardMultiplier, trustDAO]) as unknown as (Contract & ITRUSTStaking);
+        trustStaking = await ethers.deployContract('TRUSTStaking', [trust]) as unknown as (Contract & ITRUSTStaking);
         await trustStaking.waitForDeployment();
         let trustStakingAddress = await trustStaking.getAddress()
         console.log('TRUSTStaking contract deployed at', trustStakingAddress);
@@ -46,22 +40,21 @@ async function main() {
         await new Promise(resolve => setTimeout(resolve, 10000));
 
         // Set the staking address in TRUST contract
-        await ((await trust.connect(owner)) as unknown as (Contract & ITRUST)).setStakingAddress(trustStakingAddress);
+        await ((await trust.connect(signer)) as unknown as (Contract & ITRUST)).setStakingAddress(trustStakingAddress);
         // Add this line:
-        console.log('Current staking address in TRUST contract:', await trust.getStakingAddress());
         console.log('TRUST token balance of staking contract test:', await trust.balanceOf(trustStakingAddress));
-        console.log('TRUST Balance of admin account after setStakingAddress:', await trust.balanceOf(owner.address));
+        console.log('TRUST Balance of admin account after setStakingAddress:', await trust.balanceOf(signer.address));
 
-        // Confirm deposit
-        try {
-            ((await trustStaking.connect(owner)) as unknown as (Contract & ITRUSTStaking)).confirmDeposit();
-            console.log('Deposit confirmed')
-        }catch (error) {
-            console.log('Deposit not confirmed');
-        }
+        // Deploy TRUSTStakingHelper contract -- default contract call is owner
+        await ethers.getContractFactory("TRUSTStakingHelper");
+        console.log('Contract factory for TRUSTStakingHelper obtained');
 
-        console.log("Epoch Count", await trustStaking.epochCount());
-        console.log("Total Reward for Epoch", await trustStaking.getTotalTrustReward(0));
+        trustStakingHelper = await ethers.deployContract('TRUSTStakingHelper', [trust, trustStaking]) as unknown as (Contract & ITRUSTStakingHelper);
+        await trustStakingHelper.waitForDeployment();
+        let trustStakingHelperAddress = await trustStakingHelper.getAddress()
+        console.log('TRUSTStakingHelper contract deployed at', trustStakingHelperAddress);
+        console.log("MinStake: ", (await trustStakingHelper.minStake()).toString());
+        console.log("CanStake: ", (await trustStakingHelper.canStake()).toString());
 
     } catch (error) {
         console.error(error);

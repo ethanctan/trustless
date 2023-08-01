@@ -1,11 +1,10 @@
 // SPDX-License-Identifier: MIT
-import { ethers } from "ethers";
+import { ContractTransaction } from "ethers";
 
-export interface ITRUST  {
+export interface ITRUST {
   setStakingAddress: (
-    _stakingAddress: string
-  ) => Promise<ethers.ContractTransaction>;
+    stakingAddress: string
+  ) => Promise<ContractTransaction>;
   admin: () => Promise<string>;
-  airdropReserve: () => Promise<ethers.BigNumberish>;
-  stakingAddress: () => Promise<string>;
 }
+

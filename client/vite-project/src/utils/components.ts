@@ -3,7 +3,7 @@ import {DefiData} from '../utils/interfaces.ts'
 
 export interface INavbar {
     passAccount: (account: string) => void;
-    passContracts: (contracts: { trust: ethers.Contract; trustStaking: ethers.Contract; }) => void;
+    passContracts: (contracts: { trust: ethers.Contract; trustStaking: ethers.Contract; trustStakingHelper: ethers.Contract}) => void;
   }
 
 export interface INavlinkComponent {
