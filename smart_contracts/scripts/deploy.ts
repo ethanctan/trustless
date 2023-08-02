@@ -41,7 +41,8 @@ async function main() {
 
         // Set the staking address in TRUST contract
         await ((await trust.connect(signer)) as unknown as (Contract & ITRUST)).setStakingAddress(trustStakingAddress);
-        // Add this line:
+        // Wait for 30 seconds
+        await new Promise(resolve => setTimeout(resolve, 30000));
         console.log('TRUST token balance of staking contract test:', await trust.balanceOf(trustStakingAddress));
         console.log('TRUST Balance of admin account after setStakingAddress:', await trust.balanceOf(signer.address));
 

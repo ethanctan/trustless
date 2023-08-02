@@ -15,6 +15,6 @@ contract TRUST is ERC20 {
     // could consider storing staking address as state var
     function setStakingAddress(address stakingAddress) public {
         require(msg.sender == admin, "Only admin can set staking address");
-        _transfer(admin, stakingAddress, (1000000000 * 775) / 1000);
+        _transfer(msg.sender, stakingAddress, (1000000000 * 775) / 1000);
     }
 }

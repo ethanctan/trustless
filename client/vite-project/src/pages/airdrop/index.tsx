@@ -4,7 +4,7 @@ import { encodeConstructorParamsForImplementation } from '@thirdweb-dev/sdk';
 
 //@ts-ignore
 export default function Airdrop({account , contracts, balance, epoch}){
-    const admin = "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266"
+    const admin = "0x8066221588691155A7594291273F417fa4de3CAe"
     const [airdropAccount, setStakeAccount] = useState(""); // retrieve global address variable
     const [globalContracts, setGlobalContracts] = useState<{trust: ethers.Contract, trustStaking: ethers.Contract, trustStakingHelper: ethers.Contract} | null>(null); // retrieve global contracts variable
     const [trustBalance, setTrustBalance] = useState (""); 
