@@ -32,7 +32,7 @@ router.post("/:cookieId/:walletId", async (req: Request, res: Response) => {
     try{
         let response = await ratingController.upsertRating(userIdentity, ratingObject, protocolName)
         res.json({message : response})
-    }catch{
+    }catch(error){
         res.json({message : "invalid request"})
     }
     

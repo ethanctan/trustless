@@ -10,8 +10,9 @@ import { Rating } from '../interfaces/rating.ts';
 
 // Add a rating to a user's rating mapping
 export async function addRating(user: UserIdentity, rating: Rating): Promise<void> {
-  await postRating(user, rating)
+  let response = await postRating(user, rating)
   await updateProtocol(rating.protocol, rating.scores);
+  return response
 }
 
 // Update a rating that already exists in a user's rating mapping

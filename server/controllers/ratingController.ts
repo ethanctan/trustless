@@ -1,6 +1,16 @@
 import UserModel, { RatingModel, ReferralModel } from "../models/user/UserModel"
 import User, {NullUser, Rating, NullRating} from "../models/user/User";
 
+
+
+
+type Success<T> = {status : 'success', data : T}
+type ErrorMessage = {status : 'error', error : string}
+
+
+type CheckedRatingResponse = (Success<RatingResponse> | ErrorMessage)
+type RatingResponse = {isFound: boolean, rating: Rating}
+
 /** Controller that handles all data processing logic for /rating routes */
 export default class RatingController{
 
@@ -35,27 +45,38 @@ export default class RatingController{
 
     async handleGetRating(cookieId : string, walletId : string, protocolName : string) {
         let rating = await this.getUserRating(cookieId, walletId, protocolName)
-        if (rating.isNull()) return { status: 404, 
-                                message: {message : rating.getErrorMessage()}}
+        if (rating.status == 'error') return {status : 404, message: {message : rating.error}}
+        
 
-        return {status : 200, message: rating}
+        return {status : 200, message: rating.data}
    }
+
+
+   private createErrorMessage(message : string) : ErrorMessage{
+        return {status : 'error', error : message}
+   }
+
+   private createSuccessMessage(rating : Rating) : Success<RatingResponse>{
+        let data = {isFound: (!rating.isNull()), rating: rating}
+        return {status : 'success', data : data}
+   }
+   
 
    /**
      * Gets user rating from database. Returns 
      * nullRating user or rating isn't found
      */
    async getUserRating(cookieId : string, 
-    walletId : string, protocolName : string) : Promise<Rating>{
+    walletId : string, protocolName : string) : Promise<CheckedRatingResponse>{
         const user = await UserModel.findOne(
             { cookieId: cookieId, walletId: walletId });
         if (!user){
-            return new NullRating("User not found")
+            return this.createErrorMessage("User not found")
         }
         const rating = user.protocolRatings.get(protocolName);
-        if (rating == null) return  new NullRating("Rating not found")
+        if (rating == null) return this.createSuccessMessage(new NullRating())
 
-        return Rating.fromIRating(rating)
+        return this.createSuccessMessage(Rating.fromIRating(rating))
     }
 
     async handleGetAllRatings(cookieId : string, walletId : string){

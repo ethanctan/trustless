@@ -56,7 +56,7 @@ describe("Test get rating", () => {
     it("Should return rating not found if rating cannot be found", async () => {
         let url = "/uwu/owo/three"
         let response = await request(app).get(url)
-        expect(response.body.message).toBe("Rating not found")
+        expect(response._body.isFound).toBe(false)
     })
     it("Should return rating if it exists", async () => {
         let url = "/Sky/does/Hello"
@@ -64,7 +64,7 @@ describe("Test get rating", () => {
         let newUser = new User("Sky", "does", "craft", 0, new Map([["Hello", rating]]))
         await addUserToDatabase(newUser)
         let response = await request(app).get(url)
-        expect(response.body.code).toBe("World")
+        expect(response._body.rating.code).toBe("World")
     })
 })
 

@@ -53,9 +53,6 @@ function FormController({account} : UserWalletAccount){
     <Form 
         defiData={defiData}
         getUserData={getUserData}
-        // connectMetamask={connectMetamask}
-        updateProtocol={formHandler.updateProtocol}
-        handleUserSubmission={formHandler.handleUserSubmission}
         account={account}
     />
   )

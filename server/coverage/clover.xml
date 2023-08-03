@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<coverage generated="1690125380095" clover="3.2.0">
-  <project timestamp="1690125380095" name="All files">
-    <metrics statements="355" coveredstatements="334" conditionals="58" coveredconditionals="54" methods="95" coveredmethods="87" elements="508" coveredelements="475" complexity="0" loc="355" ncloc="355" packages="8" files="18" classes="18"/>
+<coverage generated="1691027454795" clover="3.2.0">
+  <project timestamp="1691027454795" name="All files">
+    <metrics statements="358" coveredstatements="335" conditionals="58" coveredconditionals="54" methods="97" coveredmethods="88" elements="513" coveredelements="477" complexity="0" loc="358" ncloc="358" packages="8" files="18" classes="18"/>
     <package name="controllers">
-      <metrics statements="120" coveredstatements="119" conditionals="35" coveredconditionals="35" methods="27" coveredmethods="27"/>
+      <metrics statements="123" coveredstatements="122" conditionals="35" coveredconditionals="35" methods="29" coveredmethods="29"/>
       <file name="protocolController.ts" path="/Users/brandonman/Documents/Github/aegis_mvp_board/server/controllers/protocolController.ts">
         <metrics statements="40" coveredstatements="40" conditionals="7" coveredconditionals="7" methods="12" coveredmethods="12"/>
         <line num="1" count="2" type="stmt"/>
@@ -48,32 +48,35 @@
         <line num="95" count="6" type="stmt"/>
       </file>
       <file name="ratingController.ts" path="/Users/brandonman/Documents/Github/aegis_mvp_board/server/controllers/ratingController.ts">
-        <metrics statements="25" coveredstatements="25" conditionals="6" coveredconditionals="6" methods="4" coveredmethods="4"/>
+        <metrics statements="28" coveredstatements="28" conditionals="6" coveredconditionals="6" methods="6" coveredmethods="6"/>
         <line num="1" count="2" type="stmt"/>
         <line num="2" count="2" type="stmt"/>
-        <line num="5" count="2" type="stmt"/>
-        <line num="17" count="7" type="stmt"/>
-        <line num="21" count="7" type="cond" truecount="1" falsecount="0"/>
-        <line num="22" count="2" type="stmt"/>
-        <line num="24" count="5" type="stmt"/>
-        <line num="27" count="5" type="stmt"/>
-        <line num="28" count="5" type="cond" truecount="1" falsecount="0"/>
-        <line num="29" count="1" type="stmt"/>
-        <line num="31" count="4" type="stmt"/>
-        <line num="32" count="4" type="stmt"/>
-        <line num="33" count="4" type="stmt"/>
+        <line num="15" count="2" type="stmt"/>
+        <line num="27" count="7" type="stmt"/>
+        <line num="31" count="7" type="cond" truecount="1" falsecount="0"/>
+        <line num="32" count="2" type="stmt"/>
+        <line num="34" count="5" type="stmt"/>
         <line num="37" count="5" type="stmt"/>
         <line num="38" count="5" type="cond" truecount="1" falsecount="0"/>
-        <line num="41" count="1" type="stmt"/>
-        <line num="50" count="7" type="stmt"/>
-        <line num="52" count="7" type="cond" truecount="1" falsecount="0"/>
-        <line num="53" count="4" type="stmt"/>
-        <line num="55" count="3" type="stmt"/>
-        <line num="56" count="3" type="cond" truecount="1" falsecount="0"/>
-        <line num="58" count="2" type="stmt"/>
-        <line num="62" count="3" type="stmt"/>
-        <line num="64" count="3" type="cond" truecount="1" falsecount="0"/>
-        <line num="66" count="2" type="stmt"/>
+        <line num="39" count="1" type="stmt"/>
+        <line num="41" count="4" type="stmt"/>
+        <line num="42" count="4" type="stmt"/>
+        <line num="43" count="4" type="stmt"/>
+        <line num="47" count="5" type="stmt"/>
+        <line num="48" count="5" type="cond" truecount="1" falsecount="0"/>
+        <line num="51" count="2" type="stmt"/>
+        <line num="56" count="4" type="stmt"/>
+        <line num="60" count="3" type="stmt"/>
+        <line num="61" count="3" type="stmt"/>
+        <line num="71" count="7" type="stmt"/>
+        <line num="73" count="7" type="cond" truecount="1" falsecount="0"/>
+        <line num="74" count="4" type="stmt"/>
+        <line num="76" count="3" type="stmt"/>
+        <line num="77" count="3" type="cond" truecount="1" falsecount="0"/>
+        <line num="79" count="2" type="stmt"/>
+        <line num="83" count="3" type="stmt"/>
+        <line num="85" count="3" type="cond" truecount="1" falsecount="0"/>
+        <line num="87" count="2" type="stmt"/>
       </file>
       <file name="referralController.ts" path="/Users/brandonman/Documents/Github/aegis_mvp_board/server/controllers/referralController.ts">
         <metrics statements="22" coveredstatements="21" conditionals="8" coveredconditionals="8" methods="4" coveredmethods="4"/>
@@ -182,26 +185,26 @@
       </file>
     </package>
     <package name="models.user">
-      <metrics statements="73" coveredstatements="64" conditionals="16" coveredconditionals="13" methods="29" coveredmethods="24"/>
+      <metrics statements="73" coveredstatements="62" conditionals="16" coveredconditionals="13" methods="29" coveredmethods="23"/>
       <file name="User.ts" path="/Users/brandonman/Documents/Github/aegis_mvp_board/server/models/user/User.ts">
-        <metrics statements="64" coveredstatements="55" conditionals="16" coveredconditionals="13" methods="29" coveredmethods="24"/>
+        <metrics statements="64" coveredstatements="53" conditionals="16" coveredconditionals="13" methods="29" coveredmethods="23"/>
         <line num="3" count="8" type="stmt"/>
-        <line num="11" count="22" type="stmt"/>
-        <line num="12" count="22" type="cond" truecount="1" falsecount="1"/>
+        <line num="11" count="18" type="stmt"/>
+        <line num="12" count="18" type="cond" truecount="1" falsecount="1"/>
         <line num="13" count="0" type="stmt"/>
-        <line num="15" count="22" type="stmt"/>
+        <line num="15" count="18" type="stmt"/>
         <line num="20" count="2" type="cond" truecount="2" falsecount="0"/>
         <line num="21" count="2" type="stmt"/>
         <line num="22" count="2" type="stmt"/>
         <line num="26" count="2" type="stmt"/>
         <line num="30" count="5" type="stmt"/>
-        <line num="32" count="1" type="stmt"/>
+        <line num="32" count="2" type="stmt"/>
         <line num="34" count="0" type="stmt"/>
-        <line num="40" count="5" type="stmt"/>
-        <line num="41" count="5" type="cond" truecount="1" falsecount="1"/>
-        <line num="42" count="5" type="stmt"/>
-        <line num="44" count="5" type="stmt"/>
-        <line num="45" count="4" type="stmt"/>
+        <line num="40" count="1" type="stmt"/>
+        <line num="41" count="1" type="cond" truecount="1" falsecount="1"/>
+        <line num="42" count="0" type="stmt"/>
+        <line num="44" count="1" type="stmt"/>
+        <line num="45" count="0" type="stmt"/>
         <line num="52" count="8" type="stmt"/>
         <line num="66" count="101" type="stmt"/>
         <line num="67" count="101" type="stmt"/>

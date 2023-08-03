@@ -16,8 +16,15 @@ async function addReferral(referralCode: string, walletAddress: string, referral
     }
   }
 
-  // Check if a user with a specific referralCode exists
+/**
+ * @param referralCode 
+ * @returns whether referral code exists. Returns true for empty string since
+ * it is vacuously true if no referral code exists
+ */
 async function checkReferralCodeExists(referralCode : string): Promise<boolean> {
+    if (referralCode == ""){
+      return true
+    }
     try {
         const response = await axiosInstance.get<boolean>(`/${referralCode}`);
         return response.data;

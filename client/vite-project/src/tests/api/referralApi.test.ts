@@ -6,6 +6,10 @@ describe("Test checkReferralCodeExists", () => {
         let response = await checkReferralCodeExists("does not exist")
         expect(response).toBe(false)
     })
+    it("Should return true for empty referral code", async () => {
+        let response = await checkReferralCodeExists("")
+        expect(response).toBe(true)
+    })
 })
 
 describe("Test add referral", () => {
