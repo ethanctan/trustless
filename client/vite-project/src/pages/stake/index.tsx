@@ -3,14 +3,14 @@ import { ethers } from 'ethers';
 
 //@ts-ignore
 export default function Stake({account , contracts, balance, epoch, stakingStatus}){
-
+    const admin = "0x8066221588691155A7594291273F417fa4de3CAe"
     const [stakeAccount, setStakeAccount] = useState(""); // retrieve global address variable
-    const [globalContracts, setGlobalContracts] = useState<{trust: ethers.Contract, trustStaking: ethers.Contract} | null>(null); // retrieve global contracts variable
-    const [stakeAmount, setStakeAmount] = useState(0);
+    const [globalContracts, setGlobalContracts] = useState<{trust: ethers.Contract, trustStaking: ethers.Contract, trustStakingHelper: ethers.Contract} | null>(null); // retrieve global contracts variable
     const [trustBalance, setTrustBalance] = useState ("");
-    const [stakingEpoch, setEpoch] = useState("");
     const [allowStaking, setAllowStaking] = useState(""); 
+
     const [approved, setApproved] = useState(false);
+    const [stakeAmount, setStakeAmount] = useState(0);
     const [totalStaked, setTotalStaked] = useState("");
     const [minStake, setMinStake] = useState("");
 
@@ -19,10 +19,9 @@ export default function Stake({account , contracts, balance, epoch, stakingStatu
             setStakeAccount(account);
             setGlobalContracts(contracts);
             setTrustBalance(balance);
-            setEpoch(epoch);
             setAllowStaking(stakingStatus);
-            setTotalStaked((await contracts.trustStaking.getTotalStaked(Number(stakingEpoch))).toString());
-            setMinStake((await contracts.trustStaking.getMinStake(Number(stakingEpoch))).toString());
+            setTotalStaked((await contracts.trust.balanceOf(contracts.trustStakingHelper.address)).toString());
+            setMinStake((await contracts.trustStakingHelper.minStake()).toString());
             console.log("Done")
         }
         setupContracts();
@@ -31,7 +30,7 @@ export default function Stake({account , contracts, balance, epoch, stakingStatu
     const approve = async () => {
         if (globalContracts && stakeAccount) {
             try {
-                const tx = await globalContracts.trust.approve(globalContracts.trustStaking.address, 100000000000)
+                const tx = await globalContracts.trust.approve(globalContracts.trustStakingHelper.address, 100000000000)
                 console.log("Approve Successful", tx);
                 setApproved(true);
             } catch (error) {
@@ -42,10 +41,13 @@ export default function Stake({account , contracts, balance, epoch, stakingStatu
     const stake = async () => {
         if (globalContracts && stakeAccount) {
             try {
-                const tx = await globalContracts.trustStaking.stakeEpoch(stakeAmount, account);
-                setTotalStaked((await globalContracts.trustStaking.getTotalStaked(Number(stakingEpoch))).toString());
+                const tx = await globalContracts.trustStakingHelper.stake(stakeAmount);
+                setTotalStaked((await contracts.trust.balanceOf(contracts.trustStakingHelper.address)).toString());
+                //update params
+                setTrustBalance((await contracts.trust.balanceOf(stakeAccount)).toString());
+                setAllowStaking((await globalContracts.trustStakingHelper.canStake()).toString());
+                setMinStake((await contracts.trustStakingHelper.minStake()).toString());
                 console.log("Staking Successful", tx);
-                console.log("Staking status:", await globalContracts.trustStaking.allowStaking())
             } catch (error) {
                 console.log(error);
             }
@@ -55,16 +57,29 @@ export default function Stake({account , contracts, balance, epoch, stakingStatu
         setStakeAmount(event.target.value);
     }
 
+    const handleEpochStart = async () => {
+        if (globalContracts && stakeAccount) {
+            try {
+                const tx = await globalContracts.trustStakingHelper.openStaking();
+                console.log("Epoch Start Successful", tx);
+                setAllowStaking((await globalContracts.trustStakingHelper.canStake()).toString());
+            }
+            catch (error) {
+                console.log(error);
+            }
+        }
+    }
+
     return (
         <div style={{display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
             <h1>This is the staking page</h1>
             <h4>Your TRUST balance: {trustBalance ? trustBalance : "Loading"}</h4>
-            <h4>Current TRUST Epoch: {stakingEpoch ? stakingEpoch : "Loading"}</h4>
+            <h4>Staking for next Epoch: {epoch ? Number(epoch)+1 : "Loading"}</h4>
             <h4>Staking status: {allowStaking != null ? allowStaking.toString() : "Loading"}</h4>
             <h4>Minimum stake for Epoch: {minStake ? minStake : "Loading"}</h4>
             <h4>Total staked: {totalStaked ? totalStaked : "Loading"}</h4>
 
-            {allowStaking != null && allowStaking == "true" ? 
+            {allowStaking == "true" ? 
                 approved ? 
                     <>
                     <input 
@@ -77,7 +92,7 @@ export default function Stake({account , contracts, balance, epoch, stakingStatu
                         onClick={stake} 
                         style={{backgroundColor: 'blue', color: 'white', padding: '10px 20px'}}
                     >
-                        Stake
+                        Stake for next epoch
                     </button>
                     </> : 
                     <button 
@@ -87,7 +102,10 @@ export default function Stake({account , contracts, balance, epoch, stakingStatu
                         Approve
                     </button>
                 :
-                <h2>Epoch {stakingEpoch} has begun, go to the submit ratings page and submit ratings!</h2>
+                <>
+                <h2> Min stake met and epoch {Number(epoch)+1} will begin soon – go claim your reward for this epoch if you haven't already!</h2>
+                { account == admin ? <button onClick={handleEpochStart}> Start next epoch </button> : null}
+                </>
             }
         </div>
     ) 
