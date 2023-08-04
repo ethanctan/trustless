@@ -19,8 +19,8 @@ async function postRating(user : UserIdentity, rating : Rating){
 }
 
 interface RatingWithoutProtocol {
-    scores : number[]
-    code : string
+    isFound : boolean
+    rating : {scores : number[], code : string}
 }
 
 async function getRating(user : UserIdentity, protocol : string): Promise<RatingWithoutProtocol>{

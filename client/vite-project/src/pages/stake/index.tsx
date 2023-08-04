@@ -3,7 +3,7 @@ import { ethers } from 'ethers';
 
 //@ts-ignore
 export default function Stake({account , contracts, balance, epoch, stakingStatus}){
-    const admin = "0x965c78d9532479fd57bebe3140cc681d5a11df89"
+    const admin = "0x8066221588691155A7594291273F417fa4de3CAe"
     const [stakeAccount, setStakeAccount] = useState(""); // retrieve global address variable
     const [globalContracts, setGlobalContracts] = useState<{trust: ethers.Contract, trustStaking: ethers.Contract, trustStakingHelper: ethers.Contract} | null>(null); // retrieve global contracts variable
     const [trustBalance, setTrustBalance] = useState ("");

@@ -14,10 +14,12 @@ import { SubmissionTable } from '../../components/submissionTable.tsx';
 //@ts-ignore
 import reCAPTCHA from "react-recaptcha-google"
 import ReCAPTCHA from 'react-google-recaptcha';
+import FormHandler from './formHandler.ts';
+import React from 'react';
 
 
 //@ts-ignore
-function Form({defiData, getUserData, updateProtocol, handleUserSubmission, account}){
+function Form({defiData, getUserData, account}){
     
     const [q1Score, setQ1Score] = useState<number>(1);
     const [q2Score, setQ2Score] = useState<number>(1);
@@ -39,6 +41,16 @@ function Form({defiData, getUserData, updateProtocol, handleUserSubmission, acco
     const [referralCode, setReferralCode] = useState<string>("");//self-code
     const [protocolRatings, setProtocolRatings] = useState<ProtocolRatings>({});
     const [connectWallet, setConnectWallet] = useState<boolean>(false);
+
+    let formHandler = new FormHandler()
+    const recaptchaRef = React.useRef<ReCAPTCHA>(null);
+
+    const handleSubmit = (e : any) =>{
+      e.preventDefault();
+      if (recaptchaRef.current == null) return
+      const token = recaptchaRef.current.getValue();
+      recaptchaRef.current.reset();
+  }
     
     // for generating form content
   const handleSetProtocol = (protocol: string) => {
@@ -51,6 +63,7 @@ function Form({defiData, getUserData, updateProtocol, handleUserSubmission, acco
   }
 
 
+  // TODO: Refactor
   async function getUserDataWrapped(){
     try{
       let [cookieAddress, user] = await getUserData()
@@ -59,7 +72,14 @@ function Form({defiData, getUserData, updateProtocol, handleUserSubmission, acco
         setReferralCode(user.referralCode)
         setAddress(user.walletId)
         setProtocolRatings(user.protocolRatings)
+        console.log("Your referral", user.referralCode)
+      }else{
+        addUser(cookieAddress,  String(address))
+        let [_, user] = await getUserData()
+        setReferralCode(user.referralCode)
+        setAddress(user.walletId)
       }
+      
     }catch(err){
       console.log("Error from getUserDataWrapped", err)
     }
@@ -85,15 +105,16 @@ function Form({defiData, getUserData, updateProtocol, handleUserSubmission, acco
 
 
   async function handleUserSubmissionWrapped(){
+    console.log(recaptchaRef)
     try{
       let scores = [q1Score, q2Score, q3Score, q4Score, q5Score];
       let newRating: Rating = {protocol: protocol, scores: scores, code: influencer};
       let user: UserIdentity = {cookieId: user_id, walletId: String(address) }
 
-      let submissionResponse = await handleUserSubmission(user, newRating)
+      let submissionResponse = await formHandler.handleUserSubmission(user, newRating)
       console.log("Ratings: ", submissionResponse)
       if (submissionResponse.status == "success"){
-        setProtocolRatings(submissionResponse.protocolRatings);
+        setProtocolRatings(submissionResponse.data.protocolRatings);
       }
       else{
         setErrorMessage(submissionResponse.error)
@@ -147,6 +168,13 @@ function Form({defiData, getUserData, updateProtocol, handleUserSubmission, acco
                 text={text4} title="Governance"/>
                 <Question questionScore={q5Score} setScore={setQ5Score} 
                 text={text5} title="Team"/>
+
+                <div className="md:col-span-4 flex items-start justify-start text-left pl-6">
+                  Your referral code is 
+                </div>
+                <div className="md:col-span-4 pr-5">
+                {referralCode}
+                </div>
                 
                 <div className="md:col-span-4 flex items-start justify-start text-left pl-6">
                     Enter a twitter influencer code. 🐦
@@ -165,7 +193,9 @@ function Form({defiData, getUserData, updateProtocol, handleUserSubmission, acco
                 </div>
             </div>
             <div className="flex flex-grow items-center justify-center my-4">
-              <ReCAPTCHA sitekey={"6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI"}/>
+              <ReCAPTCHA 
+              ref={recaptchaRef}
+              sitekey={"6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI"}/>
             </div>
 
           <div className="flex flex-col justify-center items-center">

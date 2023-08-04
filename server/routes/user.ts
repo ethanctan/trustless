@@ -52,7 +52,6 @@ router.post("/", async (req: Request, res: Response) => {
 
 
 router.get("/getUserInfo/:cookieId", async (req: Request, res: Response) => {
-    console.log("getting user info")
     const { cookieId } = req.params;
     let response = await userController.handleGetUserInfo(cookieId)
     res.status(response.status).json(response.message)

@@ -8,6 +8,8 @@ describe("Test postRating", () => {
             {cookieId: "your_cookie_id", walletId: "your_wallet_id"}, 
             {protocol : "something", scores: [1,2,3,4,5], code : "hi"}
             )
+        console.log("response", response)
+        
         expect(response).toBe("invalid request")
     })
 })
@@ -19,7 +21,7 @@ describe("Test get rating", () => {
             {cookieId: "deez", walletId: "nuts"},
             "uniswap"
         )
-        expect(response.code).toBe("someCode")
+        expect(response.rating.code).toBe("someCode")
         
     })
 })

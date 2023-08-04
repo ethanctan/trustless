@@ -30,6 +30,7 @@ export default class UserController{
     private async addUserToDatabase(user : User){
         let userModel;
         user["referredUsers"] = user["numReferredUsers"]
+        user["referralCode"] = this.generateCode()
         userModel = await new UserModel(user)
         await userModel.save()
         return "added user to database"
@@ -77,17 +78,16 @@ export default class UserController{
         if (!user) return false
         return true
     }
+
+    private generateCode(codeLength = 8) : string {
+        const str = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz'
+        let code = ""
+        for (let i=0; i < codeLength; i++){
+            code += str.charAt(Math.floor(Math.random() * (str.length+1)));
+        }
+        return code
+    }
+    
     
 }
-
-// /** @returns a random alphanumeric code with length codeLength */
-// function generateCode(codeLength = 8) : string {
-//     const str = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz'
-//     let code = ""
-//     for (let i=0; i < codeLength; i++){
-//         code += str.charAt(Math.floor(Math.random() * (str.length+1)));
-//     }
-//     return code
-// }
-
 

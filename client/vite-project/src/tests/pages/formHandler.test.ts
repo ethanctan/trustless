@@ -45,7 +45,7 @@ function checkStatusAndValue(
     response : any, expected : unknown, key : string, status: string){
     expect(response["status"]).toBe(status)
     if (response["status"] == status && status == "success")
-        expect(response[key]).toBe(expected)
+        expect(response.data[key]).toBe(expected)
     else{
         expect(response["error"]).toBe(expected)
     }
@@ -57,7 +57,8 @@ describe("Test get ratings", () => {
         let promise = new Promise<ProtocolRatings>((resolve, reject) => {testRating ? 
             resolve(testProtocolRating): reject(new Error("Not found"))})
         spy.mockReturnValue(promise)
-        let response = await formHandler.getRatings(testUser)
+        let response = await formHandler.getAllOfUsersRatings(testUser)
+        console.log("response", response)
         checkStatusAndValue(response, testProtocolRating, "protocolRatings", "success")
     })
     it("Should return empty rating for null values", async () => {
@@ -65,7 +66,7 @@ describe("Test get ratings", () => {
             (resolve, reject) => {testRating ? 
             resolve(null): reject(new Error("Not found"))})
         spy.mockReturnValue(promise)
-        let response = await formHandler.getRatings(testUser)
+        let response = await formHandler.getAllOfUsersRatings(testUser)
         checkStatusAndValue(response, emptyRating, "protocolRatings","success")
     })
 })

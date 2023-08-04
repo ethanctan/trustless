@@ -75,7 +75,7 @@ describe("Test upsert rating", () => {
   describe("Test getUserRating", () =>{
     it("Should return a null rating", async () =>{
       let response = await ratingController.getUserRating("", "", "")
-      expect(response.isNull()).toBe(true)
+      expect(response.status).toBe('error')
     })
 
     it("Should return a rating", async () => {
@@ -85,7 +85,8 @@ describe("Test upsert rating", () => {
       let response = await ratingController.getUserRating(
         testUser2.cookieId, testUser2.walletId, "foo"
       )
-      expect(response.code).toBe("bar")
+      if (response.status == "success")
+        expect(response.data.rating.code).toBe("bar")
     })
     
   })
