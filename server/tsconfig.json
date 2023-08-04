@@ -9,6 +9,7 @@
       "forceConsistentCasingInFileNames": true,
       "noImplicitAny": true,
       "suppressImplicitAnyIndexErrors": true,
+      "ignoreDeprecations": "5.0"
     },
     "include": ["**/*.ts", "tests/protocols.test.js"],
     "exclude": ["node_modules"]

@@ -3,13 +3,8 @@ import IMAGES from '../../assets/images';
 import CountdownDisplay from '../../components/timer.tsx';
 
 function Introduction(){
-  // const [expanded, setExpanded] = useState(true); //for about window
-
-  // const toggleDropdown = () => {
-  //   setExpanded(!expanded);
-  // };
-
-  const targetDate = new Date("2023-08-01")
+  
+  const targetDate = new Date("2023-09-21");
 
   return (
     
@@ -23,7 +18,6 @@ function Introduction(){
         </h2>
 
         <CountdownDisplay targetDate={targetDate}/>
-
 
         <div className="flex flex-col mt-5 w-3/4">
 

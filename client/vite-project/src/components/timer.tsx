@@ -1,13 +1,13 @@
 import { useCountdown } from "../hooks/countdown";
-
+import { ICountdownDisplay, ICountdownTimer, IDateTimeDisplay, IShowCounter } from "../utils/components";
 // Used this tutorial: https://blog.greenroots.info/how-to-create-a-countdown-timer-using-react-hooks#heading-the-countdown-app
 
 /**
  * @param targetDate Date the countdown timer counts down to in the form
  * YYYY-MM-DD. See javascript date docs for more info
  */ 
-//@ts-ignore
-function CountdownDisplay({targetDate}){
+
+function CountdownDisplay({targetDate} : ICountdownDisplay){
 
   return <CountdownTimer 
   targetDate={targetDate} 
@@ -16,8 +16,7 @@ function CountdownDisplay({targetDate}){
   />
 }
 
-//@ts-ignore
-export function CountdownTimer({targetDate, ExpiredDisplay, CountdownDisplay}){
+export function CountdownTimer({targetDate, ExpiredDisplay, CountdownDisplay} : ICountdownTimer){
   const [days, hours, minutes, seconds] = useCountdown(targetDate);
   if (days + hours + minutes + seconds <= 0) {
       return <ExpiredDisplay />;
@@ -40,8 +39,7 @@ const ExpiredNotice = () => {
   };
   
 
-//@ts-ignore
-function ShowCounter({ timeuntildeadline }){
+function ShowCounter({ timeuntildeadline } : IShowCounter){
     let [ days, hours, minutes, seconds] = timeuntildeadline 
     return (
         <div className="show-counter text-zinc-300 shadow-2xl shadow-purple-800/70 unbounded text-5xl p-7 bg-gradient-to-br from-purple-500/80 via-indigo-500/80 to-blue-500 w-1/3 bg-opacity-80 backdrop-filter backdrop-blur-md rounded-2xl flex flex-col">
@@ -57,8 +55,7 @@ function ShowCounter({ timeuntildeadline }){
       );
 }
 
-//@ts-ignore
-const DateTimeDisplay = ({ value, type, isDanger }) => {
+const DateTimeDisplay = ({ value, type, isDanger } : IDateTimeDisplay) => {
     return (
       <div className={isDanger ? 'countdown danger' : 'countdown'}>
         <p>{value}</p>

@@ -1,5 +1,6 @@
-//@ts-ignore
-function SubmissionTable({headings, submissions, RowGenerator}){
+import { ISubmissionTable } from "../utils/components";
+
+function SubmissionTable({headings, submissions, RowGenerator} : ISubmissionTable){
     return (
         <div className="w-fit border rounded-lg overflow-hidden bg-gray-900 bg-opacity-50 backdrop-filter backdrop-blur-md border-gray-700 poppins">
           <table className="divide-y divide-gray-200 divide-gray-700 table-auto">
