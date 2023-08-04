@@ -4,7 +4,7 @@ import { encodeConstructorParamsForImplementation } from '@thirdweb-dev/sdk';
 
 //@ts-ignore
 export default function Airdrop({account , contracts, balance, epoch}){
-    const admin = "0x965c78d9532479fd57bebe3140cc681d5a11df89"
+    const admin = "0x8066221588691155A7594291273F417fa4de3CAe"
     const [airdropAccount, setStakeAccount] = useState(""); // retrieve global address variable
     const [globalContracts, setGlobalContracts] = useState<{trust: ethers.Contract, trustStaking: ethers.Contract, trustStakingHelper: ethers.Contract} | null>(null); // retrieve global contracts variable
     const [trustBalance, setTrustBalance] = useState (""); 
@@ -73,13 +73,13 @@ export default function Airdrop({account , contracts, balance, epoch}){
                         type="text" 
                         value={rewardTemp} 
                         onChange={handleRewardChange} 
-                        style={{margin: '10px 0'}} 
+                        className="text-black m-10"
                     />
                 <input 
                         type="text" 
                         value={accountToBeRewarded} 
                         onChange={handleAccountChange} 
-                        style={{margin: '10px 0'}} 
+                        className="text-black m-10"
                     />
                 <button 
                         onClick={insertReward} 
