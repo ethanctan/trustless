@@ -28,7 +28,7 @@ function Introduction(){
                 What is this?
               </h3>
             </div>
-            <div className="flex flex-col w-1/2 text-lg bg-slate-700/20 rounded-3xl backdrop-filter backdrop-blur-md p-7 ml-5 mb-5">
+            <div className="bg-gradient-to-br from-slate-500/30 to-gray-700/30 flex flex-col w-1/2 text-lg rounded-3xl backdrop-filter backdrop-blur-md p-7 ml-5 mb-5">
               <p className="text-left text-zinc-300 poppins pl-2">
               This is TRUSTLESS, where community decides credibility.
               </p>
@@ -43,7 +43,7 @@ function Introduction(){
 
 
           <div className="relative flex flex-row items-center -mt-5">
-            <div className="flex flex-col w-1/2 text-lg bg-slate-700/20 rounded-3xl backdrop-filter backdrop-blur-md p-7 mr-5 mb-5">
+            <div className="bg-gradient-to-tl from-slate-500/30 to-gray-700/30 flex flex-col w-1/2 text-lg rounded-3xl backdrop-filter backdrop-blur-md p-7 mr-5 mb-5">
               <p className="text-right text-zinc-300 poppins p-2">
                 Crypto lacks a standard of trust. With conflicting information from influencers, markets, devs and degens, it's hard to separate signals from noise.
               </p>

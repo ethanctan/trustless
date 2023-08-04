@@ -4,7 +4,7 @@ import { encodeConstructorParamsForImplementation } from '@thirdweb-dev/sdk';
 
 //@ts-ignore
 export default function Airdrop({account , contracts, balance, epoch}){
-    const admin = "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266"
+    const admin = "0x965c78d9532479fd57bebe3140cc681d5a11df89"
     const [airdropAccount, setStakeAccount] = useState(""); // retrieve global address variable
     const [globalContracts, setGlobalContracts] = useState<{trust: ethers.Contract, trustStaking: ethers.Contract, trustStakingHelper: ethers.Contract} | null>(null); // retrieve global contracts variable
     const [trustBalance, setTrustBalance] = useState (""); 
@@ -61,13 +61,12 @@ export default function Airdrop({account , contracts, balance, epoch}){
 
     
     return (
-        <div style={{display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
-            <h1>This is the claim airdrop page</h1>
+        <div className="flex flex-col poppins">
+
             <h4>Your TRUST balance: {trustBalance ? trustBalance : "Loading"}</h4>
             <h4>Current TRUST Epoch: {epoch ? epoch : "Loading"}</h4>
             <h4>Your airdrop: {reward}</h4>
-            {/* Need type checking here */}
-            { account === admin ?  
+            { account === admin ?
             <>
             <h4> Master Console to insert rewards</h4>
                 <input 
