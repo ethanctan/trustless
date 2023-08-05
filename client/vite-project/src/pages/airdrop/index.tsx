@@ -63,9 +63,52 @@ export default function Airdrop({account , contracts, balance, epoch}){
     return (
         <div className="flex flex-col poppins">
 
-            <h4>Your TRUST balance: {trustBalance ? trustBalance : "Loading"}</h4>
-            <h4>Current TRUST Epoch: {epoch ? epoch : "Loading"}</h4>
-            <h4>Your airdrop: {reward}</h4>
+            <h3 className="unbounded text-3xl my-5">
+                Claim your $TRUST
+            </h3>
+
+            <div className="poppins max-w-xl text-lg pb-1 rounded-b-lg duration-300 px-10 mb-5">
+                After every epoch you've participated in, you can claim a $TRUST airdrop. The more ratings you submit, and the closer each rating is to the eventual average score, the more $TRUST you'll earn.
+            </div>
+
+            <ul className="mx-auto text-lg font-medium border rounded-lg bg-gray-700/30 border-gray-600 text-white font-mono">
+                <li className="w-full px-8 py-2 border-b rounded-t-lg border-gray-600">
+                    Your $TRUST balance: 
+                    <mark className="px-3 py-1 mx-2 text-white bg-gradient-to-br from-violet-500 to-blue-500 rounded-md">
+                        {trustBalance ? trustBalance : "Loading"}
+                    </mark> 
+                </li>
+                <li className="w-full px-8 py-2 border-b border-gray-600">
+                    Current TRUSTLESS Epoch: 
+                    <mark className="px-3 py-1 mx-2 text-white bg-gradient-to-br from-violet-500 to-blue-500 rounded-md">
+                        {epoch ? epoch : "Loading"}
+                    </mark>
+                </li>
+                <li className="w-full px-8 py-2 rounded-b-lg">
+                    Your airdrop: 
+                    <mark className="px-3 py-1 mx-2 text-white bg-gradient-to-br from-violet-500 to-blue-500 rounded-md">
+                        {reward}
+                    </mark>
+                </li>
+            </ul>
+
+                
+                {Number(reward) > 0 ? 
+                <button
+                    className="mx-auto mt-8 relative inline-flex items-center justify-center p-0.5 overflow-hidden text-sm font-medium text-gray-900 rounded-lg 
+                    group bg-gradient-to-br from-purple-600 to-blue-500 dark:text-white shadow-lg shadow-purple-800/40 dark:shadow-lg dark:shadow-purple-800/40"
+                    onClick={claim}
+                >
+                    <span className="relative px-5 py-2.5 transition-all ease-in duration-75 bg-slate-900 dark:bg-slate-900 rounded-md group-hover:bg-opacity-0">
+                    Claim Airdrop!
+                    </span>
+                </button>
+                : 
+                <p className="text-lg mt-4 w-full px-8 py-2 rounded-b-lg">            
+                    No airdrop. Rate protocols in the next epoch! 
+                </p>
+                }
+
             { account === admin ?
             <>
             <h4> Master Console to insert rewards</h4>
@@ -88,15 +131,6 @@ export default function Airdrop({account , contracts, balance, epoch}){
                         Insert Reward
                 </button>
             </> : null}
-
-            {Number(reward) > 0 ? 
-                <button
-                    onClick={claim}
-                    style={{backgroundColor: 'red', color: 'white', padding: '10px 20px'}}
-                >
-                    Claim Airdrop
-                </button> : 
-                <h4> Airdrops not available, go rate protocols! </h4>}
-        </div>
+            </div>
     ) 
 }

@@ -40,21 +40,13 @@ export default function Mechanics(){
                 $TRUST Tokenomics
             </h3>  
             <div className="poppins text-lg pb-1 rounded-b-lg duration-300 w-2/3 mx-auto">
-                <p className="mb-4">
-                Total Supply: 1,000,000,000 $TRUST 
-                </p>
-                <p className="mb-4">
-                Initial LP: 2.5%
-                </p>
-                <p className="mb-4">
-                Initial Epoch Airdrop: 2.5%             
-                </p>
-                <p className="mb-4">
-                Team Allocation: 7.5% 
-                </p>
-                <p className="mb-4">
-                Community Treasury: 87.5%
-                </p>
+                <ul className="mx-auto text-gray-100 font-mono border text-md w-1/2 rounded-lg bg-gray-900/70 border-gray-600 mb-6 mt-2 ">
+                    <li className="w-full px-4 py-2 border-b rounded-t-lg border-gray-600"> Total Supply: 1,000,000,000 $TRUST </li>
+                    <li className="w-full px-4 py-2 border-b border-gray-600"> Initial LP: 2.5% </li>
+                    <li className="w-full px-4 py-2 border-b border-gray-600">Initial Epoch Airdrop: 2.5% </li>
+                    <li className="w-full px-4 py-2 border-b border-gray-600">Team Allocation: 7.5%  </li>
+                    <li className="w-full px-4 py-2 rounded-b-lg">Community Treasury: 87.5% </li>
+                </ul>
                 <p className="mb-4">
                 $TRUST from the treasury will contribute to new reward pools for future epochs and protocol development. 
                 </p>

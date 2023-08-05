@@ -54,7 +54,9 @@ function Question({questionScore, setScore, text, title} : IQuestion){
         <ModifiedSlider questionScore={questionScore} setScore={setScore}/>
             
         <div className="md:col-span-1 flex items-center">
-            <p className="text-white ml-2">{questionScore}</p>
+            <p className="text-white ml-2 font-mono">
+                {questionScore}
+            </p>
         </div>
         </>
     )
