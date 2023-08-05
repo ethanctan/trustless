@@ -61,26 +61,25 @@ export default function Airdrop({account , contracts, balance, epoch}){
 
     
     return (
-        <div style={{display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
-            <h1>This is the claim airdrop page</h1>
+        <div className="flex flex-col poppins">
+
             <h4>Your TRUST balance: {trustBalance ? trustBalance : "Loading"}</h4>
             <h4>Current TRUST Epoch: {epoch ? epoch : "Loading"}</h4>
             <h4>Your airdrop: {reward}</h4>
-            {/* Need type checking here */}
-            { account === admin ?  
+            { account === admin ?
             <>
             <h4> Master Console to insert rewards</h4>
                 <input 
                         type="text" 
                         value={rewardTemp} 
                         onChange={handleRewardChange} 
-                        style={{margin: '10px 0'}} 
+                        className="text-black m-10"
                     />
                 <input 
                         type="text" 
                         value={accountToBeRewarded} 
                         onChange={handleAccountChange} 
-                        style={{margin: '10px 0'}} 
+                        className="text-black m-10"
                     />
                 <button 
                         onClick={insertReward} 
