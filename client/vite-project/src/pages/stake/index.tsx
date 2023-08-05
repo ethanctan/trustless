@@ -127,7 +127,7 @@ export default function Stake({account , contracts, balance, epoch, stakingStatu
                         onClick={stake}
                         className="relative h-full inline-flex items-center justify-center p-0.5 overflow-hidden text-sm font-medium text-gray-900 rounded-r-lg group bg-gradient-to-br from-purple-600 to-blue-500 dark:text-white shadow-lg shadow-purple-800/40 dark:shadow-lg dark:shadow-purple-800/40"
                         >
-                        <span className="relative h-full px-5 py-2.5 transition-all ease-in duration-75 bg-slate-900 dark:bg-slate-900 rounded-r-md group-hover:bg-opacity-0">
+                        <span className="relative h-full px-5 py-3 transition-all ease-in duration-75 bg-slate-900 dark:bg-slate-900 rounded-r-md group-hover:bg-opacity-0">
                             Stake
                         </span>
                         </button>
