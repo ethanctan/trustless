@@ -76,23 +76,23 @@ export default function ProtocolRankingTables(){
             <div className="poppins flex flex-row max-w-lg mx-auto items-center space-x-6 justify-center p-5">
 
                 <button
-                    className={`relative inline-flex items-center justify-center p-0.5 overflow-hidden text-sm font-medium text-gray-900 rounded-lg 
-                    group bg-gradient-to-br from-purple-600 to-blue-500 dark:text-white shadow-lg shadow-purple-800/40 dark:shadow-lg dark:shadow-purple-800/40
+                    className={`relative inline-flex items-center justify-center p-0.5 overflow-hidden text-sm font-medium rounded-lg 
+                    group bg-gradient-to-br from-purple-600 to-blue-500 text-white shadow-lg shadow-purple-800/40
                     `}
                     onClick={() => handleButtonClick(ActiveButton.MostTrusted)}
                 >
-                    <span className={`relative px-5 py-2.5 transition-all ease-in duration-75 rounded-md ${activeButton === ActiveButton.MostTrusted ? 'bg-slate-900/0' : 'bg-slate-900'}`}>
+                    <span className={`relative px-5 py-2.5 transition-all ease-in duration-75 rounded-md ${activeButton === ActiveButton.MostTrusted ? 'bg-slate-900/0' : 'bg-slate-900 hover:bg-slate-900/50'}`}>
                         Most Trusted
                     </span>
                 </button>
 
                 <button
-                    className={`relative inline-flex items-center justify-center p-0.5 overflow-hidden text-sm font-medium text-gray-900 rounded-lg 
-                    group bg-gradient-to-br from-purple-600 to-blue-500 dark:text-white shadow-lg shadow-purple-800/40 dark:shadow-lg dark:shadow-purple-800/40
+                    className={`relative inline-flex items-center justify-center p-0.5 overflow-hidden text-sm font-medium rounded-lg 
+                    group bg-gradient-to-br from-purple-600 to-blue-500 text-white shadow-lg shadow-purple-800/40
                     `}
                     onClick={() => handleButtonClick(ActiveButton.LeastTrusted)}
                 >
-                    <span className={`relative px-5 py-2.5 transition-all ease-in duration-75 rounded-md ${activeButton === ActiveButton.LeastTrusted ? 'bg-slate-900/0' : 'bg-slate-900'}`}>
+                    <span className={`relative px-5 py-2.5 transition-all ease-in duration-75 rounded-md ${activeButton === ActiveButton.LeastTrusted ? 'bg-slate-900/0' : 'bg-slate-900 hover:bg-slate-900/50'}`}>
                         Least Trusted
                     </span>
                 </button>
