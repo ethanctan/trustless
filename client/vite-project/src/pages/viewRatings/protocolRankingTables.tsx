@@ -2,8 +2,6 @@ import {SubmissionTable} from '../../components/submissionTable.tsx';
 import { useState, useEffect } from 'react';
 import { GetProtocolResponse } from '../../utils/interfaces.ts'
 import Axios from 'axios';
-import { CountdownTimer } from '../../components/timer.tsx';
-
 
 export default function ProtocolRankingTables(){
 
@@ -22,28 +20,26 @@ export default function ProtocolRankingTables(){
       protocol.protocolName.toLowerCase().includes(searchTerm.toLowerCase())
     );
 
-    function listProtocols(protocol : any, rowIndex : number){
-        return listProtocol({protocol, rowIndex})
+    function listProtocols(protocol : any){
+        return listProtocol({protocol})
     }
     
     
       //@ts-ignore
-      function listProtocol({protocol, rowIndex}){
+      function listProtocol({protocol}){
         return (
             <tr
                 key={protocol._id}
-                className={`${
-                    rowIndex % 2 === 0 ? 'bg-gray-900' : 'bg-gray-600'
-                } bg-opacity-50 backdrop-filter backdrop-blur-md`}
+                className="bg-gray-900 bg-opacity-50 backdrop-filter backdrop-blur-md"
                 style={{ marginBottom: '10px', height: '50px' }}
             >
-            <td className="p-6 py-4 whitespace-nowrap text-sm font-medium text-white poppins">
+            <td className="p-6 py-4 whitespace-nowrap text-sm font-medium text-white font-mono">
                 {protocol.protocolName}
             </td>
-            <td className="p-6 py-4 whitespace-nowrap text-sm text-white poppins">
+            <td className="p-6 py-4 whitespace-nowrap text-sm text-white font-mono">
                 {protocol.disputeCount}
             </td>
-            <td className="p-6 py-4 whitespace-nowrap text-sm text-white poppins">
+            <td className="p-6 py-4 whitespace-nowrap text-sm text-white font-mono">
                 {protocol.averageScore.toFixed(1)}
             </td>
             </tr>
@@ -72,43 +68,60 @@ export default function ProtocolRankingTables(){
     return (
         <div>
             <h3 className="unbounded text-3xl my-5">
-                TRUST ratings:
+                TRUSTLESS protocol ratings
             </h3>
             <div className="poppins text-lg pb-1 rounded-b-lg duration-300 px-10">
-                View the community's trust ratings below. 
+                View the community's consensus on the most and least trustworthy protocols in crypto.
             </div>
-            <div className="poppins flex max-w-lg mx-auto items-center space-x-6">
-                <button className={`toggle-button flex-1 bg-blue-700 hover:bg-blue-600 hover:border-white focus:outline-none mb-3 mt-3 px-4 py-2 hover:border-white focus:outline-none rounded-lg cursor-pointer ${activeButton === ActiveButton.MostTrusted ? 'active ring ring-slate-400' : ''}`} 
-                onClick={() => handleButtonClick(ActiveButton.MostTrusted)}>
-                Most Trusted
+            <div className="poppins flex flex-row max-w-lg mx-auto items-center space-x-6 justify-center p-5">
+
+                <button
+                    className={`relative inline-flex items-center justify-center p-0.5 overflow-hidden text-sm font-medium text-gray-900 rounded-lg 
+                    group bg-gradient-to-br from-purple-600 to-blue-500 dark:text-white shadow-lg shadow-purple-800/40 dark:shadow-lg dark:shadow-purple-800/40
+                    `}
+                    onClick={() => handleButtonClick(ActiveButton.MostTrusted)}
+                >
+                    <span className={`relative px-5 py-2.5 transition-all ease-in duration-75 rounded-md ${activeButton === ActiveButton.MostTrusted ? 'bg-slate-900/0' : 'bg-slate-900'}`}>
+                        Most Trusted
+                    </span>
                 </button>
-                <button className={`toggle-button flex-1 bg-blue-700 hover:bg-blue-600 hover:border-white focus:outline-none mb-3 mt-3 px-4 py-2 hover:border-white focus:outline-none rounded-lg cursor-pointer ${activeButton === ActiveButton.LeastTrusted ? 'active ring ring-slate-400' : ''}`} 
-                onClick={() => handleButtonClick(ActiveButton.LeastTrusted)}>
-                Least Trusted
+
+                <button
+                    className={`relative inline-flex items-center justify-center p-0.5 overflow-hidden text-sm font-medium text-gray-900 rounded-lg 
+                    group bg-gradient-to-br from-purple-600 to-blue-500 dark:text-white shadow-lg shadow-purple-800/40 dark:shadow-lg dark:shadow-purple-800/40
+                    `}
+                    onClick={() => handleButtonClick(ActiveButton.LeastTrusted)}
+                >
+                    <span className={`relative px-5 py-2.5 transition-all ease-in duration-75 rounded-md ${activeButton === ActiveButton.LeastTrusted ? 'bg-slate-900/0' : 'bg-slate-900'}`}>
+                        Least Trusted
+                    </span>
                 </button>
+
             </div>
 
-            <div className="p-4">
+            <div className="py-4 px-8">
                 <input
                 type="text"
                 placeholder="Search protocol..."
-                className="poppins w-50 rounded-lg p-2 border bg-gray-900 bg-opacity-50 backdrop-filter backdrop-blur-md border-gray-800 hover:border-white focus:outline-none transition-all duration-100"
+                className="poppins w-50 rounded-lg py-2 px-4 border bg-gray-900 bg-opacity-50 backdrop-filter backdrop-blur-md border-gray-800 hover:border-white focus:outline-none transition-all duration-100"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 />
             </div>
 
-        <div className="flex flex-col -m-1.5 overflow-x-auto p-1.5 min-w-full inline-block align-middle">
+        <div className="flex -m-1.5 overflow-x-auto p-1.5 inline-block align-middle justify-center">
 
             {activeButton === ActiveButton.MostTrusted && (
                 <SubmissionTable headings={protocolTableHeadings} 
                 submissions={ascendingSortedProtocol.slice(0, 10)}
-                RowGenerator={listProtocols}/>
+                RowGenerator={listProtocols}
+                />
             )}
             {activeButton === ActiveButton.LeastTrusted && (
                 <SubmissionTable headings={protocolTableHeadings} 
                 submissions={descendingSortedProtocol.slice(0, 10)}
-                RowGenerator={listProtocols}/>
+                RowGenerator={listProtocols}
+                />
             )}
             </div>
         </div>

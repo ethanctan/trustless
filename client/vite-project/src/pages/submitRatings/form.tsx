@@ -129,13 +129,16 @@ function Form({defiData, getUserData, account}){
   function listUserRatings(key : any){
     const {scores} = protocolRatings[key];
     return (
-        <tr key={key} className="py-2">
-            <td>{key}</td>
-            <td>{scores[0]}</td>
-            <td>{scores[1]}</td>
-            <td>{scores[2]}</td>
-            <td>{scores[3]}</td>
-            <td>{scores[4]}</td>
+        <tr key={key} 
+          className="bg-slate-900 bg-opacity-70 backdrop-filter backdrop-blur-md"
+          style={{ marginBottom: '10px', height: '50px' }}
+        >
+            <td className="p-6 py-4 whitespace-nowrap text-sm text-white font-mono">{key}</td>
+            <td className="p-6 py-4 whitespace-nowrap text-sm text-white font-mono">{scores[0]}</td>
+            <td className="p-6 py-4 whitespace-nowrap text-sm text-white font-mono">{scores[1]}</td>
+            <td className="p-6 py-4 whitespace-nowrap text-sm text-white font-mono">{scores[2]}</td>
+            <td className="p-6 py-4 whitespace-nowrap text-sm text-white font-mono">{scores[3]}</td>
+            <td className="p-6 py-4 whitespace-nowrap text-sm text-white font-mono">{scores[4]}</td>
         </tr>
     );
   }
@@ -201,12 +204,16 @@ function Form({defiData, getUserData, account}){
           <div className="flex flex-col justify-center items-center">
 
             {connectWallet ? 
-              <button 
-                className='mx-auto mb-3 mt-3 bg-blue-700 hover:bg-blue-600 hover:border-white focus:outline-none py-2 px-4 rounded-lg cursor-pointer' 
+              <button
+                className={`relative inline-flex items-center justify-center p-0.5 overflow-hidden text-sm font-medium text-gray-900 rounded-lg 
+                group bg-gradient-to-br from-purple-600 to-blue-500 dark:text-white shadow-lg shadow-purple-800/40 dark:shadow-lg dark:shadow-purple-800/40
+                `}
                 onClick={handleUserSubmissionWrapped}
               >
-                Submit
-              </button> 
+                <span className={`relative px-5 py-2.5 transition-all ease-in duration-75 rounded-md hover:bg-slate-900/0 bg-slate-900`}>
+                    Submit
+                </span>
+              </button>
             : null}
              
             {errorMessage == 'Successfully added!'? 
