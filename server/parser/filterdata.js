@@ -11,11 +11,11 @@ fs.readFile('protocolData.json', 'utf8', (err, data) => {
     const jsonData = JSON.parse(data);
 
     // Filter and map data
-    const filteredData = jsonData.filter(protocol => protocol.category !== "CEX")
+    const filteredCEXData = jsonData.filter(protocol => protocol.category == "CEX")
                                  .map(protocol => ({name: protocol.name, logo: protocol.logo}));
 
     // Save filtered data back to a new JSON file
-    fs.writeFile('filteredData.json', JSON.stringify(filteredData), (err) => {
+    fs.writeFile('filteredCEXData.json', JSON.stringify(filteredCEXData), (err) => {
         if (err) throw err;
         console.log('Filtered data written to file');
     });
