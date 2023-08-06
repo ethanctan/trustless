@@ -11,6 +11,7 @@ import { Question } from '../../components/question.tsx'
 import SearchBar from '../../components/searchBar.tsx';
 import { textFieldDesc } from './formConsts.ts';
 import { SubmissionTable } from '../../components/submissionTable.tsx';
+import { cex } from './CEX.ts';
 //@ts-ignore
 import reCAPTCHA from "react-recaptcha-google"
 import ReCAPTCHA from 'react-google-recaptcha';
@@ -161,6 +162,8 @@ function Form({defiData, getUserData, account}){
                 <p className="mb-2"> Rate {protocol}'s trustworthiness in these 5 areas. </p>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-8 gap-4 py-4">
+              { !cex.includes(protocol) ? 
+                <>
                 <Question questionScore={q1Score} setScore={setQ1Score} 
                 text={text1} title="Contracts"/>
                 <Question questionScore={q2Score} setScore={setQ2Score} 
@@ -171,6 +174,11 @@ function Form({defiData, getUserData, account}){
                 text={text4} title="Governance"/>
                 <Question questionScore={q5Score} setScore={setQ5Score} 
                 text={text5} title="Team"/>
+                </>  : 
+                <>
+                <text> Hi </text> {/* Ethan TODO: Add CEX questions */}
+                </> 
+              }
 
                 <div className="md:col-span-4 flex items-start justify-start text-left pl-6">
                   Your referral code is 
