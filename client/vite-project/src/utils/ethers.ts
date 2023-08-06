@@ -4,9 +4,9 @@ import TrustStaking from '../../../../smart_contracts/artifacts/contracts/TRUSTS
 import TrustStakingHelper from '../../../../smart_contracts/artifacts/contracts/TRUSTStakingHelper.sol/TRUSTStakingHelper.json'
 
 //Replace these addresses with those deployed on goerli testnet
-const tokenAddress = "0x1A575d9E48804c5Db07d2F23dAD28DabfAFeEddd";
-const stakingAddress = "0x3CE44692496B80ceE36965EEf8ce08bFB8834f7D";
-const helperAddress = '0x3D62277e091Ec688F8Ba1E4bc2a84fD7EeE47139';
+const tokenAddress = "0x79C9609dEfd4b238292dA1Bd4Dd9b25A998Fda8e";
+const stakingAddress = "0x3EC0549914d56e8b97859cb6FDBABc667809841A";
+const helperAddress = '0xf7670f2ba1aD7c86E4A073222BBb60890a663D79';
 
 export const getProvider = async () => {
     // For hardhat testnet

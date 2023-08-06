@@ -55,7 +55,6 @@ async function main() {
         let trustStakingHelperAddress = await trustStakingHelper.getAddress()
         console.log('TRUSTStakingHelper contract deployed at', trustStakingHelperAddress);
         console.log("MinStake: ", (await trustStakingHelper.minStake()).toString());
-        console.log("CanStake: ", (await trustStakingHelper.canStake()).toString());
 
     } catch (error) {
         console.error(error);

@@ -14,7 +14,7 @@ import Axios from "axios";
 function App() {
   const [account, setAccount] = useState(""); // global address variable
   const [contracts, setContracts] = useState<{trust: ethers.Contract, trustStaking: ethers.Contract, trustStakingHelper: ethers.Contract} | null>(null); //global contracts variable
-  const [walletInfo, setWalletInfo] = useState<{balance: string, epoch: string, stakingStatus: string} | null>(null);
+  const [walletInfo, setWalletInfo] = useState<{balance: string, epoch: string} | null>(null);
   const [epoch, setEpoch] = useState("");
 
   const passAccount = (account: string) => {
@@ -31,9 +31,8 @@ function App() {
   const getWalletInfo = async (contracts: {trust: ethers.Contract, trustStaking: ethers.Contract, trustStakingHelper: ethers.Contract}) => {
     if (contracts && account) {
       let balance = (await contracts.trust.balanceOf(account)).toString();
-      let stakingStatus = ((await contracts.trustStakingHelper.canStake()).toString());
-      console.log("Wallet info set: " + balance + " " + epoch + " " + stakingStatus);
-      setWalletInfo({balance, epoch, stakingStatus});
+      console.log("Wallet info set: " + balance + " " + epoch );
+      setWalletInfo({balance, epoch});
     }
   }
   
@@ -58,7 +57,7 @@ function App() {
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/airdrop" element={<Airdrop account={account} contracts={contracts} balance={walletInfo?.balance} epoch={walletInfo?.epoch}/>} />
-          <Route path="/stake" element={<Stake account={account} contracts={contracts} balance={walletInfo?.balance} epoch={walletInfo?.epoch} stakingStatus={walletInfo?.stakingStatus}/>} />
+          <Route path="/stake" element={<Stake account={account} contracts={contracts} balance={walletInfo?.balance} epoch={walletInfo?.epoch} />} />
           <Route path="/mechanics" element={<Mechanics />} />
           <Route path="/submitRatings" element={<SubmitRating account={account}/>} />
           <Route path="/viewRatings" element={<ViewRatings />} />
