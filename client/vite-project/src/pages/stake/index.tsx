@@ -2,32 +2,30 @@ import {useEffect, useState} from 'react';
 import { ethers } from 'ethers';
 
 //@ts-ignore
-export default function Stake({account , contracts, balance, epoch, stakingStatus}){
+export default function Stake({account , contracts, balance, epoch}){
     const admin = "0x8066221588691155A7594291273F417fa4de3CAe"
     const [stakeAccount, setStakeAccount] = useState(""); // retrieve global address variable
     const [globalContracts, setGlobalContracts] = useState<{trust: ethers.Contract, trustStaking: ethers.Contract, trustStakingHelper: ethers.Contract} | null>(null); // retrieve global contracts variable
     const [trustBalance, setTrustBalance] = useState ("");
-    const [allowStaking, setAllowStaking] = useState(""); 
 
     const [approved, setApproved] = useState(false);
     const [stakeAmount, setStakeAmount] = useState(0);
     const [totalStaked, setTotalStaked] = useState("");
     const [minStake, setMinStake] = useState("");
-    const [unstakeAmount, setUnstakeAmount] = useState(0);
-    const [totalStakedByUser, setTotalStakedByUser] = useState(0); // DOUG TODO: Add function to get total $TRUST staked by user
+    const [totalStakedByUser, setTotalStakedByUser] = useState(""); // DOUG TODO: Add function to get total $TRUST staked by user
 
     useEffect(() => {
         async function setupContracts() {
             setStakeAccount(account);
             setGlobalContracts(contracts);
             setTrustBalance(balance);
-            setAllowStaking(stakingStatus);
+            setTotalStakedByUser((await contracts.trustStakingHelper.viewStake()).toString());
             setTotalStaked((await contracts.trust.balanceOf(contracts.trustStakingHelper.address)).toString());
             setMinStake((await contracts.trustStakingHelper.minStake()).toString());
             console.log("Done")
         }
         setupContracts();
-    }, [account, contracts, balance, epoch, stakingStatus]);
+    }, [account, contracts, balance, epoch]);
 
     const approve = async () => {
         if (globalContracts && stakeAccount) {
@@ -47,8 +45,8 @@ export default function Stake({account , contracts, balance, epoch, stakingStatu
                 setTotalStaked((await contracts.trust.balanceOf(contracts.trustStakingHelper.address)).toString());
                 //update params
                 setTrustBalance((await contracts.trust.balanceOf(stakeAccount)).toString());
-                setAllowStaking((await globalContracts.trustStakingHelper.canStake()).toString());
                 setMinStake((await contracts.trustStakingHelper.minStake()).toString());
+                setTotalStakedByUser((await contracts.trustStakingHelper.viewStake()).toString());
                 console.log("Staking Successful", tx);
             } catch (error) {
                 console.log(error);
@@ -59,18 +57,25 @@ export default function Stake({account , contracts, balance, epoch, stakingStatu
         setStakeAmount(event.target.value);
     }
 
-    const handleUnstakeInputChange = (event : any) => {
-        let { value, min, max } = event.target;
-        value = Math.max(Number(min), Math.min(Number(max), Number(value)));
-        setUnstakeAmount(value);
-    }
+    const unstake = async () => {
+        if (globalContracts && stakeAccount) {
+            try {
+                const tx = await globalContracts.trustStakingHelper.withdraw();
+                console.log("Unstaking Successful", tx);
+                //set params
+                setTotalStaked((await contracts.trust.balanceOf(contracts.trustStakingHelper.address)).toString());
+                setTotalStakedByUser((await contracts.trustStakingHelper.viewStake()).toString());
+                setTrustBalance((await contracts.trust.balanceOf(stakeAccount)).toString());
+            } catch (error) {
+                console.log(error);
+            }
+        }};
 
     const handleEpochStart = async () => {
         if (globalContracts && stakeAccount) {
             try {
-                const tx = await globalContracts.trustStakingHelper.openStaking();
+                const tx = await globalContracts.trustStakingHelper.transferStake();
                 console.log("Epoch Start Successful", tx);
-                setAllowStaking((await globalContracts.trustStakingHelper.canStake()).toString());
             }
             catch (error) {
                 console.log(error);
@@ -122,8 +127,7 @@ export default function Stake({account , contracts, balance, epoch, stakingStatu
             </li>
             </ul>
     
-            {allowStaking === "true" ? (
-                approved ? (
+            {approved ? (
                     <div className="flex mt-4 h-12 items-center rounded-lg bg-opacity-50 backdrop-filter backdrop-blur-md  focus:outline-none transition-all duration-100">
                     <input
                     type="text"
@@ -156,53 +160,29 @@ export default function Stake({account , contracts, balance, epoch, stakingStatu
                         </span>
                     </button>
                     </span>
-                )
-                ) : (
-                <>
-                    <h2 className="mt-4 text-lg poppins max-w-xl">
-                    The threshold for beginning the next epoch has been met! Epoch {Number(epoch) + 1} will begin soon. Go claim your reward for this epoch if you haven't already!
-                    </h2>
-                    {account === admin ? (
-                    <span className="relative inline-flex">
-                        <button
-                        onClick={handleEpochStart}
-                        className="mt-4 relative inline-flex items-center justify-center p-0.5 overflow-hidden text-sm font-medium text-gray-900 rounded-lg 
-                        group bg-gradient-to-br from-purple-600 to-blue-500 dark:text-white shadow-lg shadow-purple-800/40"
-                        >
-                        <span className="relative px-5 py-2.5 transition-all ease-in duration-75 bg-slate-900 rounded-md group-hover:bg-opacity-0">
-                            Start next epoch
-                        </span>
-                        </button>
-                    </span>
-                    ) : null}
-                </>
                 )}
 
-                { totalStakedByUser > 0 ?
+                { Number(totalStakedByUser) > 0 ?
                     <div className="flex mt-4 h-12 items-center rounded-lg bg-opacity-50 backdrop-filter backdrop-blur-md  focus:outline-none transition-all duration-100">
-                    <input
-                    type="text"
-                    //@ts-ignore
-                    value={unstakeAmount}
-                    onChange={handleUnstakeInputChange}
-                    min="0"
-                    max={totalStakedByUser ? totalStakedByUser : "0"}
-                    placeholder="Unstake..."
-                    className="border border-slate-700 w-full h-full flex-1 px-4 py-full bg-gray-900 hover:border-white transition-all duration-100 rounded-l-lg bg-transparent border border-transparent group focus:border-transparent focus:outline-none"
-                    />
 
                     <span className="relative inline-flex h-full">
                         <button
-                        onClick={() => {return null}} //DOUG TODO: Add unstaking function
-                        className="relative h-full inline-flex items-center justify-center p-0.5 overflow-hidden text-sm font-medium rounded-r-lg group bg-gradient-to-br from-purple-600 to-blue-500 text-white shadow-lg shadow-purple-800/40"
+                        onClick={unstake} //DOUG TODO: Add unstaking function
+                        className="relative h-full inline-flex items-center justify-center p-0.5 overflow-hidden text-sm font-medium rounded-lg group bg-gradient-to-br from-purple-600 to-blue-500 text-white shadow-lg shadow-purple-800/40"
                         >
-                        <span className="relative h-full px-5 py-3 transition-all ease-in duration-75 bg-slate-900 rounded-r-md group-hover:bg-opacity-0">
+                        <span className="relative h-full px-5 py-3 transition-all ease-in duration-75 bg-slate-900 rounded-md group-hover:bg-opacity-0">
                             Unstake
                         </span>
                         </button>
                     </span>
                     </div> : null
                 }
+
+                { account == admin ?
+                    <button onClick={handleEpochStart}>
+                        Transfer Stake and start staking for new epoch
+                    </button> 
+                    : null}
       </div>
     ) 
 }

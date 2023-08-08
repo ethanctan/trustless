@@ -8,7 +8,6 @@ contract TRUSTStakingHelper {
     uint256 public minStake = 50000;
     address public mainStakingContract;
     address public owner;
-    bool public canStake = true;
 
     // Mapping to track user's staked amounts
     mapping(uint256 => mapping(address => uint256)) public stakedAmounts;
@@ -20,34 +19,28 @@ contract TRUSTStakingHelper {
     }
 
     function stake(uint256 amount) external {
-        require(canStake == true, "Wait for next epoch");
         require(
             trustToken.transferFrom(msg.sender, address(this), amount),
             "Transfer failed"
         );
         stakedAmounts[minStake][msg.sender] += amount;
-
-        if (trustToken.balanceOf(address(this)) >= minStake) {
-            require(
-                trustToken.transfer(
-                    mainStakingContract,
-                    trustToken.balanceOf(address(this))
-                ),
-                "Transfer failed"
-            );
-            minStake += 50000;
-            canStake = false;
-            //reset stakedAmounts
-        }
     }
 
-    function openStaking() external {
+    // to be called when we start a new epoch
+    function transferStake() external {
         require(msg.sender == owner, "Not Owner");
         require(
-            canStake == false && trustToken.balanceOf(address(this)) == 0,
-            "Invalid"
+            trustToken.balanceOf(address(this)) >= minStake,
+            "Insufficient Stake"
         );
-        canStake = true;
+        require(
+            trustToken.transfer(
+                mainStakingContract,
+                trustToken.balanceOf(address(this))
+            ),
+            "Transfer failed"
+        );
+        minStake += 50000;
     }
 
     function withdraw() external {
@@ -60,5 +53,9 @@ contract TRUSTStakingHelper {
             "Transfer failed"
         );
         stakedAmounts[minStake][msg.sender] = 0;
+    }
+
+    function viewStake() external view returns (uint) {
+        return stakedAmounts[minStake][msg.sender];
     }
 }

@@ -6,8 +6,10 @@ export interface ITRUSTStakingHelper {
   minStake: () => Promise<string>;
   mainStakingContract: () => Promise<string>;
   owner: () => Promise<string>;
-  canStake: () => Promise<boolean>;
   stake: (amount: string) => Promise<ContractTransaction>;
-  openStaking: () => Promise<ContractTransaction>;
+  transferStake: () => Promise<ContractTransaction>;
   withdraw: () => Promise<ContractTransaction>;
+  viewStake: () => Promise<number>;
+  stakedAmounts: (minStake: number, userAddress: string) => Promise<number>;
 }
+
