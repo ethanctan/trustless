@@ -1,5 +1,3 @@
-
-
 import express, { Request, Response } from 'express';
 import axios from 'axios'
 
@@ -7,6 +5,7 @@ import axios from 'axios'
 const router = express.Router()
 
 router.post("/", async (req : Request, res : Response) => {
+    console.log("Route reached")
     ////Destructuring response token and input field value from request body
   const { token, inputVal } = req.body;
   const key = "6LeIxAcTAAAAAGG-vFI1TnRWxMZNFuojJ4WifJWe"
@@ -30,5 +29,4 @@ router.post("/", async (req : Request, res : Response) => {
 
 })
 
-export default router
 module.exports = router

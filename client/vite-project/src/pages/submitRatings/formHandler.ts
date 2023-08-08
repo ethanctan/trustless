@@ -20,7 +20,7 @@ type RatingResponse = {protocolRatings : ProtocolRatings}
 
 
 class FormHandler {
-    
+
     async addUserRating(user : UserIdentity, newRating : Rating){
         try{
             await addRating(user, newRating);
@@ -103,6 +103,8 @@ class FormHandler {
     
     return this.getAllOfUsersRatings(user)
   }
+
+  
 
 
 }

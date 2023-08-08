@@ -25,7 +25,7 @@ app.use("/defiData", defiDataRouter)
 app.use("/protocols", protocolsRouter)
 app.use("/ratings", ratingRouter)
 app.use("/referrals", referralRouter)
-app.use("/recpatcha", recaptchaRouter)
+app.use("/recaptcha", recaptchaRouter)
  
 app.use("/epochCount", epochCountRouter)
 

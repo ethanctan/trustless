@@ -16,6 +16,7 @@ import reCAPTCHA from "react-recaptcha-google"
 import ReCAPTCHA from 'react-google-recaptcha';
 import FormHandler from './formHandler.ts';
 import React from 'react';
+import { getToken } from '../../utils/utils.ts';
 
 
 //@ts-ignore
@@ -41,16 +42,11 @@ function Form({defiData, getUserData, account}){
     const [referralCode, setReferralCode] = useState<string>("");//self-code
     const [protocolRatings, setProtocolRatings] = useState<ProtocolRatings>({});
     const [connectWallet, setConnectWallet] = useState<boolean>(false);
+    const [valid_token, setValidToken] = useState([]);
 
     let formHandler = new FormHandler()
     const recaptchaRef = React.useRef<ReCAPTCHA>(null);
 
-    const handleSubmit = (e : any) =>{
-      e.preventDefault();
-      if (recaptchaRef.current == null) return
-      const token = recaptchaRef.current.getValue();
-      recaptchaRef.current.reset();
-  }
     
     // for generating form content
   const handleSetProtocol = (protocol: string) => {
@@ -94,23 +90,25 @@ function Form({defiData, getUserData, account}){
   }, [account]);
 
   // sets cookieid for user, and sets referral code, wallet address and protocolratings if user exists
-  useEffect(() =>{
-    getUserDataWrapped();
-  }, [])
+  useEffect(() =>{getUserDataWrapped();}, [])
 
   // Reset the errorMessage each time the protocol changes
-  useEffect(() => {
-      setErrorMessage(null);
-    }, [protocol]);
+  useEffect(() => {setErrorMessage(null);}, [protocol]);
 
 
   async function handleUserSubmissionWrapped(){
-    console.log(recaptchaRef)
-    try{
-      let scores = [q1Score, q2Score, q3Score, q4Score, q5Score];
-      let newRating: Rating = {protocol: protocol, scores: scores, code: influencer};
-      let user: UserIdentity = {cookieId: user_id, walletId: String(address) }
+    let validToken = await getToken(recaptchaRef.current)
+    if (!validToken){
+      setErrorMessage("Verify you are not a bot")
+      return
+    }
+    
+    let scores = [q1Score, q2Score, q3Score, q4Score, q5Score];
+    let newRating: Rating = {protocol: protocol, scores: scores, code: influencer};
+    let user: UserIdentity = {cookieId: user_id, walletId: String(address) }
 
+
+    try{
       let submissionResponse = await formHandler.handleUserSubmission(user, newRating)
       console.log("Ratings: ", submissionResponse)
       if (submissionResponse.status == "success"){
@@ -124,7 +122,7 @@ function Form({defiData, getUserData, account}){
       setErrorMessage(err["message"])
     }
   }
-  
+
 
   function listUserRatings(key : any){
     const {scores} = protocolRatings[key];

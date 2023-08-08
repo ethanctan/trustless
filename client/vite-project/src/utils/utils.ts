@@ -4,9 +4,23 @@ import {Protocol, GetProtocolResponse} from './interfaces.ts'
 import { UserIdentity } from '../interfaces/user.ts';
 import { postRating } from '../api/ratingApi.ts';
 import { Rating } from '../interfaces/rating.ts';
+import verifyToken from '../api/recaptchaApi.ts';
+import ReCAPTCHA from 'react-google-recaptcha';
 
 
-
+export async function getToken(recaptcha : ReCAPTCHA | null) {
+  if (recaptcha == null) {return false}
+    
+  let token = recaptcha.getValue();
+  recaptcha.reset();
+  if (token) {
+    let valid_token = await verifyToken(token);
+    console.log("valid token", valid_token)
+    
+    return valid_token["verified"]
+  }
+  return false
+}
 
 // Add a rating to a user's rating mapping
 export async function addRating(user: UserIdentity, rating: Rating): Promise<void> {
