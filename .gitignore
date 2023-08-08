@@ -1,5 +1,9 @@
 # Dependency directories
 node_modules/
+client/node_modules
+client/vite-project/node_modules
+server/node_modules
+
 
 # System files
 .DS_Store
