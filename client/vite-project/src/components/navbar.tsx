@@ -1,7 +1,7 @@
 import { ethers } from 'ethers';
-import { useState} from 'react';
-// import { ConnectWallet, useAddress } from "@thirdweb-dev/react";
-import {getProvider, getWallet, getContract} from '../utils/ethers';
+import { useEffect, useState} from 'react';
+import { ConnectWallet, useAddress, useSigner } from "@thirdweb-dev/react";
+import { getProvider, getContract } from '../utils/ethers';
 import { INavbar } from '../utils/components';
 import NavlinkComponent from "./navlink";
 import TooltipComponent from "./tooltip";
@@ -10,35 +10,71 @@ import TooltipComponent from "./tooltip";
 export default function Navbar({ passAccount, passContracts} : INavbar) {
   
   const [provider, setProvider] = useState<ethers.providers.JsonRpcProvider | null>(null);
-  const [signer, setSigner] = useState<{signer: ethers.Signer, account: string} | null>(null);
+  const [signer, setSigner] = useState< ethers.Signer | null>(null);
   const [setup, setSetup] = useState(false);
+  const [walletReject, setWalletReject] = useState("");
 
-  const setupContracts = async () => {
-        const providerTemp = await getProvider();
-        setProvider(providerTemp);
+  let thirdwebAddress = useAddress();
+  let thirdwebSigner = useSigner(); 
 
-        // Get wallet and signer
-        const signerTemp = await getWallet(providerTemp);
-        setSigner(signerTemp);
-
+  useEffect(() => {
+    async function fetchData() {
+      if (thirdwebAddress && thirdwebSigner) {
+        //get provider for balance checking later
+        const provider = await getProvider(); 
+        
+        // Set Thirdweb signer
+        setSigner(thirdwebSigner);
+        console.log("Signer: ", thirdwebSigner);
+        console.log("Address: ", thirdwebAddress);
+        
         // Get contracts
-        const contractsTemp = await getContract(signerTemp.signer);
+        const contractsTemp = await getContract(thirdwebSigner);
+  
+        // Checks
+        const transactionCount = await provider.getTransactionCount(thirdwebAddress);
+        console.log("Transaction Count: ", transactionCount)
+        const ethBalance = (await provider.getBalance(thirdwebAddress)).toString();
+        console.log("Eth Balance: ", ethBalance)
 
         // Setup
-        passAccount(signerTemp.account);
-        passContracts(contractsTemp);
-        setSetup(true);
+        if (transactionCount >= 10 && Number(ethBalance) >= 10) {
+          passAccount(thirdwebAddress);
+          passContracts(contractsTemp);
+          setSetup(true);
+        }
+        else {
+          setWalletReject("Wallet does not meet requirements");
+        }
+      }
+    }
+  
+    fetchData();
+  }, [thirdwebAddress, thirdwebSigner]);
+
+  const [isTransactionPending, setIsTransactionPending] = useState(false);
+
+  //function to detect pending transactions
+  useEffect(() => {
+    const updateTransactionCounts = async () => {
+      if (thirdwebAddress && thirdwebSigner) {
+        const provider = await getProvider();
+        const confirmedCount = await provider.getTransactionCount(thirdwebAddress);
+        const pendingCount = await provider.getTransactionCount(thirdwebAddress, 'pending');
+        console.log("confirm count = pendingcount", confirmedCount == pendingCount)
+        setIsTransactionPending(!(confirmedCount == pendingCount));
+      } 
     };
-   
-  // var thirdwebAddress = useAddress();
-
-  // useEffect(() => {
-  //   if (thirdwebAddress) {
-  //     passAccount(thirdwebAddress);
-  //   }
-  // }, [thirdwebAddress]);
-
-  // const location = useLocation();
+    
+    // Call the function immediately on mount
+    updateTransactionCounts();
+    
+    // Set up a polling mechanism to keep checking every few seconds
+    const interval = setInterval(updateTransactionCounts, 500); // 5 seconds, adjust as needed
+    
+    // Cleanup: clear the interval when the component is unmounted
+    return () => clearInterval(interval);
+  }, [thirdwebAddress, thirdwebSigner]);
 
   return (
     <nav className="fixed top-0 left-0 right-0 w-full py-2 z-50 bg-slate-800/60 backdrop-blur-lg poppins flex flex-row ">
@@ -58,19 +94,15 @@ export default function Navbar({ passAccount, passContracts} : INavbar) {
       </ul>
 
       <div className="ml-auto flex items-center justify-end px-8 py-2">
-        {/* <ConnectWallet
-          className="connect-wallet"
-        /> */}
-        <button
-          className={`relative inline-flex items-center justify-center p-0.5 my-2 mr-2 overflow-hidden text-sm font-medium text-white rounded-lg 
-          group bg-gradient-to-br from-purple-600 to-blue-500 group-hover:from-purple-600 group-hover:to-blue-500 hover:text-white focus:ring-2 focus:outline-none shadow-lg shadow-purple-800/40
-          `}
-          onClick={setupContracts}
-        >
-          <span className="relative px-5 py-2.5 transition-all ease-in duration-75 bg-slate-900 rounded-md group-hover:bg-opacity-0">
-            {signer == null ? 'Connect Wallet' : `Connected: 0x${signer.account.substr(2, 4)}...`}
-          </span>
-        </button>
+        {!isTransactionPending ? 
+          <>
+          <ConnectWallet
+            className="connect-wallet"
+          />
+          {walletReject && <div className="text-red-500 text-sm">{walletReject}</div>} 
+          </> :
+          <text>pending</text>
+        }
       </div>
 
     </nav>
