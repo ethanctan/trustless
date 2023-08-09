@@ -27,7 +27,7 @@ const ReferralSchema = new mongoose.Schema({
 });
 
 const UserSchema = new mongoose.Schema({
-    cookieId: {type: String, required: true},
+    cookieId: {type: String, required: false},
     walletId: {type: String, required: true},
     referralCode: {type: String, required: false},
     referredUsers: {type: Number, required: true},

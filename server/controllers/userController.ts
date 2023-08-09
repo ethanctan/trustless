@@ -7,23 +7,14 @@ export default class UserController{
 
     // need to make new function to take in a req and parse the req
     async handlePostRequest(user : User) : Promise<string> {
-        const userCookie = await UserModel.findOne({ cookieId: user["cookieId"] });
         const userWallet = await UserModel.findOne({ walletId: user["walletId"] });
 
-        let userCookieExists = Boolean(userCookie)
-        let userWalletExists = Boolean(userWallet)
-        switch (true){
-            case (!userCookieExists && userWalletExists):
-                await this.updateUserCookies(user, userWallet)
-                return "reassigned user"
-            case (userCookieExists && !userWalletExists):
-                return "non existent wallet"
-            case (userCookieExists && userWalletExists):
-                //@ts-ignore
-                return this.handleKnownUser(userCookie.id, userWallet.id)
-            default:
-                return await this.addUserToDatabase(user)
+        
+        if (userWallet == null){
+            return await this.addUserToDatabase(user)
         }
+        return await this.handleKnownUser("", userWallet.id)
+
     }
 
     /** Assumes that user does not exist in the database */
@@ -31,23 +22,14 @@ export default class UserController{
         let userModel;
         user["referredUsers"] = user["numReferredUsers"]
         user["referralCode"] = this.generateCode()
+        user.cookieId = "null"
         userModel = await new UserModel(user)
         await userModel.save()
         return "added user to database"
     }
     
 
-    private async updateUserCookies(user : User, userWallet : any){
-        userWallet.cookieId = user.cookieId;
-        await UserModel.findOneAndUpdate({_id : userWallet.id}, 
-            userWallet, {upsert : true})
-
-    }
-
     private handleKnownUser(userCookie : string, userWallet : string){
-        if (userCookie != userWallet){
-            return "wrong user-wallet pair"
-        }
         return "correct user-wallet pair"
     }
 
