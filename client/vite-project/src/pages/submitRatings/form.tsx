@@ -21,7 +21,7 @@ import { getToken } from '../../utils/utils.ts';
 
 
 //@ts-ignore
-function Form({defiData, getUserData, account}){
+function Form({defiData, getUserData, walletAccount}){
     
     const [q1Score, setQ1Score] = useState<number>(1);
     const [q2Score, setQ2Score] = useState<number>(1);
@@ -39,10 +39,8 @@ function Form({defiData, getUserData, account}){
     const [text3, setText3] = useState<string>("");
     const [text4, setText4] = useState<string>("");
     const [text5, setText5] = useState<string>("");
-    const [user_id, set_uid] = useState<string>("");
     const [referralCode, setReferralCode] = useState<string>("");//self-code
     const [protocolRatings, setProtocolRatings] = useState<ProtocolRatings>({});
-    const [connectWallet, setConnectWallet] = useState<boolean>(false);
     const [valid_token, setValidToken] = useState([]);
 
     let formHandler = new FormHandler()
@@ -63,16 +61,15 @@ function Form({defiData, getUserData, account}){
   // TODO: Refactor
   async function getUserDataWrapped(){
     try{
-      let [cookieAddress, user] = await getUserData()
-      set_uid(cookieAddress)
+      let user = await getUserData()
       if (user){
         setReferralCode(user.referralCode)
         setAddress(user.walletId)
         setProtocolRatings(user.protocolRatings)
         console.log("Your referral", user.referralCode)
       }else{
-        addUser(cookieAddress,  String(address))
-        let [_, user] = await getUserData()
+        addUser(String(address))
+        let user = await getUserData()
         setReferralCode(user.referralCode)
         setAddress(user.walletId)
       }
@@ -81,14 +78,6 @@ function Form({defiData, getUserData, account}){
       console.log("Error from getUserDataWrapped", err)
     }
   }
-
-  useEffect(() => {
-    if (account){
-      setAddress(account);
-      addUser(user_id, account);
-      setConnectWallet(true);
-    }
-  }, [account]);
 
   // sets cookieid for user, and sets referral code, wallet address and protocolratings if user exists
   useEffect(() =>{getUserDataWrapped();}, [])
@@ -106,7 +95,7 @@ function Form({defiData, getUserData, account}){
     
     let scores = [q1Score, q2Score, q3Score, q4Score, q5Score];
     let newRating: Rating = {protocol: protocol, scores: scores, code: influencer};
-    let user: UserIdentity = {cookieId: user_id, walletId: String(address) }
+    let user: UserIdentity = {cookieId: "", walletId: String(address) }
 
 
     try{
@@ -145,13 +134,7 @@ function Form({defiData, getUserData, account}){
     return (
       <div className="flex flex-col justify-center"> 
         <div className="flex flex-col justify-items-stretch poppins">
-          {!connectWallet ?  
-            <div className="poppins mx-auto text-lg mt-5 text-red-500">
-              Connect your wallet first!
-            </div>
-          : null}
-            {connectWallet ? <SearchBar protocol={protocol} defiData={defiData} handleSetProtocol={handleSetProtocol} /> : null}
-
+            <SearchBar protocol={protocol} defiData={defiData} handleSetProtocol={handleSetProtocol} />
             { protocol && (
 
             <div className="bg-gray-900 backdrop-blur-md bg-opacity-50 p-4 rounded-lg mb-4 mx-auto max-w-xl">
@@ -209,7 +192,6 @@ function Form({defiData, getUserData, account}){
 
           <div className="flex flex-col justify-center items-center">
 
-            {connectWallet ? 
               <button
                 className={`relative inline-flex items-center justify-center p-0.5 overflow-hidden text-sm font-medium rounded-lg 
                 group bg-gradient-to-br from-purple-600 to-blue-500 text-white shadow-lg shadow-purple-800/40
@@ -220,7 +202,6 @@ function Form({defiData, getUserData, account}){
                     Submit
                 </span>
               </button>
-            : null}
              
             {errorMessage == 'Successfully added!'? 
               <button type="button" className="mx-auto text-white bg-[#1da1f2] hover:bg-[#1da1f2]/90 focus:ring-4 focus:outline-none font-medium rounded-lg text-md px-5 py-2.5 text-center inline-flex items-center focus:ring-[#1da1f2]/55"
@@ -242,20 +223,18 @@ function Form({defiData, getUserData, account}){
         )}
     </div>
 
-      {connectWallet ? 
-      <>
-        <h3 className="unbounded text-2xl my-5 font-light">
-          Your ratings:
-        </h3>
-        <div className="mx-auto">
-          <SubmissionTable 
-          headings={["Protocol Name", "Contracts", "Treasury", "Roadmap", "Governance", "Team"]}
-          submissions={Object.keys(protocolRatings)}
-          RowGenerator={listUserRatings}
-          /> 
-        </div>
-      </>
-      : null}
+    <>
+      <h3 className="unbounded text-2xl my-5 font-light">
+        Your ratings:
+      </h3>
+      <div className="mx-auto">
+        <SubmissionTable 
+        headings={["Protocol Name", "Contracts", "Treasury", "Roadmap", "Governance", "Team"]}
+        submissions={Object.keys(protocolRatings)}
+        RowGenerator={listUserRatings}
+        /> 
+      </div>
+    </>
   </div>
   )
 }

@@ -10,14 +10,14 @@ describe("Check user cookie", () => {
 
 describe("Check getUserInfo", () => {
     it("Should get user info", async () => {
-        let response = await getUserInfo("your_cookie_id")
+        let response = await getUserInfo("your_wallet_id")
         expect(response.walletId).toBe("your_wallet_id")
     })
 })
 
 describe("add user test", () => {
     it("Should not add existing user", async () => {
-        let response = await addUser("your_cookie_id", "your_wallet_id")
+        let response = await addUser("your_wallet_id")
         expect(response).toBe("correct user-wallet pair")
     })
 })

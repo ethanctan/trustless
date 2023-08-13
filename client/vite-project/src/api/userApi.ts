@@ -4,9 +4,9 @@ import createAxiosInstance from "./axiosConfig";
 const axiosInstance = createAxiosInstance("user")
 
 // Add user to database
-export async function addUser(user_id : string, account : string ) {
+export async function addUser(account : string ) {
     let userInfo: UserIdentity = {
-      cookieId: user_id,
+      cookieId: "",
       walletId: account
     };
   
@@ -20,9 +20,9 @@ export async function addUser(user_id : string, account : string ) {
   }
 
 
-export async function getUserInfo(cookieId: string): Promise<UserInfo> {
+export async function getUserInfo(walletId: string): Promise<UserInfo> {
     try {
-        const response = await axiosInstance.get<UserInfo>(`/getUserInfo/${cookieId}`);
+        const response = await axiosInstance.get<UserInfo>(`/getUserInfo/${walletId}`);
         return response.data;
     } catch (error) {
         console.error('Error getting user ratings:', error);

@@ -33,7 +33,7 @@ class FormHandler {
     }
 
     async getAllOfUsersRatings(user : UserIdentity) : Promise<CheckedResponse<RatingResponse>>{
-        const response1 = await getProtocolRatings(user.cookieId, user.walletId);
+        const response1 = await getProtocolRatings(user.walletId);
         if (response1 != null) 
             return {status : 'success', data: { protocolRatings : response1}}
         
@@ -58,7 +58,6 @@ class FormHandler {
       }
 
       let rating_msg = await this.addUserRating(user, rating)
-      console.log("Rating message", rating_msg)
       let response1 = await this.getAllOfUsersRatings(user)
       if (response1.status == "success"){
         let responseData = response1.data
