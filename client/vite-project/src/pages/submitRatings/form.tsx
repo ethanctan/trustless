@@ -5,7 +5,6 @@ import '@fontsource/poppins';
 import { TextField } from '@mui/material';
 import { UserIdentity } from '../../interfaces/user.ts';
 import { Rating, ProtocolRatings } from '../../interfaces/rating.ts';
-import { addUser } from '../../api/userApi.ts';
 
 import { Question } from '../../components/question.tsx'
 import SearchBar from '../../components/searchBar.tsx';
