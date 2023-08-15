@@ -28,6 +28,7 @@ export async function getUserInfo(walletId: string): Promise<UserInfoResponse> {
         const response = await axiosInstance.get<UserInfo>(`/getUserInfo/${walletId}`);
         return {isFound : true, data : response.data};
     } catch (error) {
+      console.log("Hello")
       return {isFound : false, data : emptyUserInfo}
     }
 }

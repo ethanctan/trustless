@@ -19,7 +19,6 @@ import FormHandler from './formHandler.ts';
 import React from 'react';
 import { getToken } from '../../utils/utils.ts';
 
-
 //@ts-ignore
 function Form({defiData, getUserData, walletAccount}){
     
@@ -30,7 +29,7 @@ function Form({defiData, getUserData, walletAccount}){
     const [q5Score, setQ5Score] = useState<number>(1);
     const [influencer, setInfluencer] = useState<string>(""); //other people's code
 
-    const [address, setAddress] = useState<string | null>(null);
+    const [address, setAccount] = useState<string | null>(null);
     const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
     const [protocol, setProtocol] = useState<string>("");
@@ -58,26 +57,35 @@ function Form({defiData, getUserData, walletAccount}){
   }
 
 
-  // TODO: Refactor
-  async function getUserDataWrapped(){
-    try{
-      let user = await getUserData()
-      if (user){
-        setReferralCode(user.referralCode)
-        setAddress(user.walletId)
-        setProtocolRatings(user.protocolRatings)
-        console.log("Your referral", user.referralCode)
-      }else{
-        addUser(String(address))
-        let user = await getUserData()
-        setReferralCode(user.referralCode)
-        setAddress(user.walletId)
-      }
-      
-    }catch(err){
-      console.log("Error from getUserDataWrapped", err)
-    }
+  async function getUserDataWrapped() {
+    console.log("Wallet account", walletAccount)
+    let user = await getUserData(walletAccount);
+    setReferralCode(user.referralCode)
+    setAccount(user.walletId)
   }
+
+
+  // // TODO: Refactor
+  // async function getUserDataWrapped(){
+  //   try{
+  //     let user = await getUserData()
+  //     if (user){
+  //       setReferralCode(user.referralCode)
+  //       setAccount(user.walletId)
+  //       setProtocolRatings(user.protocolRatings)
+  //       console.log("Your referral", user.referralCode)
+  //     }else{
+  //       await addUser(String(address))
+  //       let user = await getUserData()
+  //       console.log("User", user)
+  //       setReferralCode(user.referralCode)
+  //       setAccount(user.walletId)
+  //     }
+      
+  //   }catch(err){
+  //     console.log("Error from getUserDataWrapped", err)
+  //   }
+  // }
 
   // sets cookieid for user, and sets referral code, wallet address and protocolratings if user exists
   useEffect(() =>{getUserDataWrapped();}, [])

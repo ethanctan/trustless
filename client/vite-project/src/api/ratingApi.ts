@@ -24,6 +24,7 @@ interface RatingWithoutProtocol {
 }
 
 async function getRating(user : UserIdentity, protocol : string): Promise<RatingWithoutProtocol>{
+    console.log("User", user)
     const userRating = await 
         axiosInstance.get<RatingWithoutProtocol>(`/${user.walletId}/${protocol}`);
     return userRating.data

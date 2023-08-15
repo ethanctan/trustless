@@ -6,6 +6,7 @@ import { DefiData } from '../../utils/interfaces.ts'
 import Axios from 'axios';
 import FormHandler from './formHandler.ts';
 import { addUser } from '../../api/userApi.ts';
+import { emptyUserInfo } from '../../interfaces/user.ts';
 
 
 interface UserWalletAccount {
@@ -32,22 +33,30 @@ function FormController({account} : UserWalletAccount){
     });
     }, [])
 
-    async function getUserData(){
-        let user = null
-        if (account){
-            user = await getUserInfo(account)
-            if (user.isFound == false){
-                return null
+    async function getUserData(walletAccount : string){
+        let user = await getUserInfo(walletAccount)
+        return user.data
+    }
+
+    async function getUserDataSafe(walletAccount : string){
+        try{
+            let user = await getUserInfo(walletAccount)
+            if (user.isFound == true){
+                return user
             }
+            await addUser(walletAccount)
+            return user
+        }catch(err){
+            console.log("Error from getUserDataWrapped", err)
+            return emptyUserInfo
         }
-        return user
     }
 
   return (
     connectWallet ? 
     <Form 
         defiData={defiData}
-        getUserData={getUserData}
+        getUserData={getUserDataSafe}
         walletAccount={account}
     /> : <ConnectWallet/>
   )
