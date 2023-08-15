@@ -1,10 +1,9 @@
-import { ethers } from 'ethers';
 import { useEffect, useState} from 'react';
 import { ConnectWallet, useAddress, useSigner } from "@thirdweb-dev/react";
-import { getProvider, getContract } from '../utils/ethers';
 import { INavbar } from '../utils/components';
 import NavlinkComponent from "./navlink";
 import TooltipComponent from "./tooltip";
+import ThirdWebAuth from './thirdwebAuth';
 
 
 export default function Navbar({ passAccount, passContracts, passProvider, pendingState} : INavbar) {
@@ -14,32 +13,22 @@ export default function Navbar({ passAccount, passContracts, passProvider, pendi
 
   let thirdwebAddress = useAddress();
   let thirdwebSigner = useSigner(); 
-
+  
   useEffect(() => {
     async function fetchData() {
       if (thirdwebAddress && thirdwebSigner) {
-        
-        // Set provider
-        const provider = await getProvider();
-        // Get contracts
-        const contractsTemp = await getContract(thirdwebSigner);
-  
-        // Checks
-        const transactionCount = await provider.getTransactionCount(thirdwebAddress);
-        console.log("Transaction Count: ", transactionCount)
-        const ethBalance = (await provider.getBalance(thirdwebAddress)).toString();
-        console.log("Eth Balance: ", ethBalance)
-
-        // Setup
-        if (transactionCount >= 10 && Number(ethBalance) >= 10) {
-          passAccount(thirdwebAddress);
-          passContracts(contractsTemp);
-          passProvider(provider);
-          setSetup(true);
+        const provider = await ThirdWebAuth.getProvider()
+        let thirdWebAuth = new ThirdWebAuth(thirdwebAddress, thirdwebSigner, provider)
+        let response = await thirdWebAuth.authorizeTransaction(0, 0)
+        if ((response).status == false){
+          setWalletReject(response.message);
+          setSetup(false)
+          return 
         }
-        else {
-          setWalletReject("Wallet does not meet requirements");
-        }
+        passAccount(thirdwebAddress);
+        passContracts(response.contracts);
+        passProvider(thirdWebAuth.provider);
+        setSetup(true);
       }
     }
   
