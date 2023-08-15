@@ -57,36 +57,12 @@ function Form({defiData, getUserData, walletAccount}){
     setText5("How strong is the track record of " + protocol + "'s team? If they're doxxed, do they have strong credentials and experience? If undoxxed, do they have a good reputation and history?");
   }
 
-
   async function getUserDataWrapped() {
     console.log("Wallet account", walletAccount)
     let user = await getUserData(walletAccount);
-    setReferralCode(user.referralCode)
-    setAccount(user.walletId)
+    setReferralCode(user.data.referralCode)
+    setAccount(user.data.walletId)
   }
-
-
-  // // TODO: Refactor
-  // async function getUserDataWrapped(){
-  //   try{
-  //     let user = await getUserData()
-  //     if (user){
-  //       setReferralCode(user.referralCode)
-  //       setAccount(user.walletId)
-  //       setProtocolRatings(user.protocolRatings)
-  //       console.log("Your referral", user.referralCode)
-  //     }else{
-  //       await addUser(String(address))
-  //       let user = await getUserData()
-  //       console.log("User", user)
-  //       setReferralCode(user.referralCode)
-  //       setAccount(user.walletId)
-  //     }
-      
-  //   }catch(err){
-  //     console.log("Error from getUserDataWrapped", err)
-  //   }
-  // }
 
   // sets cookieid for user, and sets referral code, wallet address and protocolratings if user exists
   useEffect(() =>{getUserDataWrapped();}, [])

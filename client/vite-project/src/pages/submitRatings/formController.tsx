@@ -33,14 +33,10 @@ function FormController({account} : UserWalletAccount){
     });
     }, [])
 
-    async function getUserData(walletAccount : string){
-        let user = await getUserInfo(walletAccount)
-        return user.data
-    }
-
     async function getUserDataSafe(walletAccount : string){
         try{
             let user = await getUserInfo(walletAccount)
+            console.log("user", user)
             if (user.isFound == true){
                 return user
             }

@@ -51,9 +51,9 @@ router.post("/", async (req: Request, res: Response) => {
 });
 
 
-router.get("/getUserInfo/:cookieId", async (req: Request, res: Response) => {
-    const { cookieId } = req.params;
-    let response = await userController.handleGetUserInfo(cookieId)
+router.get("/getUserInfo/:walletId", async (req: Request, res: Response) => {
+    const { walletId } = req.params;
+    let response = await userController.handleGetUserInfo(walletId)
     res.status(response.status).json(response.message)
 });
 

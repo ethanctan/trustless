@@ -33,20 +33,21 @@ export default class UserController{
         return "correct user-wallet pair"
     }
 
-    async handleGetUserInfo(cookieId : string) {
-        let user = await this.getUserInfo(cookieId)
+    // Edit: changed to walletId
+    async handleGetUserInfo( walletId : string) {
+        let user = await this.getUserInfo(walletId)
         if (user.isNull()) return {status: 404, 
                                 message: { message: user.getErrorMessage() }}
         return {status: 200, message: user.getUserObject()}
     }
 
     /**
-     * Gets a user based on userId. Returns user object and success message
+     * Gets a user based on walletId. Returns user object and success message
      * if found and returns only message otherwise
-     * @param cookieId 
+     * @param walletId 
      */
-    async getUserInfo(cookieId : string) : Promise<User> {
-        let user = await UserModel.findOne({ cookieId: cookieId})
+    async getUserInfo(walletId : string) : Promise<User> {
+        let user = await UserModel.findOne({ walletId: walletId})
         if (!user){
             return new NullUser("User not found")
         }

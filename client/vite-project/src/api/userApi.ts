@@ -12,6 +12,7 @@ export async function addUser(account : string ) {
   
     try {
       const response = await axiosInstance.post('', userInfo);
+      console.log("adduser response", response.data.message)
       return response.data.message
     } catch (error) {
       console.error('Error adding user:', error);
