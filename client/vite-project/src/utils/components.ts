@@ -69,6 +69,11 @@ export interface ITooltipComponent {
     title: string;
 }
 
+export interface IPendingCheck {
+    txHash: string;
+    provider : ethers.providers.JsonRpcProvider
+}
+
 
 
 

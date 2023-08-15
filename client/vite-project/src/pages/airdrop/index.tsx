@@ -1,9 +1,9 @@
 import {useEffect, useState} from 'react';
 import { ethers } from 'ethers';
-import { encodeConstructorParamsForImplementation } from '@thirdweb-dev/sdk';
+import pendingCheck from '../../components/pendingCheck';
 
 //@ts-ignore
-export default function Airdrop({account , contracts, balance, epoch}){
+export default function Airdrop({account , contracts, balance, epoch, provider, passPendingState}){
     const admin = "0x8066221588691155A7594291273F417fa4de3CAe"
     const [airdropAccount, setStakeAccount] = useState(""); // retrieve global address variable
     const [globalContracts, setGlobalContracts] = useState<{trust: ethers.Contract, trustStaking: ethers.Contract, trustStakingHelper: ethers.Contract} | null>(null); // retrieve global contracts variable
@@ -30,8 +30,12 @@ export default function Airdrop({account , contracts, balance, epoch}){
     const insertReward = async () => {
         if (globalContracts && airdropAccount) {
             try {
+                passPendingState(true)
                 const tx = await globalContracts.trustStaking.insertAirdrop(accountToBeRewarded, rewardTemp, Number(epoch));
-                console.log("Insert Successful", tx);
+                //wait for transaction to finish mining
+                await pendingCheck({txHash: tx.hash, provider: provider})
+                //update paramters
+                passPendingState(false)
                 setReward((await contracts.trustStaking.viewAirdrop(Number(epoch))).toString());
             } catch (error) {
                 console.log(error);
@@ -41,10 +45,13 @@ export default function Airdrop({account , contracts, balance, epoch}){
     const claim = async () => {
         if (globalContracts && airdropAccount) {
             try {
+                passPendingState(true)
                 const tx = await globalContracts.trustStaking.claimAirdrop(Number(epoch));
-                console.log("Claim Successful", tx);
+                //wait for transaction to finish mining
+                await pendingCheck({txHash: tx.hash, provider: provider})
+                //update paramters
+                passPendingState(false)
                 setReward((await contracts.trustStaking.viewAirdrop(Number(epoch))).toString());
-                //update balance
                 setTrustBalance((await contracts.trust.balanceOf(account)).toString());
             } catch (error) {
                 console.log(error);

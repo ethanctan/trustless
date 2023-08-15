@@ -1,5 +1,6 @@
 import {useEffect, useState} from 'react';
 import { ethers } from 'ethers';
+import pendingCheck from '../../components/pendingCheck';
 
 //@ts-ignore
 export default function Stake({account , contracts, balance, epoch, provider, passPendingState}){
@@ -33,13 +34,7 @@ export default function Stake({account , contracts, balance, epoch, provider, pa
                 passPendingState(true);
                 const tx = await globalContracts.trust.approve(globalContracts.trustStakingHelper.address, 100000000000)
                 //wait for transaction to finish mining
-                let receipt = await provider.getTransactionReceipt(tx.hash);
-                while (receipt === null) {
-                    await new Promise(resolve => setTimeout(resolve, 1000))
-                    receipt = await provider.getTransactionReceipt(tx.hash) 
-                    console.log("checking receipt:", receipt)
-                  }
-                console.log("mining done")
+                await pendingCheck({txHash: tx.hash, provider: provider})
                 //update paramters
                 passPendingState(false)
                 setApproved(true);
@@ -53,16 +48,10 @@ export default function Stake({account , contracts, balance, epoch, provider, pa
             try {
                 passPendingState(true);
                 const tx = await globalContracts.trustStakingHelper.stake(stakeAmount);
-                // wait for transaction to finish mining
-                let receipt = await provider.getTransactionReceipt(tx.hash);
-                while (receipt === null) {
-                    await new Promise(resolve => setTimeout(resolve, 1000))
-                    receipt = await provider.getTransactionReceipt(tx.hash) 
-                    console.log("checking receipt:", receipt)
-                  }
-                console.log("mining done")
-                passPendingState(false)
+                //wait for transaction to finish mining
+                await pendingCheck({txHash: tx.hash, provider: provider})
                 //update params
+                passPendingState(false)
                 setTotalStaked((await contracts.trust.balanceOf(contracts.trustStakingHelper.address)).toString());
                 setTrustBalance((await contracts.trust.balanceOf(stakeAccount)).toString());
                 setMinStake((await contracts.trustStakingHelper.minStake()).toString());
@@ -81,14 +70,8 @@ export default function Stake({account , contracts, balance, epoch, provider, pa
             try {
                 passPendingState(true);
                 const tx = await globalContracts.trustStakingHelper.withdraw();
-                //wait for transaction to finish pending
-                let receipt = await provider.getTransactionReceipt(tx.hash);
-                while (receipt === null) {
-                    await new Promise(resolve => setTimeout(resolve, 1000))
-                    receipt = await provider.getTransactionReceipt(tx.hash) 
-                    console.log("checking receipt:", receipt)
-                  }
-                console.log("mining done")
+                //wait for transaction to finish mining
+                await pendingCheck({txHash: tx.hash, provider: provider})
                 //set params
                 passPendingState(false)
                 setTotalStaked((await contracts.trust.balanceOf(contracts.trustStakingHelper.address)).toString());
@@ -102,8 +85,13 @@ export default function Stake({account , contracts, balance, epoch, provider, pa
     const handleEpochStart = async () => {
         if (globalContracts && stakeAccount) {
             try {
+                passPendingState(true)
                 const tx = await globalContracts.trustStakingHelper.transferStake();
-                console.log("Epoch Start Successful", tx);
+                //wait for transaction to finish mining
+                await pendingCheck({txHash: tx.hash, provider: provider})
+                //print done
+                console.log("New epoch started")
+                passPendingState(false)
             }
             catch (error) {
                 console.log(error);
@@ -195,7 +183,7 @@ export default function Stake({account , contracts, balance, epoch, provider, pa
 
                     <span className="relative inline-flex h-full">
                         <button
-                        onClick={unstake} //DOUG TODO: Add unstaking function
+                        onClick={unstake} 
                         className="relative h-full inline-flex items-center justify-center p-0.5 overflow-hidden text-sm font-medium rounded-lg group bg-gradient-to-br from-purple-600 to-blue-500 text-white shadow-lg shadow-purple-800/40"
                         >
                         <span className="relative h-full px-5 py-3 transition-all ease-in duration-75 bg-slate-900 rounded-md group-hover:bg-opacity-0">
