@@ -32,16 +32,13 @@ function FormController({account} : UserWalletAccount){
     });
     }, [])
 
-    //What error should I throw here
-    async function getUser(cookieAddr : string){
-        const response = await getUserInfo(cookieAddr)
-        return response
-    }
-
     async function getUserData(){
         let user = null
         if (account){
-            user = await getUser(account)
+            user = await getUserInfo(account)
+            if (user.isFound == false){
+                return null
+            }
         }
         return user
     }

@@ -1,4 +1,4 @@
-import { UserIdentity, UserInfo } from "../interfaces/user";
+import { UserIdentity, UserInfo, emptyUserInfo } from "../interfaces/user";
 import createAxiosInstance from "./axiosConfig";
 
 const axiosInstance = createAxiosInstance("user")
@@ -19,14 +19,16 @@ export async function addUser(account : string ) {
     }
   }
 
+interface UserInfoResponse { 
+  isFound : boolean, data : UserInfo
+}
 
-export async function getUserInfo(walletId: string): Promise<UserInfo> {
+export async function getUserInfo(walletId: string): Promise<UserInfoResponse> {
     try {
         const response = await axiosInstance.get<UserInfo>(`/getUserInfo/${walletId}`);
-        return response.data;
+        return {isFound : true, data : response.data};
     } catch (error) {
-        console.error('Error getting user ratings:', error);
-        throw error;
+      return {isFound : false, data : emptyUserInfo}
     }
 }
 
