@@ -61,6 +61,7 @@ function Form({defiData, getUserData, walletAccount}){
     let user = await getUserData(walletAccount);
     setReferralCode(user.data.referralCode)
     setAccount(user.data.walletId)
+    setProtocolRatings(user.data.protocolRatings)
   }
 
   // sets cookieid for user, and sets referral code, wallet address and protocolratings if user exists
@@ -83,6 +84,8 @@ function Form({defiData, getUserData, walletAccount}){
 
 
     try{
+
+      console.log("submitting")
       let submissionResponse = await formHandler.handleUserSubmission(user, newRating)
       console.log("Ratings: ", submissionResponse)
       if (submissionResponse.status == "success"){
@@ -128,7 +131,7 @@ function Form({defiData, getUserData, walletAccount}){
             </div>
             <div className="grid grid-cols-1 md:grid-cols-8 gap-4 py-4">
             { 
-              !cex.includes(protocol) && !Bridge.includes(protocol) ? (
+              !cex.includes(protocol) ? (
                 <>
                   <Question questionScore={q1Score} setScore={setQ1Score} text={text1} title="Contracts" />
                   <Question questionScore={q2Score} setScore={setQ2Score} text={text2} title="Treasury" />
@@ -137,15 +140,7 @@ function Form({defiData, getUserData, walletAccount}){
                   <Question questionScore={q5Score} setScore={setQ5Score} text={text5} title="Team" />
                 </>
               ) : (
-                <>
-                  {
-                    Bridge.includes(protocol) ? (
-                      <span> Bridge Questions </span> // Ethan TODO: Add CEX questions
-                    ) : (
-                      <span> CEX Questions </span> // Ethan TODO: Add CEX questions
-                    )
-                  }
-                </>
+                <span> CEX Questions </span> // Ethan TODO: Add CEX questions
               )
             }
 

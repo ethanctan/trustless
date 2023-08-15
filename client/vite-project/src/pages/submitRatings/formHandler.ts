@@ -22,6 +22,9 @@ type RatingResponse = {protocolRatings : ProtocolRatings}
 class FormHandler {
 
     async addUserRating(user : UserIdentity, newRating : Rating){
+        console.log("adding rating")
+        console.log("user", user)
+        console.log("newRating", newRating)
         try{
             await addRating(user, newRating);
             return "Successfully added!"
@@ -45,7 +48,7 @@ class FormHandler {
     }    
 
     async handleUserSubmission(user : UserIdentity, rating : Rating): Promise<CheckedResponse<SubmissionResponse>>{ 
-      
+        console.log("handleUserSubmission")
         let preconditionSatisfied = await this.checkSubmissionPreConditions(user, rating)
         if (preconditionSatisfied.status == "error"){
             return preconditionSatisfied
@@ -56,8 +59,9 @@ class FormHandler {
           let userReferral:UserReferral = { protocol:rating.protocol }
           await addReferral(rating["code"], user.walletId, userReferral);
       }
-
+      console.log("adding user rating")
       let rating_msg = await this.addUserRating(user, rating)
+      console.log("rating_msg", rating_msg)
       let response1 = await this.getAllOfUsersRatings(user)
       if (response1.status == "success"){
         let responseData = response1.data
@@ -72,6 +76,7 @@ class FormHandler {
 
     private async checkSubmissionPreConditions(user : UserIdentity, rating : Rating) : 
         Promise<CheckedResponse<string>>{
+        console.log("checkSubmissionPreConditions")
         const influencerExists = await checkReferralCodeExists(rating["code"]); //check if influencer exists
         if (!influencerExists){
             return this.createError("Influencer does not exist. Try again or leave blank!")

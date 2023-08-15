@@ -12,6 +12,7 @@ async function postRating(user : UserIdentity, rating : Rating){
             rating: scoreAndCode,
             protocolName: rating.protocol
           });
+        console.log("response:", response.data.message)
         return response.data.message
     }catch(err){
         console.log("error:",err)
@@ -24,7 +25,7 @@ interface RatingWithoutProtocol {
 }
 
 async function getRating(user : UserIdentity, protocol : string): Promise<RatingWithoutProtocol>{
-    console.log("User", user)
+    console.log("getting rating")
     const userRating = await 
         axiosInstance.get<RatingWithoutProtocol>(`/${user.walletId}/${protocol}`);
     return userRating.data

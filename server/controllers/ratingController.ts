@@ -19,13 +19,12 @@ export default class RatingController{
      * Adds rating to the database for a user. If user already has rating, 
      * update it instead. Returns a success/failure message
      * If user doesn't exist, then return error
-     * @param userIdentity Object with fields {cookieId, walletId } both of @type string
+     * @param userIdentity Object with fields { walletId } both of @type string
      * @param rating Rating object
      * @param protocol Protocol
      */
     async upsertRating(userIdentity : object, rating : Rating, protocol : string){
         const user = await UserModel.findOne({ 
-            cookieId: userIdentity["cookieId"], 
             walletId: userIdentity["walletId"] 
         });
         if (!user) 
@@ -43,8 +42,8 @@ export default class RatingController{
         return "rating added"
     }
 
-    async handleGetRating(cookieId : string, walletId : string, protocolName : string) {
-        let rating = await this.getUserRating(cookieId, walletId, protocolName)
+    async handleGetRating(walletId : string, protocolName : string) {
+        let rating = await this.getUserRating(walletId, protocolName)
         if (rating.status == 'error') return {status : 404, message: {message : rating.error}}
         
 
@@ -66,10 +65,9 @@ export default class RatingController{
      * Gets user rating from database. Returns 
      * nullRating user or rating isn't found
      */
-   async getUserRating(cookieId : string, 
-    walletId : string, protocolName : string) : Promise<CheckedRatingResponse>{
+   async getUserRating(walletId : string, protocolName : string) : Promise<CheckedRatingResponse>{
         const user = await UserModel.findOne(
-            { cookieId: cookieId, walletId: walletId });
+            { walletId: walletId });
         if (!user){
             return this.createErrorMessage("User not found")
         }
@@ -79,9 +77,9 @@ export default class RatingController{
         return this.createSuccessMessage(Rating.fromIRating(rating))
     }
 
-    async handleGetAllRatings(cookieId : string, walletId : string){
+    async handleGetAllRatings(walletId : string){
        let user = await UserModel.findOne(
-        { cookieId: cookieId, walletId: walletId });
+        { walletId: walletId });
         if (!user ) return {status: 404, message: 
                         {message : 'User not found'}}
         return {status : 200, message : user.protocolRatings}
