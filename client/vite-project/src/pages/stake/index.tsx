@@ -2,7 +2,7 @@ import {useEffect, useState} from 'react';
 import { ethers } from 'ethers';
 
 //@ts-ignore
-export default function Stake({account , contracts, balance, epoch}){
+export default function Stake({account , contracts, balance, epoch, passPendingState}){
     const admin = "0x8066221588691155A7594291273F417fa4de3CAe"
     const [stakeAccount, setStakeAccount] = useState(""); // retrieve global address variable
     const [globalContracts, setGlobalContracts] = useState<{trust: ethers.Contract, trustStaking: ethers.Contract, trustStakingHelper: ethers.Contract} | null>(null); // retrieve global contracts variable
@@ -12,7 +12,9 @@ export default function Stake({account , contracts, balance, epoch}){
     const [stakeAmount, setStakeAmount] = useState(0);
     const [totalStaked, setTotalStaked] = useState("");
     const [minStake, setMinStake] = useState("");
-    const [totalStakedByUser, setTotalStakedByUser] = useState(""); // DOUG TODO: Add function to get total $TRUST staked by user
+    const [totalStakedByUser, setTotalStakedByUser] = useState(""); 
+
+    const [isPending, setIsPending] = useState(false);
 
     useEffect(() => {
         async function setupContracts() {
@@ -30,9 +32,11 @@ export default function Stake({account , contracts, balance, epoch}){
     const approve = async () => {
         if (globalContracts && stakeAccount) {
             try {
+                passPendingState(true);
                 const tx = await globalContracts.trust.approve(globalContracts.trustStakingHelper.address, 100000000000)
                 console.log("Approve Successful", tx);
                 setApproved(true);
+                passPendingState(false);
             } catch (error) {
                 console.log(error);
             }
@@ -41,12 +45,14 @@ export default function Stake({account , contracts, balance, epoch}){
     const stake = async () => {
         if (globalContracts && stakeAccount) {
             try {
+                passPendingState(true);
                 const tx = await globalContracts.trustStakingHelper.stake(stakeAmount);
                 setTotalStaked((await contracts.trust.balanceOf(contracts.trustStakingHelper.address)).toString());
                 //update params
                 setTrustBalance((await contracts.trust.balanceOf(stakeAccount)).toString());
                 setMinStake((await contracts.trustStakingHelper.minStake()).toString());
                 setTotalStakedByUser((await contracts.trustStakingHelper.viewStake()).toString());
+                passPendingState(false);
                 console.log("Staking Successful", tx);
             } catch (error) {
                 console.log(error);
@@ -60,12 +66,14 @@ export default function Stake({account , contracts, balance, epoch}){
     const unstake = async () => {
         if (globalContracts && stakeAccount) {
             try {
+                passPendingState(true);
                 const tx = await globalContracts.trustStakingHelper.withdraw();
                 console.log("Unstaking Successful", tx);
                 //set params
                 setTotalStaked((await contracts.trust.balanceOf(contracts.trustStakingHelper.address)).toString());
                 setTotalStakedByUser((await contracts.trustStakingHelper.viewStake()).toString());
                 setTrustBalance((await contracts.trust.balanceOf(stakeAccount)).toString());
+                passPendingState(false);
             } catch (error) {
                 console.log(error);
             }

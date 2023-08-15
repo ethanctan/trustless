@@ -16,6 +16,7 @@ function App() {
   const [contracts, setContracts] = useState<{trust: ethers.Contract, trustStaking: ethers.Contract, trustStakingHelper: ethers.Contract} | null>(null); //global contracts variable
   const [walletInfo, setWalletInfo] = useState<{balance: string, epoch: string} | null>(null);
   const [epoch, setEpoch] = useState("");
+  const [pendingState, setPendingState] = useState(false);
 
   const passAccount = (account: string) => {
     setAccount(account);
@@ -25,6 +26,12 @@ function App() {
   const passContracts = (contracts: {trust: ethers.Contract, trustStaking: ethers.Contract, trustStakingHelper: ethers.Contract}) => {
     setContracts(contracts);
     console.log("global contracts set: " + contracts.trust.address + " " + contracts.trustStaking.address +  " " + contracts.trustStakingHelper.address);
+  }
+
+  // set pending state for all transactions
+  const passPendingState = (isPending: boolean) => {
+    setPendingState(isPending);
+    console.log("global pending state set: " + isPending);
   }
 
   // add params here as needed 
@@ -52,12 +59,12 @@ function App() {
   //currently, any transactions can only be reflected after a manuel refresh, need events to update in real time. Also need error handling. 
   return (
     <>
-      <Navbar passAccount={passAccount} passContracts={passContracts}/>
+      <Navbar passAccount={passAccount} passContracts={passContracts} pendingState={pendingState}/>
       <div className="container mx-auto pt-24">
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/airdrop" element={<Airdrop account={account} contracts={contracts} balance={walletInfo?.balance} epoch={walletInfo?.epoch}/>} />
-          <Route path="/stake" element={<Stake account={account} contracts={contracts} balance={walletInfo?.balance} epoch={walletInfo?.epoch} />} />
+          <Route path="/stake" element={<Stake passPendingState={passPendingState} account={account} contracts={contracts} balance={walletInfo?.balance} epoch={walletInfo?.epoch} />} />
           <Route path="/mechanics" element={<Mechanics />} />
           <Route path="/submitRatings" element={<SubmitRating account={account}/>} />
           <Route path="/viewRatings" element={<ViewRatings />} />

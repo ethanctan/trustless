@@ -7,7 +7,7 @@ import NavlinkComponent from "./navlink";
 import TooltipComponent from "./tooltip";
 
 
-export default function Navbar({ passAccount, passContracts} : INavbar) {
+export default function Navbar({ passAccount, passContracts, pendingState} : INavbar) {
   
   const [provider, setProvider] = useState<ethers.providers.JsonRpcProvider | null>(null);
   const [signer, setSigner] = useState< ethers.Signer | null>(null);
@@ -52,30 +52,6 @@ export default function Navbar({ passAccount, passContracts} : INavbar) {
     fetchData();
   }, [thirdwebAddress, thirdwebSigner]);
 
-  const [isTransactionPending, setIsTransactionPending] = useState(false);
-
-  //function to detect pending transactions
-  useEffect(() => {
-    const updateTransactionCounts = async () => {
-      if (thirdwebAddress && thirdwebSigner) {
-        const provider = await getProvider();
-        const confirmedCount = await provider.getTransactionCount(thirdwebAddress);
-        const pendingCount = await provider.getTransactionCount(thirdwebAddress, 'pending');
-        console.log("confirm count = pendingcount", confirmedCount == pendingCount)
-        setIsTransactionPending(!(confirmedCount == pendingCount));
-      } 
-    };
-    
-    // Call the function immediately on mount
-    updateTransactionCounts();
-    
-    // Set up a polling mechanism to keep checking every few seconds
-    const interval = setInterval(updateTransactionCounts, 500); // 5 seconds, adjust as needed
-    
-    // Cleanup: clear the interval when the component is unmounted
-    return () => clearInterval(interval);
-  }, [thirdwebAddress, thirdwebSigner]);
-
   return (
     <nav className="fixed top-0 left-0 right-0 w-full py-2 z-50 bg-slate-800/60 backdrop-blur-lg poppins flex flex-row ">
       <ul className="flex items-center justify-start space-x-8 px-8 py-2">
@@ -94,14 +70,14 @@ export default function Navbar({ passAccount, passContracts} : INavbar) {
       </ul>
 
       <div className="ml-auto flex items-center justify-end px-8 py-2">
-        {!isTransactionPending ? 
+        {pendingState ? 
+          <text> Pending</text> :
           <>
           <ConnectWallet
             className="connect-wallet"
           />
           {walletReject && <div className="text-red-500 text-sm">{walletReject}</div>} 
-          </> :
-          <text>pending</text>
+          </> 
         }
       </div>
 
