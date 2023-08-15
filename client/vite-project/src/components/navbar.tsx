@@ -7,10 +7,8 @@ import NavlinkComponent from "./navlink";
 import TooltipComponent from "./tooltip";
 
 
-export default function Navbar({ passAccount, passContracts, pendingState} : INavbar) {
+export default function Navbar({ passAccount, passContracts, passProvider, pendingState} : INavbar) {
   
-  const [provider, setProvider] = useState<ethers.providers.JsonRpcProvider | null>(null);
-  const [signer, setSigner] = useState< ethers.Signer | null>(null);
   const [setup, setSetup] = useState(false);
   const [walletReject, setWalletReject] = useState("");
 
@@ -20,14 +18,9 @@ export default function Navbar({ passAccount, passContracts, pendingState} : INa
   useEffect(() => {
     async function fetchData() {
       if (thirdwebAddress && thirdwebSigner) {
-        //get provider for balance checking later
-        const provider = await getProvider(); 
         
-        // Set Thirdweb signer
-        setSigner(thirdwebSigner);
-        console.log("Signer: ", thirdwebSigner);
-        console.log("Address: ", thirdwebAddress);
-        
+        // Set provider
+        const provider = await getProvider();
         // Get contracts
         const contractsTemp = await getContract(thirdwebSigner);
   
@@ -41,6 +34,7 @@ export default function Navbar({ passAccount, passContracts, pendingState} : INa
         if (transactionCount >= 10 && Number(ethBalance) >= 10) {
           passAccount(thirdwebAddress);
           passContracts(contractsTemp);
+          passProvider(provider);
           setSetup(true);
         }
         else {
@@ -71,7 +65,7 @@ export default function Navbar({ passAccount, passContracts, pendingState} : INa
 
       <div className="ml-auto flex items-center justify-end px-8 py-2">
         {pendingState ? 
-          <text> Pending</text> :
+          <div><text>pending</text></div> :
           <>
           <ConnectWallet
             className="connect-wallet"

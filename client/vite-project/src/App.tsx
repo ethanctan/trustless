@@ -13,6 +13,7 @@ import Axios from "axios";
 
 function App() {
   const [account, setAccount] = useState(""); // global address variable
+  const [provider, setProvider] = useState<ethers.providers.JsonRpcProvider | null>(null); //global provider variable
   const [contracts, setContracts] = useState<{trust: ethers.Contract, trustStaking: ethers.Contract, trustStakingHelper: ethers.Contract} | null>(null); //global contracts variable
   const [walletInfo, setWalletInfo] = useState<{balance: string, epoch: string} | null>(null);
   const [epoch, setEpoch] = useState("");
@@ -32,6 +33,11 @@ function App() {
   const passPendingState = (isPending: boolean) => {
     setPendingState(isPending);
     console.log("global pending state set: " + isPending);
+  }
+
+  const passProvider = (provider: ethers.providers.JsonRpcProvider) => {
+    setProvider(provider);
+    console.log("global provider set: " + provider);
   }
 
   // add params here as needed 
@@ -59,12 +65,12 @@ function App() {
   //currently, any transactions can only be reflected after a manuel refresh, need events to update in real time. Also need error handling. 
   return (
     <>
-      <Navbar passAccount={passAccount} passContracts={passContracts} pendingState={pendingState}/>
+      <Navbar passAccount={passAccount} passContracts={passContracts} pendingState={pendingState} passProvider={passProvider}/>
       <div className="container mx-auto pt-24">
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/airdrop" element={<Airdrop account={account} contracts={contracts} balance={walletInfo?.balance} epoch={walletInfo?.epoch}/>} />
-          <Route path="/stake" element={<Stake passPendingState={passPendingState} account={account} contracts={contracts} balance={walletInfo?.balance} epoch={walletInfo?.epoch} />} />
+          <Route path="/stake" element={<Stake passPendingState={passPendingState} account={account} contracts={contracts} balance={walletInfo?.balance} epoch={walletInfo?.epoch} provider={provider} />} />
           <Route path="/mechanics" element={<Mechanics />} />
           <Route path="/submitRatings" element={<SubmitRating account={account}/>} />
           <Route path="/viewRatings" element={<ViewRatings />} />
