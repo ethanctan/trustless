@@ -150,7 +150,7 @@ export default function Stake({account , contracts, balance, epoch, provider, pa
                     value={stakeAmount}
                     onChange={handleInputChange}
                     placeholder="Stake amount..."
-                    className="border border-slate-700 w-full h-full flex-1 px-4 py-full bg-gray-900 hover:border-white transition-all duration-100 rounded-l-lg bg-transparent border border-transparent group focus:border-transparent focus:outline-none"
+                    className="border-slate-500 border-2 w-full h-full flex-1 px-4 py-full bg-gray-900 hover:border-white transition-all duration-100 rounded-l-lg bg-transparent border border-transparent group"
                     />
 
                     <span className="relative inline-flex h-full">
