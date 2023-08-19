@@ -85,6 +85,7 @@ class FormHandler {
             return this.createError("Wallet not connected. Try again!")
         }
         //Check user has not already submitted rating
+        console.log("rating.protocol", rating.protocol)
         let resp = await getRating(user, rating.protocol)
         if (resp.isFound){return this.createError("You have already rated this protocol!")}
 

@@ -34,7 +34,7 @@ export default class UserController{
     }
 
     // Edit: changed to walletId
-    async handleGetUserInfo( walletId : string) {
+    async handleGetUserInfo(walletId : string) {
         let user = await this.getUserInfo(walletId)
         if (user.isNull()) return {status: 404, 
                                 message: { message: user.getErrorMessage() }}
@@ -52,6 +52,19 @@ export default class UserController{
             return new NullUser("User not found")
         }
         let ret = User.createUserFromDocument(user)
+        return ret
+    }
+
+    /**
+     * @returns list of all valid user addresses
+     */
+    async getAllUsers() : Promise<String[]> {
+        let users = await UserModel.find({})
+        let ret = users.map((user : any) => User.createUserFromDocument(user).walletId)
+
+        // Filter out strings that do not have a length of 42 characters
+        ret = ret.filter((walletId: string) => walletId.length === 42);
+        
         return ret
     }
 

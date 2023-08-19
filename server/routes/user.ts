@@ -68,6 +68,14 @@ router.get("/check/:cookieId", async (req, res) => {
     res.json(response)
   });
 
+/**
+ * GET request to get all user address
+ * @returns list of all user addresses
+ */
+router.get("/getAllUserAddresses", async (req, res) => {
+    let response = await userController.getAllUsers()
+    res.json(response)
+});
 
 export default router;
 
