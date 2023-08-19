@@ -2,7 +2,7 @@ function Instructions(){
 
   return (
     
-    <div className="bg-gradient-to-t from-slate-500/30 to-gray-700/30 flex text-zinc-300 flex-col items-center w-2/3 rounded-3xl backdrop-filter backdrop-blur-md p-7 ml-5 mb-5 mt-5">
+    <div className="bg-gradient-to-br from-slate-500/30 to-gray-700/30 flex text-zinc-300 flex-col items-center lg:w-2/3 rounded-3xl backdrop-filter backdrop-blur-md p-7 mb-5 mt-5">
 
       <h3 className="unbounded text-3xl my-5">
         How to earn $TRUST

@@ -5,7 +5,7 @@ import { IQuestion, IModifiedSlider, IQuestionPrompt } from '../utils/components
 
 function QuestionPrompt({text, title} : IQuestionPrompt){
     return (
-    <div className="md:col-span-3 flex items-center justify-left pl-6">
+    <div className="col-span-3 flex items-center justify-left pl-6">
         <p className="text-left">
             <span className="mr-2">{title}</span>
         </p>
@@ -27,7 +27,7 @@ function QuestionPrompt({text, title} : IQuestionPrompt){
 
 function ModifiedSlider({questionScore, setScore} : IModifiedSlider){
     return (
-    <div className="md:col-span-4 flex items-center">
+    <div className="col-span-4 flex items-center w-full">
         <Slider
         min={1}
         max={10}
@@ -49,16 +49,16 @@ function Question({questionScore, setScore, text, title} : IQuestion){
     // const [questionScore, setQuestionScore] = useState<number>(1);
 
     return (
-        <>
-       <QuestionPrompt text={text} title={title} />
+        <div className="grid grid-cols-8 text-lg md:text-base">
+        <QuestionPrompt text={text} title={title} />
         <ModifiedSlider questionScore={questionScore} setScore={setScore}/>
             
-        <div className="md:col-span-1 flex items-center">
+        <div className="flex items-center justify-center">
             <p className="text-white ml-2 font-mono">
                 {questionScore}
             </p>
         </div>
-        </>
+        </div>
     )
 }
 

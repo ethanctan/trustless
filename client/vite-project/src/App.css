@@ -34,9 +34,9 @@
   font-weight: 500;
   color: #e8ebef !important;
   border-radius: 0.5rem;
-  background-image: linear-gradient(to bottom right, #242158, #200b38) !important;
-  border: 2px solid; /* Add transparent border */
-  box-shadow: 0px 0px 7px 2px #5c33ff89 !important;
+  background-color: #151515 !important;
+  border: 2px solid !important; /* Add transparent border */
+  border-color:#5b23a0 !important;
   transition: 0.3s !important;
   opacity: 1;
   padding: 15px !important;

@@ -14,7 +14,7 @@ export default function ProtocolRankingTables(){
     const [protocolData, setProtocolData] = useState<GetProtocolResponse[]>([]);
     const [protocolDataTop, setProtocolDataTop] = useState<GetProtocolResponse[]>([]);
     const [searchTerm, setSearchTerm] = useState(''); // for searching submissions
-    const protocolTableHeadings = ["PROTOCOL",	"NUMBER OF RATINGS", "AVERAGE SCORE"]
+    const protocolTableHeadings = ["PROTOCOL",	"NUM. OF RATINGS", "AVERAGE SCORE"]
   
     const ascendingSortedProtocol = protocolDataTop.filter((protocol) =>
       protocol.protocolName.toLowerCase().includes(searchTerm.toLowerCase())

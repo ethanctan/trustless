@@ -49,7 +49,7 @@ function Form({defiData, getUserData, walletAccount}){
     // for generating form content
   const handleSetProtocol = (protocol: string) => {
     setProtocol(protocol);
-    setText1("How secure do you believe " + protocol + "'s smart contracts are? Have they been audited and open-sourced? Or have they been exploited before?");
+    setText1("How secure do you believe " + protocol + "'s smart contracts are? Have they been audited, or have they been exploited? How robust is the protocol's offchain security? Have they suffered offchain exploits, data breaches, phishing, or other attacks?");
     setText2("How robust, transparent, and community-oriented is " + protocol + "'s treasury? Does it mostly comprise of the protocol's native token, creating concentrated risk? Or does it have a diverse range of assets? Is value regularly distributed to the community?");
     setText3("How confident are you in " + protocol + "'s ability to deliver on their roadmap? Have they delivered in the past? Do their goals seem feasible, or are they overpromising?");
     setText4("How robust is " + protocol + "'s governance system? If decentralized, is there strong voter participation, or is voting controlled by a few whales? If centralized, is there a clear and transparent decision-making process?");
@@ -126,14 +126,33 @@ function Form({defiData, getUserData, walletAccount}){
 
             <div className="bg-gray-900 backdrop-blur-md bg-opacity-50 p-4 rounded-lg mb-4 mx-auto max-w-xl">
             <div className="m-4"> 
-                <p className="mb-2"> Our framework for trust consists of 5 factors, rated on a scale of 1-10, with 1 being the least trustworthy and 10 being the most. </p>
-                <p className="mb-2"> Rate {protocol}'s trustworthiness in these 5 areas. </p>
+                <p className="md:mb-2 mb-5 text-lg md:text-base"> Our framework for trust consists of 5 factors, rated on a scale of 1-10, with 1 being the least trustworthy and 10 being the most. </p>
+                <p className="mb-2 text-lg md:text-base"> Rate {protocol}'s trustworthiness in these 5 areas. </p>
+
+                <div className="flex justify-center items-center mb-2 mt-5 text-base md:hidden">
+                  <span className="mr-2">
+                    (Tap and hold the
+                  </span>
+                  <svg fill="#3874cb" version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 416.979 416.979" width="14" height="14">
+                  <g>
+                      <path d="M356.004,61.156c-81.37-81.47-213.377-81.551-294.848-0.182c-81.47,81.371-81.552,213.379-0.181,294.85
+                      c81.369,81.47,213.378,81.551,294.849,0.181C437.293,274.636,437.375,142.626,356.004,61.156z M237.6,340.786
+                      c0,3.217-2.607,5.822-5.822,5.822h-46.576c-3.215,0-5.822-2.605-5.822-5.822V167.885c0-3.217,2.607-5.822,5.822-5.822h46.576
+                      c3.215,0,5.822,2.604,5.822,5.822V340.786z M208.49,137.901c-18.618,0-33.766-15.146-33.766-33.765
+                      c0-18.617,15.147-33.766,33.766-33.766c18.619,0,33.766,15.148,33.766,33.766C242.256,122.755,227.107,137.901,208.49,137.901z"/>
+                  </g>
+                  </svg>
+                  <span className="ml-2">
+                    icon to show details)
+                  </span>
+                </div>
+
             </div>
-            <div className="grid grid-cols-1 md:grid-cols-8 gap-4 py-4">
+            <div className="flex-col gap-4 py-4">
             { 
               !cex.includes(protocol) ? (
                 <>
-                  <Question questionScore={q1Score} setScore={setQ1Score} text={text1} title="Contracts" />
+                  <Question questionScore={q1Score} setScore={setQ1Score} text={text1} title="Security" />
                   <Question questionScore={q2Score} setScore={setQ2Score} text={text2} title="Treasury" />
                   <Question questionScore={q3Score} setScore={setQ3Score} text={text3} title="Roadmap" />
                   <Question questionScore={q4Score} setScore={setQ4Score} text={text4} title="Governance" />
@@ -145,23 +164,23 @@ function Form({defiData, getUserData, walletAccount}){
             }
 
 
-                <div className="md:col-span-4 flex items-start justify-start text-left pl-6">
-                  Your referral code is 
-                </div>
-                <div className="md:col-span-4 pr-5">
-                {referralCode}
+                <div className="flex justify-start text-left pl-6 mt-5 mb-3 items-center text-lg md:text-base">
+                  Your referral code is: 
+                    <mark className="px-3 py-1 ml-4 text-white bg-gradient-to-br from-violet-500 to-blue-500 rounded-md font-mono">
+                    {referralCode ? referralCode : 'Loading...'}
+                    </mark>
                 </div>
                 
-                <div className="md:col-span-4 flex items-start justify-start text-left pl-6">
-                    Enter a twitter influencer code. 🐦
+                <div className="flex items-start justify-start text-left pl-6 text-lg md:text-base">
+                    If you're copying someone's ratings, enter their code.
                 </div>
-                <div className="md:col-span-4 pr-5">
+                <div className="md:col-span-4 pr-5 mt-5">
                     <TextField 
                     className="poppins"
                     id="outlined-basic" 
                     sx={textFieldDesc}
                     placeholder="@twitterhandle" 
-                    label="Twitter Code..." 
+                    label="Referral Code..." 
                     variant="outlined" 
                     onChange={(event) => setInfluencer(event.target.value)}
                     color="primary"
@@ -188,7 +207,7 @@ function Form({defiData, getUserData, walletAccount}){
               </button>
              
             {errorMessage == 'Successfully added!'? 
-              <button type="button" className="mx-auto text-white bg-[#1da1f2] hover:bg-[#1da1f2]/90 focus:ring-4 focus:outline-none font-medium rounded-lg text-md px-5 py-2.5 text-center inline-flex items-center focus:ring-[#1da1f2]/55"
+              <button type="button" className="mx-auto text-white bg-[#1da1f2] hover:bg-[#1da1f2]/90 focus:ring-4 focus:outline-none font-medium rounded-lg text-base px-5 py-2.5 text-center inline-flex items-center focus:ring-[#1da1f2]/55"
                 onClick={() => {
                   window.open(`https://twitter.com/intent/tweet?text=I%20just%20rated%20${protocol}%20with%20scores%20of%20${[q1Score, q2Score, q3Score, q4Score, q5Score].join(', ')}%20on%20TRUST%20and%20earned%20a%20$TRUST%20airdrop.%20Check%20it%20out%20at%20http://localhost:5173&via=YourTwitterHandle`);
                 }}>
@@ -211,9 +230,9 @@ function Form({defiData, getUserData, walletAccount}){
       <h3 className="unbounded text-2xl my-5 font-light">
         Your ratings:
       </h3>
-      <div className="mx-auto">
+      <div className="mx-auto mb-10">
         <SubmissionTable 
-        headings={["Protocol Name", "Contracts", "Treasury", "Roadmap", "Governance", "Team"]}
+        headings={["Protocol Name", "Security", "Treasury", "Roadmap", "Governance", "Team"]}
         submissions={Object.keys(protocolRatings)}
         RowGenerator={listUserRatings}
         /> 

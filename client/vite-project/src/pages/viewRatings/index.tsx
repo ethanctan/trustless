@@ -4,7 +4,7 @@ import ProtocolRankingTables from './protocolRankingTables.tsx';
 export default function ViewRatings(){
     return (
         <div>
-            <CountdownTimer targetDate={"2022-03-08"} 
+            <CountdownTimer targetDate={new Date("2022-03-08")} 
             ExpiredDisplay={ProtocolRankingTables}
             CountdownDisplay={Counter}/>
         </div>
