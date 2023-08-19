@@ -77,7 +77,7 @@ async function calculateScores(walletId, protocolData) {
     console.log("sigmoid dist:", sigmoid(averageDist))
     return sigmoid(averageDist);
   }
-  
+
 }
 
 
