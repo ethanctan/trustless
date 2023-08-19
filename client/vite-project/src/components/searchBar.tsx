@@ -8,7 +8,7 @@ function SearchBar({defiData, handleSetProtocol} : ISearchBar){
     return (
         <>
         <Select
-            className="mt-4 mb-4 poppins w-1/3 mx-auto"
+            className="mt-4 mb-4 poppins md:w-1/3 w-1/2 mx-auto"
             options={defiData.map((protocol : any) => ({
                 value: protocol.name,
                 label: protocol.name,

@@ -1,11 +1,11 @@
 export default function Mechanics(){
     return (
-        <div className="text-left flex flex-col mx-auto">
-            <h3 className="unbounded text-3xl my-5 w-2/3 mx-auto">
+        <div className="md:text-left flex flex-col mx-auto">
+            <h3 className="unbounded md:text-3xl text-xl my-5 md:w-2/3 mx-auto">
                 Overview of TRUSTLESS
             </h3>
 
-            <div className="poppins text-lg pb-1 rounded-b-lg duration-300 w-2/3 mx-auto">
+            <div className="poppins md:text-base pb-1 rounded-b-lg duration-300 md:w-2/3 mx-auto">
                 <p className="mb-4">
                 TRUSTLESS is an open-source DeFi analytics dashboard that aggregates user trust ratings of DeFi protocols. By rating DeFi protocols, users earn $TRUST rewards while collectively forming public consensus on the reliability and trustworthiness of DeFi protocols. TRUSTLESS offers analytics on 3000+ protocols across 30+ chains.                 
                 </p>
@@ -17,11 +17,11 @@ export default function Mechanics(){
                 </p>
             </div>        
 
-            <h3 className="unbounded text-3xl my-5 w-2/3 mx-auto">
+            <h3 className="unbounded md:text-3xl text-xl my-5 md:w-2/3 mx-auto">
                 $TRUST Rewards Mechanism
             </h3>
 
-            <div className="poppins text-lg pb-1 rounded-b-lg duration-300 w-2/3 mx-auto">
+            <div className="poppins md:text-base pb-1 rounded-b-lg duration-300 md:w-2/3 mx-auto">
                 <p className="mb-4">
                 During each 36-hour rating epoch, users can earn $TRUST rewards by participaing in the rating of DeFi protocols featured on TRUST. Users are welcome to rate anywhere between 1 to 3000+ protocols but can only rate each protocol once. At the end of each epoch, consensus ratings will be published. Participants of the epoch will receive $TRUST rewards based on how close their ratings were to the average and how many protocols they rated.                 
                 </p>
@@ -36,11 +36,11 @@ export default function Mechanics(){
                 </p>
             </div> 
 
-            <h3 className="unbounded text-3xl my-5 w-2/3 mx-auto">
+            <h3 className="unbounded md:text-3xl text-xl my-5 md:w-2/3 mx-auto">
                 $TRUST Tokenomics
             </h3>  
-            <div className="poppins text-lg pb-1 rounded-b-lg duration-300 w-2/3 mx-auto">
-                <ul className="mx-auto text-gray-100 font-mono border text-md w-1/2 rounded-lg bg-gray-900/70 border-gray-600 mb-6 mt-2 ">
+            <div className="poppins md:text-base pb-1 rounded-b-lg duration-300 md:w-2/3 mx-auto">
+                <ul className="mx-auto text-gray-100 font-mono border text-base w-1/2 rounded-lg bg-gray-900/70 border-gray-600 mb-6 mt-2 ">
                     <li className="w-full px-4 py-2 border-b rounded-t-lg border-gray-600"> Total Supply: 1,000,000,000 $TRUST </li>
                     <li className="w-full px-4 py-2 border-b border-gray-600"> Initial LP: 2.5% </li>
                     <li className="w-full px-4 py-2 border-b border-gray-600">Initial Epoch Airdrop: 2.5% </li>

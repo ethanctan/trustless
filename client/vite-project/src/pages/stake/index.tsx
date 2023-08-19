@@ -100,7 +100,7 @@ export default function Stake({account , contracts, balance, epoch, provider, pa
     }
 
     return (
-        <div className="flex flex-col items-center p-8 rounded-lg shadow-lg poppins">
+        <div className="flex flex-col items-center md:p-8 rounded-lg shadow-lg poppins">
 
             <h3 className="unbounded text-3xl my-5">Stake your $TRUST</h3>
             <p className="text-lg text-center poppins max-w-xl">

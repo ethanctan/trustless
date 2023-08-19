@@ -74,7 +74,7 @@ export default function Airdrop({account , contracts, balance, epoch, provider, 
                 Claim your $TRUST
             </h3>
 
-            <div className="poppins max-w-xl text-lg pb-1 rounded-b-lg duration-300 px-10 mb-5">
+            <div className="poppins max-w-xl text-lg pb-1 rounded-b-lg duration-300 md:px-10 mb-5">
                 After every epoch you've participated in, you can claim a $TRUST airdrop. The more ratings you submit, and the closer each rating is to the eventual average score, the more $TRUST you'll earn.
             </div>
 
