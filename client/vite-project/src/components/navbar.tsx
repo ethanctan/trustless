@@ -14,6 +14,9 @@ export default function Navbar({ passAccount, passContracts, passProvider, pendi
   const toggleMenu = () => {
     setIsMenuExpanded(prevState => !prevState);
   };
+  const closeMenu = () => {
+    setIsMenuExpanded(false);
+  };
 
   let thirdwebAddress = useAddress();
   let thirdwebSigner = useSigner(); 
@@ -75,18 +78,18 @@ export default function Navbar({ passAccount, passContracts, passProvider, pendi
 
             <div className={`items-center justify-between ${isMenuExpanded ? 'block' : 'hidden lg:block'} w-full lg:flex lg:w-auto lg:order-1 lg:py-0 py-2`} id="navbar-sticky">
               <ul className={`flex flex-col lg:flex-row items-center justify-start space-y-2 lg:space-y-0 lg:space-x-6 px-8 py-2 ${isMenuExpanded ? 'block' : 'invisible lg:visible'}`}>
-                  <NavlinkComponent to="/" classNamePath={"/"} title={"About"} />
+                  <NavlinkComponent to="/" classNamePath={"/"} title={"About"} onClick={closeMenu}/>
                   {setup ? 
-                    <NavlinkComponent to="/airdrop" classNamePath={"/airdrop"} title={"Claim Airdrop"}/> :     
+                    <NavlinkComponent to="/airdrop" classNamePath={"/airdrop"} title={"Claim Airdrop"} onClick={closeMenu}/> :     
                     <TooltipComponent toolTipTitle={"Available after the rating phase is complete and connect your account."} classNamePath={"/airdrop"} title={"Claim Airdrop"}/> 
                   }
                   {setup ? 
-                    <NavlinkComponent to="/stake" classNamePath={"/stake"} title={"Stake"}/> :     
+                    <NavlinkComponent to="/stake" classNamePath={"/stake"} title={"Stake"} onClick={closeMenu}/> :     
                     <TooltipComponent toolTipTitle={"Available after the rating phase is complete and connect your account."} classNamePath={"/stake"} title={"Stake"}/> 
                   }
-                  <NavlinkComponent to="/mechanics" classNamePath={"/mechanics"} title={"Mechanics"} />
-                  <NavlinkComponent to="/submitRatings" classNamePath={"/submitRatings"} title={"Submit Ratings"} />
-                  <NavlinkComponent to="/viewRatings" classNamePath={"/viewRatings"} title={"View Ratings"} />
+                  <NavlinkComponent to="/mechanics" classNamePath={"/mechanics"} title={"Mechanics"} onClick={closeMenu}/>
+                  <NavlinkComponent to="/submitRatings" classNamePath={"/submitRatings"} title={"Submit Ratings"} onClick={closeMenu}/>
+                  <NavlinkComponent to="/viewRatings" classNamePath={"/viewRatings"} title={"View Ratings"} onClick={closeMenu}/>
               </ul>
             </div>
           </div>

@@ -12,6 +12,7 @@ export interface INavlinkComponent {
     to: string;
     classNamePath: string;
     title: string;
+    onClick: () => void;
 }
 
 export interface IQuestionPrompt {
