@@ -48,7 +48,7 @@ export default function Navbar({ passAccount, passContracts, passProvider, pendi
         <nav className="fixed top-0 left-0 right-0 w-full py-2 z-50 bg-slate-800/60 backdrop-blur-lg poppins">
           <div className={`max-w-screen-xl flex flex-wrap items-center justify-between mx-auto lg:p-4 px-4 pt-4 ${isMenuExpanded ? 'pb-0' : 'pb-4'}`}>
             <a href="/" className="flex items-center">
-                <img src="../../public/trustless.png" className="h-14 mx-3" alt="TRUSTLESS Logo" />
+                <img src="../../public/AEGIS.png" className="h-14 mx-3" alt="TRUSTLESS Logo" />
                 {/* <span className="self-center text-2xl font-normal unbounded whitespace-nowrap text-white">$TRUST<span className="gradient-stroke">LESS</span></span> */}
             </a>
 

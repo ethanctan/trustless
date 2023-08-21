@@ -44,10 +44,10 @@ function Introduction(){
 
           <div className="relative flex md:flex-row flex-col items-center lg:-mt-5 mt-5">
             <div className="order-2 md:order-1 bg-gradient-to-br from-slate-500/30 to-gray-700/30 flex flex-col lg:w-1/2 text-lg rounded-3xl backdrop-filter backdrop-blur-md p-7 md:mr-5 mb-5">
-              <p className="text-right text-zinc-300 poppins p-2">
+              <p className="text-left md:text-right text-zinc-300 poppins p-2">
                 Crypto lacks a standard of trust. With conflicting information from influencers, markets, devs and degens, it's hard to separate signals from noise.
               </p>
-              <p className="text-right text-zinc-300 poppins p-2">
+              <p className="text-left md:text-right text-zinc-300 poppins p-2">
                 TRUSTLESS aims to cut through the crap with a transparent and decentralized method to determine the reliability of DeFi protocols. So you can trust less.
               </p>
             </div>
