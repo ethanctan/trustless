@@ -87,7 +87,8 @@ export default function Navbar({ passAccount, passContracts, passProvider, pendi
                     <NavlinkComponent to="/stake" classNamePath={"/stake"} title={"Stake"} onClick={closeMenu}/> :     
                     <TooltipComponent toolTipTitle={"Available after the rating phase is complete and connect your account."} classNamePath={"/stake"} title={"Stake"}/> 
                   }
-                  <NavlinkComponent to="/mechanics" classNamePath={"/mechanics"} title={"Mechanics"} onClick={closeMenu}/>
+                  {/* <NavlinkComponent to="/mechanics" classNamePath={"/mechanics"} title={"Mechanics"} onClick={closeMenu}/> */}
+                  <a className="text-gray-400 hover:text-gray-100" href="https://aegis-protocol-1.gitbook.io/aegis-protocol/" target="_blank">Mechanics</a>
                   <NavlinkComponent to="/submitRatings" classNamePath={"/submitRatings"} title={"Submit Ratings"} onClick={closeMenu}/>
                   <NavlinkComponent to="/viewRatings" classNamePath={"/viewRatings"} title={"View Ratings"} onClick={closeMenu}/>
               </ul>
