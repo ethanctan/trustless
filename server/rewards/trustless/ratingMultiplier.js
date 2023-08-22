@@ -1,23 +1,7 @@
 const axios = require('axios');
+const { fetchProtocolData } = require('../utils/apis');
 
-// Step 1: Fetch Protocols from API
-async function fetchProtocolData() {
-  try {
-    const response = await axios.get('http://localhost:3001/protocols');
-    const protocolData = response.data;
-    // console.log("protocol data:", protocolData);
-    // Do something with protocolData here, or return it to use elsewhere
-    return protocolData;
-  } catch (error) {
-    console.error('Error fetching protocols:', error);
-  }
-}
-
-// Call the function to fetch the data
-fetchProtocolData();
-
-
-// Step 2: Instantiate Sigmoid Function
+// Step 1: Instantiate Sigmoid Function
 
 function sigmoid(x) {
   if (x > 15) {
@@ -28,7 +12,7 @@ function sigmoid(x) {
   }
 }
 
-// Step 3: Calculate Scores for Each Wallet
+// Step 2: Calculate Scores for Each Wallet
 // Caveat: Must delete all rankings between epochs
 
 async function calculateScores(walletId, protocolData) {
@@ -45,9 +29,7 @@ async function calculateScores(walletId, protocolData) {
         // console.log("continuing")
         continue;
       }
-      // console.log("user rating:", userRating.rating.scores)
-      // console.log("user rating sum:", userRating.rating.scores[0])
-      // console.log("protocol avgScore:", protocol.averageScore)
+  
       // Calculate the distance for this protocol
       const dist = Math.sqrt(
         Math.pow(userRating.rating.scores[0] - protocol.averageScore, 2) + 
@@ -82,7 +64,7 @@ async function calculateScores(walletId, protocolData) {
 
 
 // This will fetch protocol data, then calculate scores
-async function main(userWallet) {
+async function calculateRatingMultiplier(userWallet) {
   const protocolData = await fetchProtocolData();
   let res = await calculateScores(userWallet, protocolData);
   return res
@@ -90,6 +72,6 @@ async function main(userWallet) {
 
 //export 
 module.exports = {
-  main
+  calculateRatingMultiplier
 };
 

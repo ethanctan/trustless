@@ -121,7 +121,7 @@ export default class User{
         this.numReferredUsers += 1
     }
     
-    getNumReferrredUsers(){
+    getNumReferredUsers(){
         return this.numReferredUsers
     }
 

@@ -68,6 +68,24 @@ export default class UserController{
         return ret
     }
 
+    /**
+     * @returns key-value pair of walletId : referredUsers
+     */
+    async getAllReferrals(): Promise<{ [key: string]: number }> {
+        let users = await UserModel.find({});
+        let referralMap: { [key: string]: number } = {};
+    
+        users.forEach((user: any) => {
+            const userData = User.createUserFromDocument(user);
+            if (userData.walletId.length === 42) {
+                referralMap[userData.walletId] = userData.getNumReferredUsers(); // assuming referredUsers is a number
+            }
+        });
+    
+        return referralMap;
+    }
+    
+
 
     async handleCheckUserExists(cookieId : string){
         const user = await UserModel.findOne({ cookieId: cookieId });
