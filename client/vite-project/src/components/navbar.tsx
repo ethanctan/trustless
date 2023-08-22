@@ -14,6 +14,9 @@ export default function Navbar({ passAccount, passContracts, passProvider, pendi
   const toggleMenu = () => {
     setIsMenuExpanded(prevState => !prevState);
   };
+  const closeMenu = () => {
+    setIsMenuExpanded(false);
+  };
 
   let thirdwebAddress = useAddress();
   let thirdwebSigner = useSigner(); 
@@ -45,7 +48,7 @@ export default function Navbar({ passAccount, passContracts, passProvider, pendi
         <nav className="fixed top-0 left-0 right-0 w-full py-2 z-50 bg-slate-800/60 backdrop-blur-lg poppins">
           <div className={`max-w-screen-xl flex flex-wrap items-center justify-between mx-auto lg:p-4 px-4 pt-4 ${isMenuExpanded ? 'pb-0' : 'pb-4'}`}>
             <a href="/" className="flex items-center">
-                <img src="../../public/trustless.png" className="h-14 mx-3" alt="TRUSTLESS Logo" />
+                <img src="../../public/AEGIS.png" className="h-14 mx-3" alt="TRUSTLESS Logo" />
                 {/* <span className="self-center text-2xl font-normal unbounded whitespace-nowrap text-white">$TRUST<span className="gradient-stroke">LESS</span></span> */}
             </a>
 
@@ -75,18 +78,19 @@ export default function Navbar({ passAccount, passContracts, passProvider, pendi
 
             <div className={`items-center justify-between ${isMenuExpanded ? 'block' : 'hidden lg:block'} w-full lg:flex lg:w-auto lg:order-1 lg:py-0 py-2`} id="navbar-sticky">
               <ul className={`flex flex-col lg:flex-row items-center justify-start space-y-2 lg:space-y-0 lg:space-x-6 px-8 py-2 ${isMenuExpanded ? 'block' : 'invisible lg:visible'}`}>
-                  <NavlinkComponent to="/" classNamePath={"/"} title={"About"} />
+                  <NavlinkComponent to="/" classNamePath={"/"} title={"About"} onClick={closeMenu}/>
                   {setup ? 
-                    <NavlinkComponent to="/airdrop" classNamePath={"/airdrop"} title={"Claim Airdrop"}/> :     
+                    <NavlinkComponent to="/airdrop" classNamePath={"/airdrop"} title={"Claim Airdrop"} onClick={closeMenu}/> :     
                     <TooltipComponent toolTipTitle={"Available after the rating phase is complete and connect your account."} classNamePath={"/airdrop"} title={"Claim Airdrop"}/> 
                   }
                   {setup ? 
-                    <NavlinkComponent to="/stake" classNamePath={"/stake"} title={"Stake"}/> :     
+                    <NavlinkComponent to="/stake" classNamePath={"/stake"} title={"Stake"} onClick={closeMenu}/> :     
                     <TooltipComponent toolTipTitle={"Available after the rating phase is complete and connect your account."} classNamePath={"/stake"} title={"Stake"}/> 
                   }
-                  <NavlinkComponent to="/mechanics" classNamePath={"/mechanics"} title={"Mechanics"} />
-                  <NavlinkComponent to="/submitRatings" classNamePath={"/submitRatings"} title={"Submit Ratings"} />
-                  <NavlinkComponent to="/viewRatings" classNamePath={"/viewRatings"} title={"View Ratings"} />
+                  {/* <NavlinkComponent to="/mechanics" classNamePath={"/mechanics"} title={"Mechanics"} onClick={closeMenu}/> */}
+                  <a className="text-gray-400 hover:text-gray-100" href="https://aegis-protocol-1.gitbook.io/aegis-protocol/" target="_blank">Mechanics</a>
+                  <NavlinkComponent to="/submitRatings" classNamePath={"/submitRatings"} title={"Submit Ratings"} onClick={closeMenu}/>
+                  <NavlinkComponent to="/viewRatings" classNamePath={"/viewRatings"} title={"View Ratings"} onClick={closeMenu}/>
               </ul>
             </div>
           </div>

@@ -63,6 +63,7 @@ function App() {
   }, [])
 
   //currently, any transactions can only be reflected after a manuel refresh, need events to update in real time. Also need error handling. 
+  // TODO: Add conditionals to disable pages based on website state
   return (
     <>
       <Navbar passAccount={passAccount} passContracts={passContracts} pendingState={pendingState} passProvider={passProvider}/>
@@ -71,7 +72,7 @@ function App() {
           <Route path="/" element={<Home />} />
           <Route path="/airdrop" element={<Airdrop passPendingState={passPendingState} account={account} contracts={contracts} balance={walletInfo?.balance} epoch={walletInfo?.epoch} provider={provider} />} />
           <Route path="/stake" element={<Stake passPendingState={passPendingState} account={account} contracts={contracts} balance={walletInfo?.balance} epoch={walletInfo?.epoch} provider={provider} />} />
-          <Route path="/mechanics" element={<Mechanics />} />
+          {/* <Route path="/mechanics" element={<Mechanics />} /> */}
           <Route path="/submitRatings" element={<SubmitRating account={account}/>} />
           <Route path="/viewRatings" element={<ViewRatings />} />
         </Routes>

@@ -2,11 +2,11 @@ import { NavLink } from "react-router-dom";
 import { INavlinkComponent } from "../utils/components";
 import { useLocation } from 'react-router-dom';
 
-export default function NavlinkComponent({to , classNamePath, title} : INavlinkComponent){
+export default function NavlinkComponent({to , classNamePath, title, onClick} : INavlinkComponent){
     const location = useLocation();
 
         return(
-            <li>
+            <li onClick={onClick}>
                 <NavLink
                     // key={location.pathname}
                     to={to}
