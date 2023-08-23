@@ -72,7 +72,6 @@ function App() {
           <Route path="/" element={<Home />} />
           <Route path="/airdrop" element={<Airdrop passPendingState={passPendingState} account={account} contracts={contracts} balance={walletInfo?.balance} epoch={walletInfo?.epoch} provider={provider} />} />
           <Route path="/stake" element={<Stake passPendingState={passPendingState} account={account} contracts={contracts} balance={walletInfo?.balance} epoch={walletInfo?.epoch} provider={provider} />} />
-          {/* <Route path="/mechanics" element={<Mechanics />} /> */}
           <Route path="/submitRatings" element={<SubmitRating account={account}/>} />
           <Route path="/viewRatings" element={<ViewRatings />} />
         </Routes>

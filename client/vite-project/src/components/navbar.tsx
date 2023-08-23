@@ -49,7 +49,7 @@ export default function Navbar({ passAccount, passContracts, passProvider, pendi
           <div className={`max-w-screen-xl flex flex-wrap items-center justify-between mx-auto lg:p-4 px-4 pt-4 ${isMenuExpanded ? 'pb-0' : 'pb-4'}`}>
             <a href="/" className="flex items-center">
                 <img src="../../public/AEGIS.png" className="h-14 mx-3" alt="TRUSTLESS Logo" />
-                {/* <span className="self-center text-2xl font-normal unbounded whitespace-nowrap text-white">$TRUST<span className="gradient-stroke">LESS</span></span> */}
+                {/* <span className="self-center text-2xl font-normal unbounded whitespace-nowrap  text-zinc-300">$TRUST<span className="gradient-stroke">LESS</span></span> */}
             </a>
 
             <div className="flex justify-center items-center lg:order-2">
@@ -81,13 +81,13 @@ export default function Navbar({ passAccount, passContracts, passProvider, pendi
                   <NavlinkComponent to="/" classNamePath={"/"} title={"About"} onClick={closeMenu}/>
                   {setup ? 
                     <NavlinkComponent to="/airdrop" classNamePath={"/airdrop"} title={"Claim Airdrop"} onClick={closeMenu}/> :     
-                    <TooltipComponent toolTipTitle={"Available after the rating phase is complete and connect your account."} classNamePath={"/airdrop"} title={"Claim Airdrop"}/> 
+                    <TooltipComponent toolTipTitle={"Connect your account first!"} classNamePath={"/airdrop"} title={"Claim Airdrop"}/> 
                   }
                   {setup ? 
                     <NavlinkComponent to="/stake" classNamePath={"/stake"} title={"Stake"} onClick={closeMenu}/> :     
-                    <TooltipComponent toolTipTitle={"Available after the rating phase is complete and connect your account."} classNamePath={"/stake"} title={"Stake"}/> 
+                    <TooltipComponent toolTipTitle={"Connect your account first!"} classNamePath={"/stake"} title={"Stake"}/> 
                   }
-                  {/* <NavlinkComponent to="/mechanics" classNamePath={"/mechanics"} title={"Mechanics"} onClick={closeMenu}/> */}
+                  {/* TODO: Change tooltip to "available after epoch is complete" when we're in the middle of an epoch */}
                   <a className="text-gray-400 hover:text-gray-100" href="https://aegis-protocol-1.gitbook.io/aegis-protocol/" target="_blank">Mechanics</a>
                   <NavlinkComponent to="/submitRatings" classNamePath={"/submitRatings"} title={"Submit Ratings"} onClick={closeMenu}/>
                   <NavlinkComponent to="/viewRatings" classNamePath={"/viewRatings"} title={"View Ratings"} onClick={closeMenu}/>

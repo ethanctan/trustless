@@ -2,10 +2,19 @@ import { useCountdown } from "../hooks/countdown";
 import { ICountdownDisplay, ICountdownTimer, IDateTimeDisplay, IShowCounter } from "../utils/components";
 // Used this tutorial: https://blog.greenroots.info/how-to-create-a-countdown-timer-using-react-hooks#heading-the-countdown-app
 
+// let's use this to automatically change epochs and track the website state
+// we need: a timer in this component that alternates between 1-month and 72-hour countdowns, and a POST route to change the epoch
+
 /**
  * @param targetDate Date the countdown timer counts down to in the form
  * YYYY-MM-DD. See javascript date docs for more info
  */ 
+
+function CountdownDisplayAutomated({targetDate} : ICountdownDisplay) {
+  // Target date here will be the starting date for the timer
+
+  
+}
 
 function CountdownDisplay({targetDate} : ICountdownDisplay){
 

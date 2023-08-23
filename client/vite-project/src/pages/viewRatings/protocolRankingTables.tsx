@@ -33,13 +33,13 @@ export default function ProtocolRankingTables(){
                 className="bg-gray-900 bg-opacity-50 backdrop-filter backdrop-blur-md"
                 style={{ marginBottom: '10px', height: '50px' }}
             >
-            <td className="p-6 py-4 whitespace-nowrap text-sm font-medium text-white font-mono">
+            <td className="p-6 py-4 whitespace-nowrap text-sm font-medium  text-zinc-300 font-mono">
                 {protocol.protocolName}
             </td>
-            <td className="p-6 py-4 whitespace-nowrap text-sm text-white font-mono">
+            <td className="p-6 py-4 whitespace-nowrap text-sm  text-zinc-300 font-mono">
                 {protocol.disputeCount}
             </td>
-            <td className="p-6 py-4 whitespace-nowrap text-sm text-white font-mono">
+            <td className="p-6 py-4 whitespace-nowrap text-sm  text-zinc-300 font-mono">
                 {protocol.averageScore.toFixed(1)}
             </td>
             </tr>
@@ -77,7 +77,7 @@ export default function ProtocolRankingTables(){
 
                 <button
                     className={`relative inline-flex items-center justify-center p-0.5 overflow-hidden text-sm font-medium rounded-lg 
-                    group bg-gradient-to-br from-purple-600 to-blue-500 text-white shadow-lg shadow-purple-800/40
+                    group bg-gradient-to-br from-purple-600 to-blue-500  text-zinc-300 shadow-lg shadow-purple-800/40
                     `}
                     onClick={() => handleButtonClick(ActiveButton.MostTrusted)}
                 >
@@ -88,7 +88,7 @@ export default function ProtocolRankingTables(){
 
                 <button
                     className={`relative inline-flex items-center justify-center p-0.5 overflow-hidden text-sm font-medium rounded-lg 
-                    group bg-gradient-to-br from-purple-600 to-blue-500 text-white shadow-lg shadow-purple-800/40
+                    group bg-gradient-to-br from-purple-600 to-blue-500  text-zinc-300 shadow-lg shadow-purple-800/40
                     `}
                     onClick={() => handleButtonClick(ActiveButton.LeastTrusted)}
                 >

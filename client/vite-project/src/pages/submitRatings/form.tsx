@@ -1,14 +1,11 @@
 import {useState, useEffect} from 'react';
 import '@fontsource-variable/unbounded';
 import '@fontsource/poppins';
-
-import { TextField } from '@mui/material';
+import { Input } from '@chakra-ui/react'
 import { UserIdentity } from '../../interfaces/user.ts';
 import { PostRating, ProtocolRatings } from '../../interfaces/rating.ts';
-
 import { Question } from '../../components/question.tsx'
 import SearchBar from '../../components/searchBar.tsx';
-import { textFieldDesc } from './formConsts.ts';
 import { SubmissionTable } from '../../components/submissionTable.tsx';
 import { cex } from './CEX.ts';
 import { Bridge } from './Bridge.ts';
@@ -108,13 +105,13 @@ function Form({defiData, getUserData, walletAccount}){
           className="bg-slate-900 bg-opacity-70 backdrop-filter backdrop-blur-md"
           style={{ marginBottom: '10px', height: '50px' }}
         >
-            <td className="p-6 py-4 whitespace-nowrap text-sm text-white font-mono">{epoch}</td>
-            <td className="p-6 py-4 whitespace-nowrap text-sm text-white font-mono">{key ? protocol : key}</td>
-            <td className="p-6 py-4 whitespace-nowrap text-sm text-white font-mono">{scores[0]}</td>
-            <td className="p-6 py-4 whitespace-nowrap text-sm text-white font-mono">{scores[1]}</td>
-            <td className="p-6 py-4 whitespace-nowrap text-sm text-white font-mono">{scores[2]}</td>
-            <td className="p-6 py-4 whitespace-nowrap text-sm text-white font-mono">{scores[3]}</td>
-            <td className="p-6 py-4 whitespace-nowrap text-sm text-white font-mono">{scores[4]}</td>
+            <td className="p-6 py-4 whitespace-nowrap text-sm  text-zinc-300 font-mono">{epoch}</td>
+            <td className="p-6 py-4 whitespace-nowrap text-sm  text-zinc-300 font-mono">{key ? protocol : key}</td>
+            <td className="p-6 py-4 whitespace-nowrap text-sm  text-zinc-300 font-mono">{scores[0]}</td>
+            <td className="p-6 py-4 whitespace-nowrap text-sm  text-zinc-300 font-mono">{scores[1]}</td>
+            <td className="p-6 py-4 whitespace-nowrap text-sm  text-zinc-300 font-mono">{scores[2]}</td>
+            <td className="p-6 py-4 whitespace-nowrap text-sm  text-zinc-300 font-mono">{scores[3]}</td>
+            <td className="p-6 py-4 whitespace-nowrap text-sm  text-zinc-300 font-mono">{scores[4]}</td>
         </tr>
     );
   }
@@ -167,7 +164,7 @@ function Form({defiData, getUserData, walletAccount}){
 
                 <div className="flex justify-start text-left pl-6 mt-5 mb-3 items-center text-lg md:text-base">
                   Your referral code is: 
-                    <mark className="px-3 py-1 ml-4 text-white bg-gradient-to-br from-violet-500 to-blue-500 rounded-md font-mono">
+                    <mark className="px-3 py-1 ml-4  text-zinc-300 bg-gradient-to-br from-violet-500 to-blue-500 rounded-md font-mono">
                     {referralCode ? referralCode : 'Loading...'}
                     </mark>
                 </div>
@@ -175,16 +172,14 @@ function Form({defiData, getUserData, walletAccount}){
                 <div className="flex items-start justify-start text-left pl-6 text-lg md:text-base">
                     If you're copying someone's ratings, enter their code.
                 </div>
-                <div className="md:col-span-4 pr-5 mt-5">
-                    <TextField 
-                    className="poppins"
-                    id="outlined-basic" 
-                    sx={textFieldDesc}
-                    placeholder="@twitterhandle" 
-                    label="Referral Code..." 
-                    variant="outlined" 
-                    onChange={(event) => setInfluencer(event.target.value)}
-                    color="primary"
+                <div className="md:col-span-4 mt-5 w-1/2 mx-auto">
+                    <Input 
+                      className="poppins text-slate-200 bg-slate-900 border border-transparent border-1 focus:hover:border-2 hover:border-white focus:border-blue-500 transition-all duration-150 ease-in-out"
+                      id="outlined-basic" 
+                      placeholder="Referral Code..." 
+                      variant="outlined" 
+                      onChange={(event) => setInfluencer(event.target.value)}
+                      color="primary"
                     />
                 </div>
             </div>
@@ -198,7 +193,7 @@ function Form({defiData, getUserData, walletAccount}){
 
               <button
                 className={`relative inline-flex items-center justify-center p-0.5 overflow-hidden text-sm font-medium rounded-lg 
-                group bg-gradient-to-br from-purple-600 to-blue-500 text-white shadow-lg shadow-purple-800/40
+                group bg-gradient-to-br from-purple-600 to-blue-500  text-zinc-300 shadow-lg shadow-purple-800/40
                 `}
                 onClick={handleUserSubmissionWrapped}
               >
@@ -208,7 +203,7 @@ function Form({defiData, getUserData, walletAccount}){
               </button>
              
             {errorMessage == 'Successfully added!'? 
-              <button type="button" className="mx-auto text-white bg-[#1da1f2] hover:bg-[#1da1f2]/90 focus:ring-4 focus:outline-none font-medium rounded-lg text-base px-5 py-2.5 text-center inline-flex items-center focus:ring-[#1da1f2]/55"
+              <button type="button" className="mx-auto  text-zinc-300 bg-[#1da1f2] hover:bg-[#1da1f2]/90 focus:ring-4 focus:outline-none font-medium rounded-lg text-base px-5 py-2.5 text-center inline-flex items-center focus:ring-[#1da1f2]/55"
                 onClick={() => {
                   window.open(`https://twitter.com/intent/tweet?text=I%20just%20rated%20${protocol}%20with%20scores%20of%20${[q1Score, q2Score, q3Score, q4Score, q5Score].join(', ')}%20on%20TRUST%20and%20earned%20a%20$TRUST%20airdrop.%20Check%20it%20out%20at%20http://localhost:5173&via=YourTwitterHandle`);
                 }}>

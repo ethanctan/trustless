@@ -1,17 +1,15 @@
-import { Tooltip } from '@mui/material';
+import { Tooltip } from '@chakra-ui/react'
 import { ITooltipComponent } from '../utils/components';
 
 export default function TooltipComponent({toolTipTitle, classNamePath, title} : ITooltipComponent){
     return(
         <li>
-        <Tooltip title={toolTipTitle} placement="top" arrow>
-            <span
-              className={`${
+          <Tooltip hasArrow className="poppins" label={toolTipTitle}>
+            <p className={`${
                 location.pathname === classNamePath ? "text-purple-400 text-glow " : "text-gray-400 "
-              }`}
-            >
-              {title}
-            </span>
+              }`}>
+                {title}
+              </p>
           </Tooltip> 
         </li>
     )

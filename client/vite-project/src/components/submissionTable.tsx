@@ -7,7 +7,7 @@ function SubmissionTable({headings, submissions, RowGenerator} : ISubmissionTabl
           <thead>
               <tr>
               {headings.map((heading : string) => (
-                  <th scope="col" className="p-6 py-3 text-center text-xs font-medium text-white uppercase poppins">
+                  <th scope="col" className="p-6 py-3 text-center text-xs font-medium  text-zinc-300 uppercase poppins">
                       {heading}
                   </th>
               ))}
@@ -18,7 +18,7 @@ function SubmissionTable({headings, submissions, RowGenerator} : ISubmissionTabl
             </tbody>
           </table>
           {submissions.length === 0 && (
-            <p className="p-6 py-4 whitespace-nowrap text-sm font-medium text-white poppins">No entries found. Submit a rating!</p>
+            <p className="p-6 py-4 whitespace-nowrap text-sm font-medium  text-zinc-300 poppins">No entries found. Submit a rating!</p>
           )}
         </div>
     )

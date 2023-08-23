@@ -13,7 +13,7 @@ function Introduction(){
           <span className="text-zinc-300">$TRUST</span>
           <span className="gradient-stroke">LESS</span>
         </h1>
-        <h2 className="unbounded text-zinc-300 text-3xl text-white mt-5 mb-10 font-light flex flex-col md:flex-row">
+        <h2 className="unbounded text-zinc-300 text-3xl  text-zinc-300 mt-5 mb-10 font-light flex flex-col md:flex-row">
           <p>Rate protocols,</p> <p className="hidden md:block">&nbsp;</p> <p>earn $TRUST. </p>
         </h2>
 
@@ -24,7 +24,7 @@ function Introduction(){
           <div className="relative flex md:flex-row flex-col items-center">
             <div className="relative lg:w-1/2 md:w-full w-2/3">
               <img className="w-full" src={IMAGES.Planets} alt="Image 1" />
-              <h3 className="text-zinc-300 absolute unbounded inset-0 flex items-center justify-center text-white text-3xl font-light z-0 pl-2 pb-2">
+              <h3 className="text-zinc-300 absolute unbounded inset-0 flex items-center justify-center  text-zinc-300 text-3xl font-light z-0 pl-2 pb-2">
                 What is this?
               </h3>
             </div>
@@ -53,7 +53,7 @@ function Introduction(){
             </div>
             <div className="order-1 md:order-2 relative lg:w-1/2 md:w-full w-2/3">
               <img className="w-full" src={IMAGES.Triangle} alt="Image 1" />
-              <h3 className="text-zinc-300 absolute unbounded inset-0 flex items-center justify-center text-white text-3xl font-light z-0 ml-3">
+              <h3 className="text-zinc-300 absolute unbounded inset-0 flex items-center justify-center  text-zinc-300 text-3xl font-light z-0 ml-3">
                 The origin story:
               </h3>
             </div>

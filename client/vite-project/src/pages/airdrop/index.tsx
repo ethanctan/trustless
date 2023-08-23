@@ -78,22 +78,22 @@ export default function Airdrop({account , contracts, balance, epoch, provider, 
                 After every epoch you've participated in, you can claim a $TRUST airdrop. The more ratings you submit, and the closer each rating is to the eventual average score, the more $TRUST you'll earn.
             </div>
 
-            <ul className="mx-auto text-lg font-medium border rounded-lg bg-gray-700/30 border-gray-600 text-white font-mono">
+            <ul className="mx-auto text-lg font-medium border rounded-lg bg-gray-700/30 border-gray-600  text-zinc-300 font-mono">
                 <li className="w-full px-8 py-2 border-b rounded-t-lg border-gray-600">
                     Your $TRUST balance: 
-                    <mark className="px-3 py-1 mx-2 text-white bg-gradient-to-br from-violet-500 to-blue-500 rounded-md">
+                    <mark className="px-3 py-1 mx-2  text-zinc-300 bg-gradient-to-br from-violet-500 to-blue-500 rounded-md">
                         {trustBalance ? trustBalance : "Loading"}
                     </mark> 
                 </li>
                 <li className="w-full px-8 py-2 border-b border-gray-600">
                     Current TRUSTLESS Epoch: 
-                    <mark className="px-3 py-1 mx-2 text-white bg-gradient-to-br from-violet-500 to-blue-500 rounded-md">
+                    <mark className="px-3 py-1 mx-2  text-zinc-300 bg-gradient-to-br from-violet-500 to-blue-500 rounded-md">
                         {epoch ? epoch : "Loading"}
                     </mark>
                 </li>
                 <li className="w-full px-8 py-2 rounded-b-lg">
                     Your airdrop: 
-                    <mark className="px-3 py-1 mx-2 text-white bg-gradient-to-br from-violet-500 to-blue-500 rounded-md">
+                    <mark className="px-3 py-1 mx-2  text-zinc-300 bg-gradient-to-br from-violet-500 to-blue-500 rounded-md">
                         {reward}
                     </mark>
                 </li>
@@ -103,7 +103,7 @@ export default function Airdrop({account , contracts, balance, epoch, provider, 
                 {Number(reward) > 0 ? 
                 <button
                     className="mx-auto mt-8 relative inline-flex items-center justify-center p-0.5 overflow-hidden text-sm font-medium rounded-lg 
-                    group bg-gradient-to-br from-purple-600 to-blue-500 text-white shadow-lg shadow-purple-800/40"
+                    group bg-gradient-to-br from-purple-600 to-blue-500  text-zinc-300 shadow-lg shadow-purple-800/40"
                     onClick={claim}
                 >
                     <span className="relative px-5 py-2.5 transition-all ease-in duration-75 bg-slate-900 rounded-md group-hover:bg-opacity-0">

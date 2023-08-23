@@ -110,34 +110,34 @@ export default function Stake({account , contracts, balance, epoch, provider, pa
             Note that <a className="underline"> once an epoch begins, you will not be able to unstake. </a> Instead, your staked $TRUST will be doubled by the treasury, put into the epoch's $TRUST pool, and the $TRUST pool will be airdropped as new rewards based on your performance in this epoch.
             </p>
     
-            <ul className="mx-auto mt-6 mb-4 text-lg font-medium border rounded-lg bg-gray-700/30 border-gray-600 text-white font-mono">
+            <ul className="mx-auto mt-6 mb-4 text-lg font-medium border rounded-lg bg-gray-700/30 border-gray-600  text-zinc-300 font-mono">
             <li className="w-full px-8 py-2 border-b border-gray-600">
                 Your $TRUST balance:
-                <mark className="px-3 py-1 mx-2 text-white bg-gradient-to-br from-violet-500 to-blue-500 rounded-md">
+                <mark className="px-3 py-1 mx-2  text-zinc-300 bg-gradient-to-br from-violet-500 to-blue-500 rounded-md">
                 {trustBalance ? trustBalance : "Loading"}
                 </mark>
             </li>
             <li className="w-full px-8 py-2 border-b border-gray-600">
                 You will stake for epoch #:
-                <mark className="px-3 py-1 mx-2 text-white bg-gradient-to-br from-violet-500 to-blue-500 rounded-md">
+                <mark className="px-3 py-1 mx-2  text-zinc-300 bg-gradient-to-br from-violet-500 to-blue-500 rounded-md">
                 {epoch ? Number(epoch) + 1 : "Loading"}
                 </mark>
             </li>
             <li className="w-full px-8 py-2 border-b border-gray-600">
                 Threshold to begin the epoch:
-                <mark className="px-3 py-1 mx-2 text-white bg-gradient-to-br from-violet-500 to-blue-500 rounded-md">
+                <mark className="px-3 py-1 mx-2  text-zinc-300 bg-gradient-to-br from-violet-500 to-blue-500 rounded-md">
                 {minStake ? minStake : "Loading"}
                 </mark>
             </li>
             <li className="w-full px-8 py-2 border-b border-gray-600">
                 Your total staked $TRUST:
-                <mark className="px-3 py-1 mx-2 text-white bg-gradient-to-br from-violet-500 to-blue-500 rounded-md">
+                <mark className="px-3 py-1 mx-2  text-zinc-300 bg-gradient-to-br from-violet-500 to-blue-500 rounded-md">
                 {totalStakedByUser ? totalStakedByUser : "Loading"}
                 </mark>
             </li>
             <li className="w-full px-8 py-2">
                 Overall total staked $TRUST:
-                <mark className="px-3 py-1 mx-2 text-white bg-gradient-to-br from-violet-500 to-blue-500 rounded-md">
+                <mark className="px-3 py-1 mx-2  text-zinc-300 bg-gradient-to-br from-violet-500 to-blue-500 rounded-md">
                 {totalStaked ? totalStaked : "Loading"}
                 </mark>
             </li>
@@ -156,7 +156,7 @@ export default function Stake({account , contracts, balance, epoch, provider, pa
                     <span className="relative inline-flex h-full">
                         <button
                         onClick={stake}
-                        className="relative h-full inline-flex items-center justify-center p-0.5 overflow-hidden text-sm font-medium rounded-r-lg group bg-gradient-to-br from-purple-600 to-blue-500 text-white shadow-lg shadow-purple-800/40"
+                        className="relative h-full inline-flex items-center justify-center p-0.5 overflow-hidden text-sm font-medium rounded-r-lg group bg-gradient-to-br from-purple-600 to-blue-500  text-zinc-300 shadow-lg shadow-purple-800/40"
                         >
                         <span className="relative h-full px-5 py-3 transition-all ease-in duration-75 bg-slate-900 rounded-r-md group-hover:bg-opacity-0">
                             Stake
@@ -169,7 +169,7 @@ export default function Stake({account , contracts, balance, epoch, provider, pa
                     <button
                         onClick={approve}
                         className="mt-4 relative inline-flex items-center justify-center p-0.5 overflow-hidden text-sm font-medium rounded-lg 
-                        group bg-gradient-to-br from-purple-600 to-blue-500 text-white shadow-lg shadow-purple-800/40"
+                        group bg-gradient-to-br from-purple-600 to-blue-500  text-zinc-300 shadow-lg shadow-purple-800/40"
                     >
                         <span className="relative px-5 py-2.5 transition-all ease-in duration-75 bg-slate-900 rounded-md group-hover:bg-opacity-0">
                         Approve $TRUST to stake!
@@ -184,7 +184,7 @@ export default function Stake({account , contracts, balance, epoch, provider, pa
                     <span className="relative inline-flex h-full">
                         <button
                         onClick={unstake} 
-                        className="relative h-full inline-flex items-center justify-center p-0.5 overflow-hidden text-sm font-medium rounded-lg group bg-gradient-to-br from-purple-600 to-blue-500 text-white shadow-lg shadow-purple-800/40"
+                        className="relative h-full inline-flex items-center justify-center p-0.5 overflow-hidden text-sm font-medium rounded-lg group bg-gradient-to-br from-purple-600 to-blue-500  text-zinc-300 shadow-lg shadow-purple-800/40"
                         >
                         <span className="relative h-full px-5 py-3 transition-all ease-in duration-75 bg-slate-900 rounded-md group-hover:bg-opacity-0">
                             Unstake
