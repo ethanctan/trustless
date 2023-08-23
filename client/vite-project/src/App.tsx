@@ -57,8 +57,8 @@ function App() {
 
   useEffect(() => {
       Axios.get<EpochCount[]>('http://localhost:3001/epochCount').then((response) => {
-    setEpoch(response.data[0].epochCount.toString());
-    console.log("Epoch set: " + response.data[0].epochCount.toString())
+      setEpoch(response.data[0].epochCount.toString());
+      console.log("Epoch set: " + response.data[0].epochCount.toString())
   });
   }, [])
 
