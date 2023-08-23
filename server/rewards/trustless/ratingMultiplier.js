@@ -20,7 +20,7 @@ async function calculateScores(walletId, protocolData) {
   
   for (const protocol of protocolData) {
     try {
-      // Fetch user rating for this wallet and protocol
+      // Fetch user rating for this wallet and protocol - already serializes
       const response = await axios.get(`http://localhost:3001/ratings/${walletId}/${protocol.protocolName}`);
       const userRating = response.data;
       
