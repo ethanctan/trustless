@@ -4,7 +4,7 @@ import '@fontsource/poppins';
 
 import { TextField } from '@mui/material';
 import { UserIdentity } from '../../interfaces/user.ts';
-import { Rating, ProtocolRatings } from '../../interfaces/rating.ts';
+import { PostRating, ProtocolRatings } from '../../interfaces/rating.ts';
 
 import { Question } from '../../components/question.tsx'
 import SearchBar from '../../components/searchBar.tsx';
@@ -79,7 +79,7 @@ function Form({defiData, getUserData, walletAccount}){
     }
     
     let scores = [q1Score, q2Score, q3Score, q4Score, q5Score];
-    let newRating: Rating = {protocol: protocol, scores: scores, code: influencer};
+    let newRating: PostRating = {protocol: protocol, scores: scores, code: influencer};
     let user: UserIdentity = {cookieId: "", walletId: String(address) }
 
 
@@ -102,13 +102,14 @@ function Form({defiData, getUserData, walletAccount}){
 
 
   function listUserRatings(key : any){
-    const {scores} = protocolRatings[key];
+    const {epoch, scores, protocol} = protocolRatings[key];
     return (
         <tr key={key} 
           className="bg-slate-900 bg-opacity-70 backdrop-filter backdrop-blur-md"
           style={{ marginBottom: '10px', height: '50px' }}
         >
-            <td className="p-6 py-4 whitespace-nowrap text-sm text-white font-mono">{key}</td>
+            <td className="p-6 py-4 whitespace-nowrap text-sm text-white font-mono">{epoch}</td>
+            <td className="p-6 py-4 whitespace-nowrap text-sm text-white font-mono">{key ? protocol : key}</td>
             <td className="p-6 py-4 whitespace-nowrap text-sm text-white font-mono">{scores[0]}</td>
             <td className="p-6 py-4 whitespace-nowrap text-sm text-white font-mono">{scores[1]}</td>
             <td className="p-6 py-4 whitespace-nowrap text-sm text-white font-mono">{scores[2]}</td>
@@ -232,7 +233,7 @@ function Form({defiData, getUserData, walletAccount}){
       </h3>
       <div className="mx-auto mb-10">
         <SubmissionTable 
-        headings={["Protocol Name", "Security", "Treasury", "Roadmap", "Governance", "Team"]}
+        headings={["Epoch", "Protocol Name", "Security", "Treasury", "Roadmap", "Governance", "Team"]}
         submissions={Object.keys(protocolRatings)}
         RowGenerator={listUserRatings}
         /> 

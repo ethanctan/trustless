@@ -1,10 +1,10 @@
 import { UserIdentity } from "../interfaces/user";
 import createAxiosInstance from "./axiosConfig";
-import {Rating, ProtocolRatings } from "../interfaces/rating"
+import {PostRating, ProtocolRatings } from "../interfaces/rating"
 
 const axiosInstance = createAxiosInstance("ratings")
 
-async function postRating(user : UserIdentity, rating : Rating){
+async function postRating(user : UserIdentity, rating : PostRating){
 
     let scoreAndCode = {scores: rating.scores, code: rating.code}
     try{
@@ -36,7 +36,24 @@ async function getRating(user : UserIdentity, protocol : string): Promise<Rating
 export async function getProtocolRatings(walletId: string) {
     try {
         const response = await axiosInstance.get<ProtocolRatings>(`/${walletId}`);
-        return response.data;
+        
+        // Restructure the protocol ratings
+        const restructuredRatings: ProtocolRatings = {};
+        for (const protocolName in response.data) {
+            const combinedKey = protocolName;
+            const rating = response.data[protocolName];
+            
+            const [epoch, protocol] = combinedKey.split("#");
+            
+            restructuredRatings[protocolName] = {
+                protocol: protocol,
+                epoch: Number(epoch),
+                scores: rating.scores,
+                code: rating.code,
+            };
+        }
+        
+        return restructuredRatings;
     } catch (error) {
         console.error('Failed to fetch protocol ratings:', error);
         return null;

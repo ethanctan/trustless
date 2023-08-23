@@ -1,5 +1,5 @@
 import { UserIdentity } from "../../interfaces/user";
-import {Rating, ProtocolRatings, emptyRating } from "../../interfaces/rating"
+import {PostRating, ProtocolRatings, emptyRating } from "../../interfaces/rating"
 import { getProtocolRatings, getRating } from "../../api/ratingApi";
 import { checkReferralCodeExists, addReferral } from '../../api/referralApi.ts';
 import { UserReferral } from "../../interfaces/user";
@@ -21,7 +21,7 @@ type RatingResponse = {protocolRatings : ProtocolRatings}
 
 class FormHandler {
 
-    async addUserRating(user : UserIdentity, newRating : Rating){
+    async addUserRating(user : UserIdentity, newRating : PostRating){
         console.log("adding rating")
         console.log("user", user)
         console.log("newRating", newRating)
@@ -47,7 +47,7 @@ class FormHandler {
         return {status : 'error', error: message}
     }    
 
-    async handleUserSubmission(user : UserIdentity, rating : Rating): Promise<CheckedResponse<SubmissionResponse>>{ 
+    async handleUserSubmission(user : UserIdentity, rating : PostRating): Promise<CheckedResponse<SubmissionResponse>>{ 
         console.log("handleUserSubmission")
         let preconditionSatisfied = await this.checkSubmissionPreConditions(user, rating)
         if (preconditionSatisfied.status == "error"){
@@ -74,7 +74,7 @@ class FormHandler {
       
   }; 
 
-    private async checkSubmissionPreConditions(user : UserIdentity, rating : Rating) : 
+    private async checkSubmissionPreConditions(user : UserIdentity, rating : PostRating) : 
         Promise<CheckedResponse<string>>{
         console.log("checkSubmissionPreConditions")
         const influencerExists = await checkReferralCodeExists(rating["code"]); //check if influencer exists
@@ -93,7 +93,7 @@ class FormHandler {
     }
 
 
-  async updateProtocol(rating : Rating, user : UserIdentity) {
+  async updateProtocol(rating : PostRating, user : UserIdentity) {
 
     //check if influencer exists
     const exists = await checkReferralCodeExists(rating.code) 

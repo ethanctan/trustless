@@ -1,7 +1,6 @@
 import UserModel, { RatingModel, ReferralModel } from "../models/user/UserModel"
 import User, {NullUser, Rating, NullRating} from "../models/user/User";
-
-
+import Axios from 'axios';
 
 
 type Success<T> = {status : 'success', data : T}
@@ -14,6 +13,20 @@ type RatingResponse = {isFound: boolean, rating: Rating}
 /** Controller that handles all data processing logic for /rating routes */
 export default class RatingController{
 
+    private async getEpochCount(){
+        let response = await Axios.get('http://localhost:3001/epochCount')
+        let count = response.data[0].epochCount
+        return String(count)
+    }
+
+    private async serialize(epoch: string, protocol: string) {
+        if (!isNaN(Number(epoch))) {
+            return `${epoch}#${protocol}`;
+        } else {
+            return 'error'; 
+        }
+    }
+    
 
     /**
      * Adds rating to the database for a user. If user already has rating, 
@@ -24,6 +37,12 @@ export default class RatingController{
      * @param protocol Protocol
      */
     async upsertRating(userIdentity : object, rating : Rating, protocol : string){
+        
+        let epochCount = await this.getEpochCount()
+        let protocolEpoch = await this.serialize(epochCount, protocol)
+        
+        console.log("Protocol epoch", protocolEpoch)
+
         const user = await UserModel.findOne({ 
             walletId: userIdentity["walletId"] 
         });
@@ -33,11 +52,11 @@ export default class RatingController{
         const newRating = new RatingModel(
             {scores : rating.scores, code: rating.code})
 
-        let ratingExists = Boolean(user.protocolRatings.get(protocol))
+        let ratingExists = Boolean(user.protocolRatings.get(protocolEpoch))
         if (ratingExists){
             return "rating already submitted"
         }
-        user.protocolRatings.set(protocol, newRating);
+        user.protocolRatings.set(protocolEpoch, newRating);
         await user.save()
         return "rating added"
     }
@@ -66,12 +85,16 @@ export default class RatingController{
      * nullRating user or rating isn't found
      */
    async getUserRating(walletId : string, protocolName : string) : Promise<CheckedRatingResponse>{
+
+        let epochCount = await this.getEpochCount()
+        let protocolEpoch = await this.serialize(epochCount, protocolName)
+
         const user = await UserModel.findOne(
             { walletId: walletId });
         if (!user){
             return this.createErrorMessage("User not found")
         }
-        const rating = user.protocolRatings.get(protocolName);
+        const rating = user.protocolRatings.get(protocolEpoch);
         if (rating == null) return this.createSuccessMessage(new NullRating())
 
         return this.createSuccessMessage(Rating.fromIRating(rating))
