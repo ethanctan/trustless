@@ -46,9 +46,9 @@ function ModifiedSlider({questionScore, setScore} : IModifiedSlider){
             }}
         >
             <SliderTrack bg='blue.700'>
-                <SliderFilledTrack bg='blue.500' />
+                <SliderFilledTrack bg='blue.400' />
             </SliderTrack>
-            <SliderThumb boxSize={3} />
+            <SliderThumb boxSize={4} />
         </Slider>
     </div>
     )
