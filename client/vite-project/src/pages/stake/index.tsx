@@ -57,6 +57,9 @@ export default function Stake({account , contracts, balance, epoch, provider, pa
                 setPending(false);
                 setApproved(true);
             } catch (error) {
+                passPendingState(false);
+                setPending(false);
+                setApproved(false);
                 console.log(error);
             }
         }};
@@ -70,13 +73,15 @@ export default function Stake({account , contracts, balance, epoch, provider, pa
                 //wait for transaction to finish mining
                 await pendingCheck({txHash: tx.hash, provider: provider})
                 //update params
-                passPendingState(false)
+                passPendingState(false);
                 setPending(false);
                 setTotalStaked((await contracts.trust.balanceOf(contracts.trustStakingHelper.address)).toString());
                 setTrustBalance((await contracts.trust.balanceOf(stakeAccount)).toString());
                 setMinStake((await contracts.trustStakingHelper.minStake()).toString());
                 setTotalStakedByUser((await contracts.trustStakingHelper.viewStake()).toString());
             } catch (error) {
+                passPendingState(false);
+                setPending(false);
                 console.log(error);
             }
         }};
@@ -100,6 +105,8 @@ export default function Stake({account , contracts, balance, epoch, provider, pa
                 setTotalStakedByUser((await contracts.trustStakingHelper.viewStake()).toString());
                 setTrustBalance((await contracts.trust.balanceOf(stakeAccount)).toString());
             } catch (error) {
+                passPendingState(false);
+                setPending(false);
                 console.log(error);
             }
         }};
@@ -118,6 +125,8 @@ export default function Stake({account , contracts, balance, epoch, provider, pa
                 setPending(false)
             }
             catch (error) {
+                passPendingState(false);
+                setPending(false);
                 console.log(error);
             }
         }
@@ -179,7 +188,7 @@ export default function Stake({account , contracts, balance, epoch, provider, pa
             ) : 
             pending ? (
                 <div
-                className="relative h-full inline-flex items-center justify-center p-0.5 overflow-hidden text-sm font-medium rounded-lg group bg-gradient-to-br from-red-600 to-orange-300  text-zinc-300 shadow-lg shadow-purple-800/40"
+                className="relative h-full inline-flex items-center justify-center p-0.5 overflow-hidden text-sm font-medium rounded-lg group bg-gradient-to-br from-green-400 to-lime-300  text-zinc-300 shadow-lg shadow-purple-800/40"
                 >
                 <span className="relative h-full px-5 py-3 transition-all ease-in duration-75 bg-slate-900 rounded-md group-hover:bg-opacity-0">
                     Transaction pending. Please wait.

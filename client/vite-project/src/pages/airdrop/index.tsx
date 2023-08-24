@@ -49,6 +49,8 @@ export default function Airdrop({account , contracts, balance, epoch, provider, 
                 setPending(false)
                 setReward((await contracts.trustStaking.viewAirdrop(Number(epoch))).toString());
             } catch (error) {
+                passPendingState(false);
+                setPending(false);
                 console.log(error);
             }
         }};
@@ -67,6 +69,8 @@ export default function Airdrop({account , contracts, balance, epoch, provider, 
                 setReward((await contracts.trustStaking.viewAirdrop(Number(epoch))).toString());
                 setTrustBalance((await contracts.trust.balanceOf(account)).toString());
             } catch (error) {
+                passPendingState(false);
+                setPending(false);
                 console.log(error);
             }
         }};
@@ -132,7 +136,7 @@ export default function Airdrop({account , contracts, balance, epoch, provider, 
             ) :
             pending ? (
                 <div
-                className="relative h-full inline-flex items-center justify-center p-0.5 overflow-hidden text-sm font-medium rounded-lg group bg-gradient-to-br from-red-600 to-orange-300  text-zinc-300 shadow-lg shadow-purple-800/40"
+                className="relative h-full inline-flex items-center justify-center p-0.5 overflow-hidden text-sm font-medium rounded-lg group bg-gradient-to-br from-green-400 to-lime-300  text-zinc-300 shadow-lg shadow-purple-800/40"
                 >
                 <span className="relative h-full px-5 py-3 transition-all ease-in duration-75 bg-slate-900 rounded-md group-hover:bg-opacity-0">
                     Transaction pending. Please wait.
