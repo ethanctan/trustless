@@ -1,6 +1,5 @@
 import Navbar from "./components/navbar";
 import Home from "./pages/home";
-import Mechanics from "./pages/mechanics";
 import SubmitRating from "./pages/submitRatings";
 import ViewRatings from "./pages/viewRatings";
 import Airdrop from "./pages/airdrop"; 
@@ -11,6 +10,10 @@ import { ethers } from "ethers";
 import { EpochCount } from "./utils/interfaces";
 import Axios from "axios";
 
+// import { useNetworkMismatch } from "@thirdweb-dev/react";
+// import { useSwitchChain } from "@thirdweb-dev/react";
+// import { Sepolia } from "@thirdweb-dev/chains";
+
 function App() {
   const [account, setAccount] = useState(""); // global address variable
   const [provider, setProvider] = useState<ethers.providers.JsonRpcProvider | null>(null); //global provider variable
@@ -18,6 +21,10 @@ function App() {
   const [walletInfo, setWalletInfo] = useState<{balance: string, epoch: string} | null>(null);
   const [epoch, setEpoch] = useState("");
   const [pendingState, setPendingState] = useState(false);
+
+  //thirdWeb hooks
+  // const isMismatched = useNetworkMismatch();
+  // const switchChain = useSwitchChain();
 
   const passAccount = (account: string) => {
     setAccount(account);
@@ -62,7 +69,13 @@ function App() {
   });
   }, [])
 
-  //currently, any transactions can only be reflected after a manuel refresh, need events to update in real time. Also need error handling. 
+  // useEffect(() => {
+  //   if (isMismatched) {
+  //     console.log("Network mismatched")
+  //     switchChain(Sepolia.chainId);
+  //   }
+  // }, [isMismatched]);
+
   // TODO: Add conditionals to disable pages based on website state
   return (
     <>

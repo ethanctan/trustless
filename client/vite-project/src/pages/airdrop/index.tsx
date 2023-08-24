@@ -2,6 +2,10 @@ import {useEffect, useState} from 'react';
 import { ethers } from 'ethers';
 import pendingCheck from '../../components/pendingCheck';
 
+import { useNetworkMismatch } from "@thirdweb-dev/react";
+import { useSwitchChain } from "@thirdweb-dev/react";
+import { Sepolia } from "@thirdweb-dev/chains";
+
 //@ts-ignore
 export default function Airdrop({account , contracts, balance, epoch, provider, passPendingState}){
     const admin = "0x8066221588691155A7594291273F417fa4de3CAe"
@@ -11,6 +15,10 @@ export default function Airdrop({account , contracts, balance, epoch, provider, 
     const [reward, setReward] = useState("");
     const [rewardTemp, setRewardTemp] = useState(0);
     const [accountToBeRewarded, setAccountToBeRewarded] = useState("");
+
+    //thirdWeb hooks
+    const isMismatched = useNetworkMismatch();
+    const switchChain = useSwitchChain();
 
     //refactor by passing into function
     useEffect(() => {
@@ -57,6 +65,13 @@ export default function Airdrop({account , contracts, balance, epoch, provider, 
                 console.log(error);
             }
         }};
+    
+    const switchNetwork = async () => {
+        if (isMismatched) {
+            console.log("Network mismatched")
+            switchChain(Sepolia.chainId);
+        }
+        };
 
     const handleRewardChange = (event : any) => {
         setRewardTemp(event.target.value);
@@ -99,7 +114,18 @@ export default function Airdrop({account , contracts, balance, epoch, provider, 
                 </li>
             </ul>
 
-                
+            {isMismatched ? (
+                <button
+                className="mx-auto mt-8 relative inline-flex items-center justify-center p-0.5 overflow-hidden text-sm font-medium rounded-lg 
+                group bg-gradient-to-br from-red-600 to-orange-300  text-zinc-300 shadow-lg shadow-purple-800/40"
+                onClick={switchNetwork}
+            >
+                <span className="relative px-5 py-2.5 transition-all ease-in duration-75 bg-slate-900 rounded-md group-hover:bg-opacity-0">
+                Please switch your network.
+                </span>
+            </button>
+            ) :
+            <> 
                 {Number(reward) > 0 ? 
                 <button
                     className="mx-auto mt-8 relative inline-flex items-center justify-center p-0.5 overflow-hidden text-sm font-medium rounded-lg 
@@ -115,6 +141,7 @@ export default function Airdrop({account , contracts, balance, epoch, provider, 
                     No airdrop. Rate protocols in the next epoch! 
                 </p>
                 }
+            </>}
 
             { account === admin ?
             <>

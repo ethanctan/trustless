@@ -2,6 +2,10 @@ import {useEffect, useState} from 'react';
 import { ethers } from 'ethers';
 import pendingCheck from '../../components/pendingCheck';
 
+import { useNetworkMismatch } from "@thirdweb-dev/react";
+import { useSwitchChain } from "@thirdweb-dev/react";
+import { Sepolia } from "@thirdweb-dev/chains";
+
 //@ts-ignore
 export default function Stake({account , contracts, balance, epoch, provider, passPendingState}){
     const admin = "0x8066221588691155A7594291273F417fa4de3CAe"
@@ -15,6 +19,10 @@ export default function Stake({account , contracts, balance, epoch, provider, pa
     const [minStake, setMinStake] = useState("");
     const [totalStakedByUser, setTotalStakedByUser] = useState(""); 
 
+    //thirdWeb hooks
+    const isMismatched = useNetworkMismatch();
+    const switchChain = useSwitchChain();
+
     useEffect(() => {
         async function setupContracts() {
             setStakeAccount(account);
@@ -27,6 +35,13 @@ export default function Stake({account , contracts, balance, epoch, provider, pa
         }
         setupContracts();
     }, [account, contracts, balance, epoch]);
+
+    const switchNetwork = async () => {
+        if (isMismatched) {
+          console.log("Network mismatched")
+          switchChain(Sepolia.chainId);
+        }
+      };
 
     const approve = async () => {
         if (globalContracts && stakeAccount) {
@@ -142,7 +157,18 @@ export default function Stake({account , contracts, balance, epoch, provider, pa
                 </mark>
             </li>
             </ul>
-    
+
+            {isMismatched ? (
+                <button
+                onClick={switchNetwork} 
+                className="relative h-full inline-flex items-center justify-center p-0.5 overflow-hidden text-sm font-medium rounded-lg group bg-gradient-to-br from-red-600 to-orange-300  text-zinc-300 shadow-lg shadow-purple-800/40"
+                >
+                <span className="relative h-full px-5 py-3 transition-all ease-in duration-75 bg-slate-900 rounded-md group-hover:bg-opacity-0">
+                    Please switch your network.
+                </span>
+                </button>
+            ) :
+            <>
             {approved ? (
                     <div className="flex mt-4 h-12 items-center rounded-lg bg-opacity-50 backdrop-filter backdrop-blur-md  focus:outline-none transition-all duration-100">
                     <input
@@ -199,6 +225,7 @@ export default function Stake({account , contracts, balance, epoch, provider, pa
                         Transfer Stake and start staking for new epoch
                     </button> 
                     : null}
+            </> }
       </div>
     ) 
 }

@@ -6,6 +6,7 @@ import App from './App'
 import './index.css'
 import { BrowserRouter } from 'react-router-dom'
 import { ThirdwebProvider, metamaskWallet,coinbaseWallet, walletConnect, rainbowWallet, trustWallet} from "@thirdweb-dev/react";
+import { Sepolia } from "@thirdweb-dev/chains";
 
 const theme = extendTheme({
   styles: {
@@ -23,7 +24,7 @@ ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
       {/* CHANGE THIS IF LOCAL TESTNET OR MAINNET */}
       <ThirdwebProvider 
         supportedWallets={[metamaskWallet(), coinbaseWallet(), walletConnect(), rainbowWallet(), trustWallet()]}
-        activeChain="goerli" 
+        activeChain={Sepolia}
         clientId="f040e4ca2a016065c0cb8c64b651338a"> 
         <BrowserRouter>
           <App />
