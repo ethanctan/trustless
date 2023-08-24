@@ -17,7 +17,8 @@ export default function Stake({account , contracts, balance, epoch, provider, pa
     const [stakeAmount, setStakeAmount] = useState(0);
     const [totalStaked, setTotalStaked] = useState("");
     const [minStake, setMinStake] = useState("");
-    const [totalStakedByUser, setTotalStakedByUser] = useState(""); 
+    const [totalStakedByUser, setTotalStakedByUser] = useState("");
+    const [pending, setPending] = useState(false); //local pending render
 
     //thirdWeb hooks
     const isMismatched = useNetworkMismatch();
@@ -47,11 +48,13 @@ export default function Stake({account , contracts, balance, epoch, provider, pa
         if (globalContracts && stakeAccount) {
             try {
                 passPendingState(true);
+                setPending(true);
                 const tx = await globalContracts.trust.approve(globalContracts.trustStakingHelper.address, 100000000000)
                 //wait for transaction to finish mining
                 await pendingCheck({txHash: tx.hash, provider: provider})
                 //update paramters
                 passPendingState(false)
+                setPending(false);
                 setApproved(true);
             } catch (error) {
                 console.log(error);
@@ -62,11 +65,13 @@ export default function Stake({account , contracts, balance, epoch, provider, pa
         if (globalContracts && stakeAccount) {
             try {
                 passPendingState(true);
+                setPending(true);
                 const tx = await globalContracts.trustStakingHelper.stake(stakeAmount);
                 //wait for transaction to finish mining
                 await pendingCheck({txHash: tx.hash, provider: provider})
                 //update params
                 passPendingState(false)
+                setPending(false);
                 setTotalStaked((await contracts.trust.balanceOf(contracts.trustStakingHelper.address)).toString());
                 setTrustBalance((await contracts.trust.balanceOf(stakeAccount)).toString());
                 setMinStake((await contracts.trustStakingHelper.minStake()).toString());
@@ -84,11 +89,13 @@ export default function Stake({account , contracts, balance, epoch, provider, pa
         if (globalContracts && stakeAccount) {
             try {
                 passPendingState(true);
+                setPending(true);
                 const tx = await globalContracts.trustStakingHelper.withdraw();
                 //wait for transaction to finish mining
                 await pendingCheck({txHash: tx.hash, provider: provider})
                 //set params
                 passPendingState(false)
+                setPending(false);
                 setTotalStaked((await contracts.trust.balanceOf(contracts.trustStakingHelper.address)).toString());
                 setTotalStakedByUser((await contracts.trustStakingHelper.viewStake()).toString());
                 setTrustBalance((await contracts.trust.balanceOf(stakeAccount)).toString());
@@ -101,12 +108,14 @@ export default function Stake({account , contracts, balance, epoch, provider, pa
         if (globalContracts && stakeAccount) {
             try {
                 passPendingState(true)
+                setPending(true)
                 const tx = await globalContracts.trustStakingHelper.transferStake();
                 //wait for transaction to finish mining
                 await pendingCheck({txHash: tx.hash, provider: provider})
                 //print done
                 console.log("New epoch started")
                 passPendingState(false)
+                setPending(false)
             }
             catch (error) {
                 console.log(error);
@@ -167,6 +176,15 @@ export default function Stake({account , contracts, balance, epoch, provider, pa
                     Please switch your network.
                 </span>
                 </button>
+            ) : 
+            pending ? (
+                <div
+                className="relative h-full inline-flex items-center justify-center p-0.5 overflow-hidden text-sm font-medium rounded-lg group bg-gradient-to-br from-red-600 to-orange-300  text-zinc-300 shadow-lg shadow-purple-800/40"
+                >
+                <span className="relative h-full px-5 py-3 transition-all ease-in duration-75 bg-slate-900 rounded-md group-hover:bg-opacity-0">
+                    Transaction pending. Please wait.
+                </span>
+                </div> 
             ) :
             <>
             {approved ? (
@@ -225,7 +243,8 @@ export default function Stake({account , contracts, balance, epoch, provider, pa
                         Transfer Stake and start staking for new epoch
                     </button> 
                     : null}
-            </> }
+            </> 
+            }
       </div>
     ) 
 }
