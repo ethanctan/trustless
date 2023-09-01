@@ -35,6 +35,11 @@ function Form({defiData, getUserData, walletAccount}){
     const [text3, setText3] = useState<string>("");
     const [text4, setText4] = useState<string>("");
     const [text5, setText5] = useState<string>("");
+    const [text1cex, setText1cex] = useState<string>("");
+    const [text2cex, setText2cex] = useState<string>("");
+    const [text3cex, setText3cex] = useState<string>("");
+    const [text4cex, setText4cex] = useState<string>("");
+    const [text5cex, setText5cex] = useState<string>("");
     const [referralCode, setReferralCode] = useState<string>("");//self-code
     const [protocolRatings, setProtocolRatings] = useState<ProtocolRatings>({});
     const [valid_token, setValidToken] = useState([]);
@@ -51,6 +56,11 @@ function Form({defiData, getUserData, walletAccount}){
     setText3("How confident are you in " + protocol + "'s ability to deliver on their roadmap? Have they delivered in the past? Do their goals seem feasible, or are they overpromising?");
     setText4("How robust is " + protocol + "'s governance system? If decentralized, is there strong voter participation, or is voting controlled by a few whales? If centralized, is there a clear and transparent decision-making process?");
     setText5("How strong is the track record of " + protocol + "'s team? If they're doxxed, do they have strong credentials and experience? If undoxxed, do they have a good reputation and history?");
+    setText1cex("How secure is " + protocol + "'s infrastructure? Have they suffered any major hacks or exploits? Do they store most assets in cold storage? Do they undergo regular security audits?");
+    setText2cex("How transparent is " + protocol + "'s business operations and ownership structure? Is there clarity on who owns and operates the exchange? Do they publish regular financial statements and reports?");
+    setText3cex("How reliable and responsive is " + protocol + "'s customer support? Are support tickets resolved promptly? Is there a clear channel for customer complaints and issues?");
+    setText4cex("How robust are " + protocol + "'s compliance and regulatory practices? Are they licensed to operate in major jurisdictions? Do they have strict KYC/AML policies? Do they collaborate well with regulators?");
+    setText5cex("How long has " + protocol + "been in operation, and how has it performed during times of high volatility and trading volume? Have they been able to handle customer demand and prevent outages?");
   }
 
   async function getUserDataWrapped() {
@@ -157,7 +167,13 @@ function Form({defiData, getUserData, walletAccount}){
                   <Question questionScore={q5Score} setScore={setQ5Score} text={text5} title="Team" />
                 </>
               ) : (
-                <span> CEX Questions </span> // Ethan TODO: Add CEX questions
+                <>
+                  <Question questionScore={q1Score} setScore={setQ1Score} text={text1} title="Security" />
+                  <Question questionScore={q2Score} setScore={setQ2Score} text={text2} title="Transparency" />
+                  <Question questionScore={q3Score} setScore={setQ3Score} text={text3} title="Support" />
+                  <Question questionScore={q4Score} setScore={setQ4Score} text={text4} title="Compliance" />
+                  <Question questionScore={q5Score} setScore={setQ5Score} text={text5} title="Track Record" />
+                </>
               )
             }
 

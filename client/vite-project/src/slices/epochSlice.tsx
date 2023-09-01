@@ -29,7 +29,7 @@ export const epochSlice = createSlice({
       decrementEpoch: (state) => {
         state.epoch -= 1
       },
-      setEpoch: (state, action) => {
+      setEpoch: (state, action: PayloadAction<number>) => {
         if (!Number.isInteger(action.payload)) {
             return {
               ...state,
@@ -38,7 +38,7 @@ export const epochSlice = createSlice({
           }
         state.epoch = action.payload
       },
-      setSurveyStatus: (state, action) => {
+      setSurveyStatus: (state, action: PayloadAction<string>) => {
         if (action.payload != 'before' && action.payload != 'during') {
             return {
               ...state,

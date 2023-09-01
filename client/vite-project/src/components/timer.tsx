@@ -72,4 +72,13 @@ const DateTimeDisplay = ({ value, type, isDanger } : IDateTimeDisplay) => {
     );
   };
 
+// Start as epoch 0 and before survey
+// Initiate a X-hour countdown
+// Then transition to epoch 0 and during survey
+// Initiate a 72-hour countdown
+// Then transition to epoch 1 and before survey
+// Initiate a X-hour countdown
+// etc. 
+// Use the setEpoch function because we may need to restart things
+
 export default CountdownDisplay
