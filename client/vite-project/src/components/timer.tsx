@@ -4,11 +4,6 @@ import { useEffect, useState, useMemo } from "react";
 import { EpochCount } from "../utils/interfaces";
 import Axios from "axios";
 
-// Used this tutorial: https://blog.greenroots.info/how-to-create-a-countdown-timer-using-react-hooks#heading-the-countdown-app
-
-// let's use this to automatically change epochs and track the website state
-// we need: a timer in this component that alternates between 1-month and 72-hour countdowns, and a POST route to change the epoch
-
 /**
  * @param targetDate Date the countdown timer counts down to in the form
  * YYYY-MM-DD. See javascript date docs for more info
@@ -87,7 +82,7 @@ export function CountdownTimer({ExpiredDisplay, CountdownDisplay} : ICountdownTi
       const targetYear = currentMonth == 11 ? currentYear + 1 : currentYear;
       const targetMonth = currentMonth == 11 ? 0 : currentMonth + 1;
       const targetDay = 1;
-      const newTargetDate = new Date(currentYear, targetMonth, targetDay);
+      const newTargetDate = new Date(targetYear, targetMonth, targetDay);
 
       Axios.post('http://localhost:3001/epochCount/setTargetDate', {
         targetDate: newTargetDate
