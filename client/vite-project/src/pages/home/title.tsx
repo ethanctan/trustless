@@ -1,10 +1,6 @@
-import { useState } from 'react';
 import IMAGES from '../../assets/images';
 import CountdownDisplay from '../../components/timer.tsx';
-
-function Introduction(){
-  
-  const targetDate = new Date("2023-09-21");
+function Introduction(){  
 
   return (
     
@@ -17,7 +13,7 @@ function Introduction(){
           <p>Rate protocols,</p> <p className="hidden md:block">&nbsp;</p> <p>earn $TRUST. </p>
         </h2>
 
-        <CountdownDisplay targetDate={targetDate}/>
+        <CountdownDisplay/>
 
         <div className="flex flex-col mt-12 lg:w-3/4 w-full">
 

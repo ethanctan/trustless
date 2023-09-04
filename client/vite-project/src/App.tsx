@@ -63,9 +63,10 @@ function App() {
   }, [account, contracts]);
 
   useEffect(() => {
-      Axios.get<EpochCount[]>('http://localhost:3001/epochCount').then((response) => {
+      Axios.get<EpochCount[]>('http://localhost:3001/epochCount/').then((response) => {
       setEpoch(response.data[0].epochCount.toString());
       console.log("Epoch set: " + response.data[0].epochCount.toString())
+      console.log("Survey status: " + response.data[0].surveyStatus.toString())
   });
   }, [])
 
