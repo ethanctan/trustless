@@ -20,6 +20,7 @@ function App() {
   const [contracts, setContracts] = useState<{trust: ethers.Contract, trustStaking: ethers.Contract, trustStakingHelper: ethers.Contract} | null>(null); //global contracts variable
   const [walletInfo, setWalletInfo] = useState<{balance: string, epoch: string} | null>(null);
   const [epoch, setEpoch] = useState("");
+  const [surveyStatus, setSurveyStatus] = useState("");
   const [pendingState, setPendingState] = useState(false);
 
   //thirdWeb hooks
@@ -65,6 +66,7 @@ function App() {
   useEffect(() => {
       Axios.get<EpochCount[]>('http://localhost:3001/epochCount/').then((response) => {
       setEpoch(response.data[0].epochCount.toString());
+      setSurveyStatus(response.data[0].surveyStatus.toString());
       console.log("Epoch set: " + response.data[0].epochCount.toString())
       console.log("Survey status: " + response.data[0].surveyStatus.toString())
   });
@@ -77,15 +79,18 @@ function App() {
   //   }
   // }, [isMismatched]);
 
-  // TODO: Add conditionals to disable pages based on website state
   return (
     <>
       <Navbar passAccount={passAccount} passContracts={passContracts} pendingState={pendingState} passProvider={passProvider}/>
       <div className="container mx-auto pt-24">
         <Routes>
           <Route path="/" element={<Home />} />
-          <Route path="/airdrop" element={<Airdrop passPendingState={passPendingState} account={account} contracts={contracts} balance={walletInfo?.balance} epoch={walletInfo?.epoch} provider={provider} />} />
-          <Route path="/stake" element={<Stake passPendingState={passPendingState} account={account} contracts={contracts} balance={walletInfo?.balance} epoch={walletInfo?.epoch} provider={provider} />} />
+          {epoch === "0" ? null :
+            <Route path="/airdrop" element={<Airdrop passPendingState={passPendingState} account={account} contracts={contracts} balance={walletInfo?.balance} epoch={walletInfo?.epoch} provider={provider} />} />
+          }
+          {epoch === "0" ? null :
+            <Route path="/stake" element={<Stake passPendingState={passPendingState} account={account} contracts={contracts} balance={walletInfo?.balance} epoch={walletInfo?.epoch} provider={provider} />} />
+          }
           <Route path="/submitRatings" element={<SubmitRating account={account}/>} />
           <Route path="/viewRatings" element={<ViewRatings />} />
         </Routes>

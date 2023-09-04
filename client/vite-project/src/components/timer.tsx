@@ -95,7 +95,7 @@ export function CountdownTimer({ExpiredDisplay, CountdownDisplay} : ICountdownTi
 
   return (
     //@ts-ignore
-    <CountdownDisplay timeUntilDeadline={[days, hours, minutes, seconds]} surveyStatus={surveyStatus} /> // this component refers to ShowCounter
+    <CountdownDisplay timeUntilDeadline={[days, hours, minutes, seconds]} surveyStatus={surveyStatus} epochNumber={epoch} /> // this component refers to ShowCounter
   );
 }
 
@@ -110,19 +110,61 @@ const ExpiredNotice = () => {
   
 
 
-function ShowCounter({ timeUntilDeadline, surveyStatus } : IShowCounter){
+function ShowCounter({ timeUntilDeadline, surveyStatus, epochNumber } : IShowCounter){
     let [ days, hours, minutes, seconds] = timeUntilDeadline 
 
     return (
-        <div className="show-counter text-zinc-300 shadow-2xl shadow-purple-800/70 unbounded text-4xl md:text-5xl p-7 bg-gradient-to-br from-purple-500/80 via-indigo-500/80 to-blue-500 lg:w-1/2 w-full bg-opacity-80 backdrop-filter backdrop-blur-md rounded-2xl flex flex-col">
-          <p className="unbounded text-2xl font-light mb-2"> {surveyStatus === 'before'? `Ratings open in:` : `Ratings close in:`} </p>
-          <div className="unbounded w-full flex flex-row justify-center items-end">
-            {days} <a className="font-light text-3xl ml-1">d&nbsp;</a>
-            {hours} <a className="font-light text-3xl ml-1">h&nbsp;</a>
-            {minutes} <a className="font-light text-3xl ml-1">m&nbsp;</a>
-            {seconds} <a className="font-light text-3xl ml-1">s&nbsp;</a>
+        <>
+          <div className="show-counter text-zinc-300 shadow-2xl shadow-purple-800/70 unbounded text-4xl md:text-5xl p-7 bg-gradient-to-br from-purple-500/80 via-indigo-500/80 to-blue-500 lg:w-1/2 w-full bg-opacity-80 backdrop-filter backdrop-blur-md rounded-2xl flex flex-col">
+            <p className="unbounded text-2xl font-light mb-2"> {surveyStatus === 'before'? `Ratings open in:` : `Ratings close in:`} </p>
+            <div className="unbounded w-full flex flex-row justify-center items-end">
+              {days} <a className="font-light text-3xl ml-1">d&nbsp;</a>
+              {hours} <a className="font-light text-3xl ml-1">h&nbsp;</a>
+              {minutes} <a className="font-light text-3xl ml-1">m&nbsp;</a>
+              {seconds} <a className="font-light text-3xl ml-1">s&nbsp;</a>
+            </div>
           </div>
-        </div>
+          {surveyStatus === 'before' && epochNumber === 0? 
+          <>
+            <p className="pt-5 poppins text-lg">
+            TRUSTLESS will open for ratings soon!
+            </p>
+            <p className="poppins text-lg">
+            When ratings open, you'll have 72 hours to submit ratings and earn $TRUST.
+            </p>
+          </>
+          : null}
+          {surveyStatus === 'during' && epochNumber === 0? 
+          <>
+            <p className="pt-5 poppins text-lg">
+            TRUSTLESS is open for ratings!
+            </p>
+          </>
+          : null}
+          {surveyStatus === 'before' && epochNumber > 0? 
+          <>
+            <p className="pt-5 poppins text-lg">
+            TRUSTLESS will open for ratings soon!
+            </p>
+            <p className="poppins text-lg">
+            When ratings open, you'll have 72 hours to submit ratings and earn $TRUST.
+            </p>
+            <p className="poppins text-lg">
+            Remember to stake $TRUST! The more $TRUST staked, the more rewards you'll be eligible for.
+            </p>
+          </>
+          : null}
+          {surveyStatus === 'during' && epochNumber > 0? 
+          <>
+            <p className="pt-5 poppins text-lg">
+            TRUSTLESS is open for ratings!
+            </p>
+            <p className="poppins text-lg">
+            Remember to stake $TRUST! The more $TRUST staked, the more rewards you'll be eligible for.
+            </p>
+          </>
+          : null}
+        </>
       );
 }
 

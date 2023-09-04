@@ -99,7 +99,7 @@ export default function ProtocolRankingTables(){
 
             </div>
 
-            <div className="py-4 px-8">
+            <div className="pb-4 pt-3 px-8">
                 <input
                 type="text"
                 placeholder="Search protocol..."

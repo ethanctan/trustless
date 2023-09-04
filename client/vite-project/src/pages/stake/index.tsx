@@ -132,18 +132,20 @@ export default function Stake({account , contracts, balance, epoch, provider, pa
         }
     }
 
+    // TODO: CLARIFY HOW STAKING WORKS
+
     return (
         <div className="flex flex-col items-center md:p-8 rounded-lg shadow-lg poppins">
 
             <h3 className="unbounded text-3xl my-5">Stake your $TRUST</h3>
             <p className="text-lg text-center poppins max-w-xl">
-            Stake your $TRUST to participate in the next epoch. The countdown to the next epoch will begin once the minimum stake is met. 
+            Stake your $TRUST to participate in the next epoch. 
             </p>
             <p className="text-lg text-center poppins max-w-xl mt-4">
-            Note that <a className="underline"> once an epoch begins, you will not be able to unstake. </a> Instead, your staked $TRUST will be doubled by the treasury, put into the epoch's $TRUST pool, and the $TRUST pool will be airdropped as new rewards based on your performance in this epoch.
+            Note that <a className="underline"> once an epoch begins, you will not be able to unstake. </a> Instead, you will (earn additional $TRUST based on the amount staked? Will the staked TRUST itself be put into the rewards pool? Need to clarify this)
             </p>
     
-            <ul className="mx-auto mt-6 mb-4 text-lg font-medium border rounded-lg bg-gray-700/30 border-gray-600  text-zinc-300 font-mono">
+            <ul className="mx-auto mt-6 mb-8 text-lg font-medium border rounded-lg bg-gray-700/30 border-gray-600  text-zinc-300 font-mono">
             <li className="w-full px-8 py-2 border-b border-gray-600">
                 Your $TRUST balance:
                 <mark className="px-3 py-1 mx-2  text-zinc-300 bg-gradient-to-br from-violet-500 to-blue-500 rounded-md">
@@ -179,7 +181,7 @@ export default function Stake({account , contracts, balance, epoch, provider, pa
             {isMismatched ? (
                 <button
                 onClick={switchNetwork} 
-                className="relative h-full inline-flex items-center justify-center p-0.5 overflow-hidden text-sm font-medium rounded-lg group bg-gradient-to-br from-red-600 to-orange-300  text-zinc-300 shadow-lg shadow-purple-800/40"
+                className="relative h-full inline-flex items-center justify-center p-0.5 overflow-hidden text-sm font-medium rounded-lg group bg-gradient-to-br from-red-600 to-orange-500  text-zinc-300 shadow-lg shadow-purple-800/40"
                 >
                 <span className="relative h-full px-5 py-3 transition-all ease-in duration-75 bg-slate-900 rounded-md group-hover:bg-opacity-0">
                     Please switch your network.
@@ -221,7 +223,7 @@ export default function Stake({account , contracts, balance, epoch, provider, pa
                     <span className="relative inline-flex">
                     <button
                         onClick={approve}
-                        className="mt-4 relative inline-flex items-center justify-center p-0.5 overflow-hidden text-sm font-medium rounded-lg 
+                        className="relative inline-flex items-center justify-center p-0.5 overflow-hidden text-sm font-medium rounded-lg 
                         group bg-gradient-to-br from-purple-600 to-blue-500  text-zinc-300 shadow-lg shadow-purple-800/40"
                     >
                         <span className="relative px-5 py-2.5 transition-all ease-in duration-75 bg-slate-900 rounded-md group-hover:bg-opacity-0">

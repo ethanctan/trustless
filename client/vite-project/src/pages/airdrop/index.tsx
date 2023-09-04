@@ -126,7 +126,7 @@ export default function Airdrop({account , contracts, balance, epoch, provider, 
             {isMismatched ? (
                 <button
                 className="mx-auto mt-8 relative inline-flex items-center justify-center p-0.5 overflow-hidden text-sm font-medium rounded-lg 
-                group bg-gradient-to-br from-red-600 to-orange-300  text-zinc-300 shadow-lg shadow-purple-800/40"
+                group bg-gradient-to-br from-red-600 to-orange-500  text-zinc-300 shadow-lg shadow-purple-800/40"
                 onClick={switchNetwork}
             >
                 <span className="relative px-5 py-2.5 transition-all ease-in duration-75 bg-slate-900 rounded-md group-hover:bg-opacity-0">
