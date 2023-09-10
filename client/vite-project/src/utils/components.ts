@@ -55,6 +55,7 @@ export interface ICountdownTimer {
 export interface IShowCounter {
     timeUntilDeadline: number[];
     surveyStatus: 'before' | 'during';
+    epochNumber: number;
 }
 
 export interface IDateTimeDisplay {

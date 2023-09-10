@@ -88,7 +88,7 @@ export default function Navbar({ passAccount, passContracts, passProvider, pendi
 
             </div>
 
-            <div className={`items-center justify-between ${isMenuExpanded ? 'block' : 'hidden lg:block'} w-full lg:flex lg:w-auto lg:order-1 lg:py-0 py-2`} id="navbar-sticky">
+            <div className={`ml-auto items-center justify-between ${isMenuExpanded ? 'block' : 'hidden lg:block'} w-full lg:flex lg:w-auto lg:order-1 lg:py-0 py-2`} id="navbar-sticky">
               <ul className={`flex flex-col lg:flex-row items-center justify-start space-y-2 lg:space-y-0 lg:space-x-6 px-8 py-2 ${isMenuExpanded ? 'block' : 'invisible lg:visible'}`}>
                   <NavlinkComponent to="/" classNamePath={"/"} title={"About"} onClick={closeMenu}/>
                   {epoch == 0 ? 
@@ -104,7 +104,7 @@ export default function Navbar({ passAccount, passContracts, passProvider, pendi
                     <TooltipComponent toolTipTitle={"Connect your account first!"} classNamePath={"/stake"} title={"Stake"}/> 
                   : <NavlinkComponent to="/stake" classNamePath={"/stake"} title={"Stake"} onClick={closeMenu}/>
                   }
-                  <a className="text-gray-400 hover:text-gray-100" href="https://aegis-protocol-1.gitbook.io/aegis-protocol/" target="_blank">Mechanics</a>
+                  <a className="text-gray-400 hover:text-gray-100" href="https://aegis-protocol-1.gitbook.io/aegis-protocol/" target="_blank">Docs</a>
                   <NavlinkComponent to="/submitRatings" classNamePath={"/submitRatings"} title={"Submit Ratings"} onClick={closeMenu}/>
                   <NavlinkComponent to="/viewRatings" classNamePath={"/viewRatings"} title={"View Ratings"} onClick={closeMenu}/>
               </ul>
