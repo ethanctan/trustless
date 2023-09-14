@@ -1,14 +1,11 @@
 import {useState, useEffect} from 'react';
 import '@fontsource-variable/unbounded';
 import '@fontsource/poppins';
-
-import { TextField } from '@mui/material';
+import { Input } from '@chakra-ui/react'
 import { UserIdentity } from '../../interfaces/user.ts';
-import { Rating, ProtocolRatings } from '../../interfaces/rating.ts';
-
+import { PostRating, ProtocolRatings } from '../../interfaces/rating.ts';
 import { Question } from '../../components/question.tsx'
 import SearchBar from '../../components/searchBar.tsx';
-import { textFieldDesc } from './formConsts.ts';
 import { SubmissionTable } from '../../components/submissionTable.tsx';
 import { cex } from './CEX.ts';
 import { Bridge } from './Bridge.ts';
@@ -38,6 +35,11 @@ function Form({defiData, getUserData, walletAccount}){
     const [text3, setText3] = useState<string>("");
     const [text4, setText4] = useState<string>("");
     const [text5, setText5] = useState<string>("");
+    const [text1cex, setText1cex] = useState<string>("");
+    const [text2cex, setText2cex] = useState<string>("");
+    const [text3cex, setText3cex] = useState<string>("");
+    const [text4cex, setText4cex] = useState<string>("");
+    const [text5cex, setText5cex] = useState<string>("");
     const [referralCode, setReferralCode] = useState<string>("");//self-code
     const [protocolRatings, setProtocolRatings] = useState<ProtocolRatings>({});
     const [valid_token, setValidToken] = useState([]);
@@ -54,6 +56,11 @@ function Form({defiData, getUserData, walletAccount}){
     setText3("How confident are you in " + protocol + "'s ability to deliver on their roadmap? Have they delivered in the past? Do their goals seem feasible, or are they overpromising?");
     setText4("How robust is " + protocol + "'s governance system? If decentralized, is there strong voter participation, or is voting controlled by a few whales? If centralized, is there a clear and transparent decision-making process?");
     setText5("How strong is the track record of " + protocol + "'s team? If they're doxxed, do they have strong credentials and experience? If undoxxed, do they have a good reputation and history?");
+    setText1cex("How secure is " + protocol + "'s infrastructure? Have they suffered any major hacks or exploits? Do they store most assets in cold storage? Do they undergo regular security audits?");
+    setText2cex("How transparent is " + protocol + "'s business operations and ownership structure? Is there clarity on who owns and operates the exchange? Do they publish regular financial statements and reports?");
+    setText3cex("How reliable and responsive is " + protocol + "'s customer support? Are support tickets resolved promptly? Is there a clear channel for customer complaints and issues?");
+    setText4cex("How robust are " + protocol + "'s compliance and regulatory practices? Are they licensed to operate in major jurisdictions? Do they have strict KYC/AML policies? Do they collaborate well with regulators?");
+    setText5cex("How long has " + protocol + "been in operation, and how has it performed during times of high volatility and trading volume? Have they been able to handle customer demand and prevent outages?");
   }
 
   async function getUserDataWrapped() {
@@ -79,7 +86,7 @@ function Form({defiData, getUserData, walletAccount}){
     }
     
     let scores = [q1Score, q2Score, q3Score, q4Score, q5Score];
-    let newRating: Rating = {protocol: protocol, scores: scores, code: influencer};
+    let newRating: PostRating = {protocol: protocol, scores: scores, code: influencer};
     let user: UserIdentity = {cookieId: "", walletId: String(address) }
 
 
@@ -102,18 +109,19 @@ function Form({defiData, getUserData, walletAccount}){
 
 
   function listUserRatings(key : any){
-    const {scores} = protocolRatings[key];
+    const {epoch, scores, protocol} = protocolRatings[key];
     return (
         <tr key={key} 
           className="bg-slate-900 bg-opacity-70 backdrop-filter backdrop-blur-md"
           style={{ marginBottom: '10px', height: '50px' }}
         >
-            <td className="p-6 py-4 whitespace-nowrap text-sm text-white font-mono">{key}</td>
-            <td className="p-6 py-4 whitespace-nowrap text-sm text-white font-mono">{scores[0]}</td>
-            <td className="p-6 py-4 whitespace-nowrap text-sm text-white font-mono">{scores[1]}</td>
-            <td className="p-6 py-4 whitespace-nowrap text-sm text-white font-mono">{scores[2]}</td>
-            <td className="p-6 py-4 whitespace-nowrap text-sm text-white font-mono">{scores[3]}</td>
-            <td className="p-6 py-4 whitespace-nowrap text-sm text-white font-mono">{scores[4]}</td>
+            <td className="p-6 py-4 whitespace-nowrap text-sm  text-zinc-300 font-mono">{epoch}</td>
+            <td className="p-6 py-4 whitespace-nowrap text-sm  text-zinc-300 font-mono">{key ? protocol : key}</td>
+            <td className="p-6 py-4 whitespace-nowrap text-sm  text-zinc-300 font-mono">{scores[0]}</td>
+            <td className="p-6 py-4 whitespace-nowrap text-sm  text-zinc-300 font-mono">{scores[1]}</td>
+            <td className="p-6 py-4 whitespace-nowrap text-sm  text-zinc-300 font-mono">{scores[2]}</td>
+            <td className="p-6 py-4 whitespace-nowrap text-sm  text-zinc-300 font-mono">{scores[3]}</td>
+            <td className="p-6 py-4 whitespace-nowrap text-sm  text-zinc-300 font-mono">{scores[4]}</td>
         </tr>
     );
   }
@@ -159,14 +167,20 @@ function Form({defiData, getUserData, walletAccount}){
                   <Question questionScore={q5Score} setScore={setQ5Score} text={text5} title="Team" />
                 </>
               ) : (
-                <span> CEX Questions </span> // Ethan TODO: Add CEX questions
+                <>
+                  <Question questionScore={q1Score} setScore={setQ1Score} text={text1} title="Security" />
+                  <Question questionScore={q2Score} setScore={setQ2Score} text={text2} title="Transparency" />
+                  <Question questionScore={q3Score} setScore={setQ3Score} text={text3} title="Support" />
+                  <Question questionScore={q4Score} setScore={setQ4Score} text={text4} title="Compliance" />
+                  <Question questionScore={q5Score} setScore={setQ5Score} text={text5} title="Track Record" />
+                </>
               )
             }
 
 
                 <div className="flex justify-start text-left pl-6 mt-5 mb-3 items-center text-lg md:text-base">
                   Your referral code is: 
-                    <mark className="px-3 py-1 ml-4 text-white bg-gradient-to-br from-violet-500 to-blue-500 rounded-md font-mono">
+                    <mark className="px-3 py-1 ml-4  text-zinc-300 bg-gradient-to-br from-violet-500 to-blue-500 rounded-md font-mono">
                     {referralCode ? referralCode : 'Loading...'}
                     </mark>
                 </div>
@@ -174,16 +188,14 @@ function Form({defiData, getUserData, walletAccount}){
                 <div className="flex items-start justify-start text-left pl-6 text-lg md:text-base">
                     If you're copying someone's ratings, enter their code.
                 </div>
-                <div className="md:col-span-4 pr-5 mt-5">
-                    <TextField 
-                    className="poppins"
-                    id="outlined-basic" 
-                    sx={textFieldDesc}
-                    placeholder="@twitterhandle" 
-                    label="Referral Code..." 
-                    variant="outlined" 
-                    onChange={(event) => setInfluencer(event.target.value)}
-                    color="primary"
+                <div className="md:col-span-4 mt-5 w-1/2 mx-auto">
+                    <Input 
+                      className="poppins text-slate-200 bg-slate-900 border border-transparent border-1 focus:hover:border-2 hover:border-white focus:border-blue-500 transition-all duration-150 ease-in-out"
+                      id="outlined-basic" 
+                      placeholder="Referral Code..." 
+                      variant="outlined" 
+                      onChange={(event) => setInfluencer(event.target.value)}
+                      color="primary"
                     />
                 </div>
             </div>
@@ -197,7 +209,7 @@ function Form({defiData, getUserData, walletAccount}){
 
               <button
                 className={`relative inline-flex items-center justify-center p-0.5 overflow-hidden text-sm font-medium rounded-lg 
-                group bg-gradient-to-br from-purple-600 to-blue-500 text-white shadow-lg shadow-purple-800/40
+                group bg-gradient-to-br from-purple-600 to-blue-500  text-zinc-300 shadow-lg shadow-purple-800/40
                 `}
                 onClick={handleUserSubmissionWrapped}
               >
@@ -207,7 +219,7 @@ function Form({defiData, getUserData, walletAccount}){
               </button>
              
             {errorMessage == 'Successfully added!'? 
-              <button type="button" className="mx-auto text-white bg-[#1da1f2] hover:bg-[#1da1f2]/90 focus:ring-4 focus:outline-none font-medium rounded-lg text-base px-5 py-2.5 text-center inline-flex items-center focus:ring-[#1da1f2]/55"
+              <button type="button" className="mx-auto  text-zinc-300 bg-[#1da1f2] hover:bg-[#1da1f2]/90 focus:ring-4 focus:outline-none font-medium rounded-lg text-base px-5 py-2.5 text-center inline-flex items-center focus:ring-[#1da1f2]/55"
                 onClick={() => {
                   window.open(`https://twitter.com/intent/tweet?text=I%20just%20rated%20${protocol}%20with%20scores%20of%20${[q1Score, q2Score, q3Score, q4Score, q5Score].join(', ')}%20on%20TRUST%20and%20earned%20a%20$TRUST%20airdrop.%20Check%20it%20out%20at%20http://localhost:5173&via=YourTwitterHandle`);
                 }}>
@@ -232,7 +244,7 @@ function Form({defiData, getUserData, walletAccount}){
       </h3>
       <div className="mx-auto mb-10">
         <SubmissionTable 
-        headings={["Protocol Name", "Security", "Treasury", "Roadmap", "Governance", "Team"]}
+        headings={["Epoch", "Protocol Name", "Security", "Treasury", "Roadmap", "Governance", "Team"]}
         submissions={Object.keys(protocolRatings)}
         RowGenerator={listUserRatings}
         /> 

@@ -27,6 +27,8 @@ export interface DefiData {
 }
 
 export interface EpochCount {
-    epochCount: number,
-    _id: string
+    epochCount: number;
+    surveyStatus: string;
+    targetDate: Date;
+    _id: string;
 }

@@ -36,6 +36,8 @@ body {
   background-image: url('./assets/background_dark.jpg');
   background-repeat: no-repeat;
   background-size: cover;
+  overflow-x: hidden; /* Prevent horizontal scrolling bounce effect */
+  overflow-y: hidden; /* Prevent vertical scrolling bounce effect */
 }
 
 h1 {

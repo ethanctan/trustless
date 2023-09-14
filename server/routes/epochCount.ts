@@ -4,6 +4,7 @@
  */
 import express, { Request, Response, response } from 'express';
 import EpochCountModel from '../models/EpochCount';
+import EpochCountController from '../controllers/epochController';
 const router = express.Router()
 
 /** 
@@ -18,6 +19,17 @@ router.get("/", async (req: Request, res: Response) => {
         res.json(err)
     }
     
+});
+
+// Use axios POST request to update epochCount: http://localhost:3001/epochCount
+router.post("/", async (req: Request, res: Response) => {
+    let epochCountController = new EpochCountController()
+    try{
+        let reponse = await epochCountController.updateEpochCount()
+        res.json(reponse)
+    }catch(err){
+        res.json(err)
+    }
 });
 
 module.exports = router

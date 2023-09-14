@@ -5,9 +5,9 @@ import TrustStakingHelper from '../../../../smart_contracts/artifacts/contracts/
 import { ConnectWallet } from "@thirdweb-dev/react";
 
 //Replace these addresses with those deployed on mainnet
-const tokenAddress = "0x79C9609dEfd4b238292dA1Bd4Dd9b25A998Fda8e";
-const stakingAddress = "0x3EC0549914d56e8b97859cb6FDBABc667809841A";
-const helperAddress = '0xf7670f2ba1aD7c86E4A073222BBb60890a663D79';
+const tokenAddress = "0x18260909b0ddc83326434bC303560aEaBf21A906";
+const stakingAddress = "0xd166F4001981984332EC0EE46E9a56421B1BaeA0";
+const helperAddress = '0x3f85109658b538112B224082612C33a52BC581aF';
 
 export const getProvider = async () => {
     // For hardhat testnet

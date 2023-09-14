@@ -11,6 +11,7 @@ import express, { Request, Response } from 'express';
 import UserModel from '../models/user/UserModel';
 import UserController from '../controllers/userController';
 import User from '../models/user/User';
+import { json } from 'stream/consumers';
 
 /**
  * Express router to mount user related functions on.
@@ -68,6 +69,23 @@ router.get("/check/:cookieId", async (req, res) => {
     res.json(response)
   });
 
+/**
+ * GET request to get all user addresses
+ * @returns list of all user addresses
+ */
+router.get("/getAllUserAddresses", async (req, res) => {
+    let response = await userController.getAllUsers()
+    res.json(response)
+});
+
+/**
+ * GET request to get all user addresses and their referral counts
+ * @returns list of key:value pairs of user addresses:referral counts
+ */
+router.get("/getAllReferralCounts", async (req, res) => {
+    let response = await userController.getAllReferrals()
+    res.json(response)
+})
 
 export default router;
 

@@ -1,7 +1,13 @@
 
-import { Tooltip } from '@mui/material';
-import Slider from '@mui/material/Slider';
-import { IQuestion, IModifiedSlider, IQuestionPrompt } from '../utils/components';
+import { Tooltip } from '@chakra-ui/react'
+import {
+    Slider,
+    SliderTrack,
+    SliderFilledTrack,
+    SliderThumb,
+    SliderMark,
+  } from '@chakra-ui/react'
+  import { IQuestion, IModifiedSlider, IQuestionPrompt } from '../utils/components';
 
 function QuestionPrompt({text, title} : IQuestionPrompt){
     return (
@@ -9,7 +15,7 @@ function QuestionPrompt({text, title} : IQuestionPrompt){
         <p className="text-left">
             <span className="mr-2">{title}</span>
         </p>
-        <Tooltip title={text} placement="top" arrow>
+        <Tooltip className="poppins" label={text} placement="top" hasArrow>
             <svg fill="#3874cb" version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg"
                 viewBox="0 0 416.979 416.979" width="14" height="14">
             <g>
@@ -27,20 +33,23 @@ function QuestionPrompt({text, title} : IQuestionPrompt){
 
 function ModifiedSlider({questionScore, setScore} : IModifiedSlider){
     return (
-    <div className="col-span-4 flex items-center w-full">
-        <Slider
-        min={1}
-        max={10}
-        step={1}
-        defaultValue={questionScore}
-        value={questionScore}
-        onChange={(event, value) => {
-            const selectedValue = Array.isArray(value) ? value[0] : value;
-            setScore(selectedValue);
-        }}
-        marks
-        valueLabelDisplay="off"
-        />
+    <div className="col-span-4 flex items-center w-full my-3">
+        <Slider 
+            defaultValue={questionScore} 
+            value={questionScore}
+            min={1} 
+            max={10} 
+            step={1}
+            onChange={(value) => {
+                const selectedValue = Array.isArray(value) ? value[0] : value;
+                setScore(selectedValue);
+            }}
+        >
+            <SliderTrack bg='blue.700'>
+                <SliderFilledTrack bg='blue.400' />
+            </SliderTrack>
+            <SliderThumb boxSize={4} />
+        </Slider>
     </div>
     )
 }
@@ -54,7 +63,7 @@ function Question({questionScore, setScore, text, title} : IQuestion){
         <ModifiedSlider questionScore={questionScore} setScore={setScore}/>
             
         <div className="flex items-center justify-center">
-            <p className="text-white ml-2 font-mono">
+            <p className=" text-zinc-300 ml-2 font-mono">
                 {questionScore}
             </p>
         </div>

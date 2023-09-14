@@ -99,11 +99,11 @@ export default function ProtocolRankingTables(){
 
             </div>
 
-            <div className="py-4 px-8">
+            <div className="pb-4 pt-3 px-8">
                 <input
                 type="text"
                 placeholder="Search protocol..."
-                className="poppins w-50 rounded-lg py-2 px-4 border bg-gray-900 bg-opacity-50 backdrop-filter backdrop-blur-md border-gray-800 hover:border-white focus:outline-none transition-all duration-100"
+                className="poppins w-96 rounded-md py-2 px-4 border bg-slate-900  border border-transparent focus:outline-none focus:hover:border-2 hover:border-white focus:border-blue-500 transition-all duration-150 ease-in-out"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 />

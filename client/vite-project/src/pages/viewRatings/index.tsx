@@ -1,18 +1,7 @@
-import { CountdownTimer } from '../../components/timer.tsx';
 import ProtocolRankingTables from './protocolRankingTables.tsx';
 
 export default function ViewRatings(){
     return (
-        <div>
-            <CountdownTimer targetDate={new Date("2022-03-08")} 
-            ExpiredDisplay={ProtocolRankingTables}
-            CountdownDisplay={Counter}/>
-        </div>
-        
+        <ProtocolRankingTables/>
     )
-}
-
-//@ts-ignore
-function Counter({timeuntildeadline}){
-    return (<p>Hello world</p>)
 }

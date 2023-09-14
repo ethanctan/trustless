@@ -58,4 +58,8 @@ contract TRUSTStakingHelper {
     function viewStake() external view returns (uint) {
         return stakedAmounts[minStake][msg.sender];
     }
+
+    function viewStakeByAddress(address _address) external view returns (uint) {
+        return stakedAmounts[minStake][_address];
+    }
 }

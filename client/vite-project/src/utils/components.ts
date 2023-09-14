@@ -12,6 +12,7 @@ export interface INavlinkComponent {
     to: string;
     classNamePath: string;
     title: string;
+    onClick: () => void;
 }
 
 export interface IQuestionPrompt {
@@ -44,17 +45,17 @@ export interface ISubmissionTable {
 }
 
 export interface ICountdownDisplay {
-    targetDate: Date;
 }
 
 export interface ICountdownTimer {
-    targetDate: Date;
     ExpiredDisplay: any;
     CountdownDisplay: any;
 }
 
 export interface IShowCounter {
-    timeuntildeadline: number[];
+    timeUntilDeadline: number[];
+    surveyStatus: 'before' | 'during';
+    epochNumber: number;
 }
 
 export interface IDateTimeDisplay {

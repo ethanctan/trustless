@@ -3,7 +3,7 @@ import Axios from 'axios';
 import {Protocol, GetProtocolResponse} from './interfaces.ts'
 import { UserIdentity } from '../interfaces/user.ts';
 import { postRating } from '../api/ratingApi.ts';
-import { Rating } from '../interfaces/rating.ts';
+import { PostRating } from '../interfaces/rating.ts';
 import verifyToken from '../api/recaptchaApi.ts';
 import ReCAPTCHA from 'react-google-recaptcha';
 
@@ -23,14 +23,14 @@ export async function getToken(recaptcha : ReCAPTCHA | null) {
 }
 
 // Add a rating to a user's rating mapping
-export async function addRating(user: UserIdentity, rating: Rating): Promise<void> {
+export async function addRating(user: UserIdentity, rating: PostRating): Promise<void> {
   let response = await postRating(user, rating)
   await updateProtocol(rating.protocol, rating.scores);
   return response
 }
 
 // Update a rating that already exists in a user's rating mapping
-export async function updateRating(user: UserIdentity, rating: Rating): Promise<void> {
+export async function updateRating(user: UserIdentity, rating: PostRating): Promise<void> {
   try {
     const prev = await Axios.get<number[]>(`http://localhost:3001/user/${user.cookieId}/${user.walletId}/getRating?protocolName=${rating.protocol}`);
 
